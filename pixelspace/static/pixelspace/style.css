@@ -1,7 +1,13 @@
+h1 {
+    color: red;
+    margin-left: 50px;
+  }
+
 body {
-    background: pink url("images/test.jpg") no-repeat;
+    background: pink url("images/cattoy.jpg") no-repeat;
 }
 
 li a {
     color: green;
 }
+

@@ -1,15 +1,17 @@
 h1 {
-    color: red;
-    margin-left: 50px;
+    color: rgb(31, 30, 75);
+    text-align: center;
+
   }
 
 body {
-    background: pink url("images/cattoy.jpg") no-repeat;
+    /*background: pink url("images/cattoy.jpg") no-repeat;*/
+    background: white;
 }
 
 li a, .dropbtn {
     display: inline-block;
-    color: white;
+    color: rgb(255, 255, 255);
     text-align: center;
     padding: 14px 16px;
     text-decoration: none;
@@ -21,6 +23,7 @@ li a, .dropbtn {
 
   li.dropdown {
     display: inline-block;
+    padding: 20px;
   }
 
   .dropdown:hover .dropdown-content {
@@ -30,14 +33,15 @@ li a, .dropbtn {
     display: none;
     position: absolute;
     background-color: #9CC4E1;
-    min-width: 160px;
+    min-width: 300px;
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
   }
 
   .dropdown-content a {
-    color: white;
-    padding: 20px 25px;
+    color: rgb(255, 255, 255);
+    padding: 40px 85px;
+    font-size: large;
     text-decoration: none;
     display: block;
     text-align: left;

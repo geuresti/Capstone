@@ -18,6 +18,12 @@ h1 {
 
   }
 
+  h2 {
+    font-family: 'Iceland-Regular';
+    color: #327FAC;
+    margin: 0px;
+  }
+
 body {
     /*background: pink url("images/cattoy.jpg") no-repeat;*/
     background: white;
@@ -111,5 +117,54 @@ ul {
     color: #406783;
   }
 
+  input[type=text] {
+    width: 20%;
+    font-family: 'Iceland-Regular';
+    padding: 10px 15px;
+    font-weight: bold;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: none;
+    background-color: #D9E5FC;
+    color: #406783;
+  }
+  input[type=number] {
+    width: 30%;
+    font-family: 'Iceland-Regular';
+    font-size: 15px;
+    font-weight: bold;
+    padding: 10px 15px;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: none;
+    background-color: #D9E5FC;
+    color: #406783;
+  }
 
+  output{
+    width: 100%;
+    font-family: 'Iceland-Regular';
+    padding: 10px 15px;
+    font-weight: bold;
+    margin: 8px 0;
+    box-sizing: border-box;
+    border: none;
+    background-color: #D9E5FC;
+    color: #406783;
+  }
+
+  .parent {
+    margin: 0px;
+    padding: 0px 0px;
+    width: 100%; 
+
+  }
+  .child {
+    display: inline-block;
+    width: 30%; 
+    padding: 1rem 1rem;
+    vertical-align: middle;
+    margin-left:0px;
+    margin-right:0px;
+  }
 

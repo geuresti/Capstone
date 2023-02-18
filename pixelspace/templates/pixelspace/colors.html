@@ -35,11 +35,58 @@
 
 
       <div class="container">
-        <img src="{% static 'pixelspace/images/banner.png' %}" width="1000" height="200">
+        <img src="{% static 'pixelspace/images/banner.png' %}" width="900" height="170">
         <h1>Colors in The Media</h1>
       </div>
     
     <b>swell.</b>
+
+    <div class='parent'>
+        <div class='child'>
+            <form>
+                <label for="AAx"><h2>A-Axis (Green to Red)</h2></label><br>
+                <input type="text" id="AAx" name="AAx"><br>
+                <label for="BAx"><h2>B-Axis (Blue to Yellow) </h2></label><br>
+                <input type="text" id="BAx" name="BAx">
+                <label for="light"><h2>Lightness </h2></label><br>
+                <input type="text" id="light" name="light">
+              </form>
+
+        </div>
+
+        <div class='child'>
+            <div class="containerB">
+                <form>
+                    <label for="RGB"><h2>RGB</h2></label><br>
+                    <output id="RGB" name="RGB                    "><br>
+                    <label for="SRGB"><h2>SRGB </h2></label><br>
+                    <output  id="SRGB" name="SRGB">
+                    <label for="ProPhoto"><h2>ProPhoto </h2></label><br>
+                    <output  id="ProPhoto" name="ProPhoto">
+                  </form>
+                </div>
+
+        </div>
+
+        <div class='child'>
+            <div class="containerB">
+                <form>
+                    <label for="RGB"><h2>Alt. RGB</h2></label><br>
+
+                    <label for="SRGB"><h2>Alt. SRGB </h2></label><br>
+
+                    <label for="ProPhoto"><h2>Alt. ProPhoto </h2></label><br>
+
+                  </form>
+                </div>
+
+        </div>
+      </div>
+
+
+
+
+
 
     <div class="containerB">
         <button class ="button"> Generate</button>

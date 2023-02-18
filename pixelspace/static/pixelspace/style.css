@@ -153,18 +153,18 @@ ul {
     color: #406783;
   }
 
-  .parent {
-    margin: 0px;
-    padding: 0px 0px;
+  .flex-parent-element{
+    display: flex;
     width: 100%; 
 
   }
-  .child {
-    display: inline-block;
-    width: 30%; 
-    padding: 1rem 1rem;
-    vertical-align: middle;
-    margin-left:0px;
-    margin-right:0px;
+  .flex-child-element {
+    flex: 1;
+    width: 100%; 
+    margin: 10px;
   }
 
+  .flex-child-element:first-child {
+    margin-right: 20px;
+    flex: 1;
+  }

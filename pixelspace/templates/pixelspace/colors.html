@@ -1,2 +1,48 @@
-<h1>This is a heading</h1>
-<b>swell.</b>
+<!DOCTYPE html>
+<html>
+
+{% load static %}
+
+<head>
+<link rel="stylesheet" href="{% static 'pixelspace/style.css' %}">
+</head>
+<body>
+
+    <ul>
+
+        <li class="dropdown">
+
+          <a href="javascript:void(0)" class="dropbtn"><img src="{% static 'pixelspace/images/menu.png' %}" width="50" height="50"></img>   </a>
+
+          <div class="dropdown-content">
+            <a href="pixelmap">Pixel Map</a>
+            <a href="colors">Colors in The Media</a>
+            <a href="logo">Logo Generation</a>
+            <a href="image">Image Gallery</a>
+
+            <a href="login">Login</a>
+            <a href="settings">Settings</a>
+          </div>
+
+            
+        </li>
+        <div class="img-container">
+          <img src="{% static 'pixelspace/images/logo2.png' %}" width="300" height="106">
+        </div>
+      </ul>
+    
+
+
+      
+      <div class="container">
+        <img src="{% static 'pixelspace/images/banner.png' %}" width="1000" height="200">
+        <h1>Colors in The Media</h1>
+      </div>
+    
+    <b>swell.</b>
+
+</body>
+
+
+
+</html>

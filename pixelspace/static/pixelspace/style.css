@@ -1,6 +1,20 @@
+@font-face {
+  font-family: 'Iceland-Regular';
+  src: local('Iceland-Regular'),
+       url('fonts/Iceland-Regular.ttf') format("truetype");
+}
+
 h1 {
-    color: rgb(31, 30, 75);
+    font-family: 'Iceland-Regular';
+    color: #327FAC;
     text-align: center;
+    font-size: 100px;
+    text-shadow: #163959 -2px -3px;
+
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 
   }
 
@@ -43,8 +57,8 @@ li a, .dropbtn {
 
   .dropdown-content a {
     color: rgb(255, 255, 255);
-    padding: 40px 85px;
-    font-size: large;
+    padding: 50px 85px;
+    font-size: 20px;
     text-decoration: none;
     display: block;
     text-align: left;
@@ -62,5 +76,16 @@ ul {
 
   .img-container {
     text-align: center;
+    
   }
+
+  .container {
+    position: relative;
+    text-align: center;
+    color: white;
+    margin-top:30px;
+  }
+
+
+
 

@@ -20,5 +20,11 @@ from django.urls import include, path
 urlpatterns = [
     path('pixelspace/', include('pixelspace.urls')),
     path('pixelspace/colors/', include('pixelspace.urls')),
+    path('pixelspace/image/', include('pixelspace.urls')),
+    path('pixelspace/login/', include('pixelspace.urls')),
+    path('pixelspace/logo/', include('pixelspace.urls')),
+    path('pixelspace/pixelmap/', include('pixelspace.urls')),
+    path('pixelspace/settings/', include('pixelspace.urls')),
+
     path('admin/', admin.site.urls),
 ]

@@ -21,6 +21,7 @@ h1 {
 body {
     /*background: pink url("images/cattoy.jpg") no-repeat;*/
     background: white;
+    margin: 0;
 }
 
 li a, .dropbtn {
@@ -76,6 +77,7 @@ ul {
 
   .img-container {
     text-align: center;
+    margin: 0;
     
   }
 
@@ -86,6 +88,28 @@ ul {
     margin-top:30px;
   }
 
+  .containerB {
+    text-align: center;
+  }
+
+  .button {
+    background-color: #9CC4E1; 
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    font-family: 'Iceland-Regular';
+    text-decoration: none;
+    display: inline-block;
+    font-size: 30px;
+    border-radius: 4px;
+    transition-duration: 0.4s;
+  }
+
+  .button:hover {
+    background-color: #9CC4E1; 
+    color: #406783;
+  }
 
 
 

@@ -66,4 +66,13 @@ def settings(request):
     }
     return HttpResponse(template.render(context, request))
 
+def createacc(request):
+    template = loader.get_template('pixelspace/createacc.html')
+    #return HttpResponse(template.render(request))
+    latest_question_list = [1]
+    context = {
+        'latest_question_list': latest_question_list,
+    }
+    return HttpResponse(template.render(context, request))
+
 # Create your views here.

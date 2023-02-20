@@ -24,6 +24,12 @@ h1 {
     margin: 0px;
   }
 
+  h3 {
+    font-family: 'Iceland-Regular';
+    color: #327FAC;
+    margin: 0px;
+  }
+
 body {
     /*background: pink url("images/cattoy.jpg") no-repeat;*/
     background: white;

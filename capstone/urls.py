@@ -25,6 +25,7 @@ urlpatterns = [
     path('pixelspace/logo/', include('pixelspace.urls')),
     path('pixelspace/pixelmap/', include('pixelspace.urls')),
     path('pixelspace/settings/', include('pixelspace.urls')),
+    path('pixelspace/createacc/', include('pixelspace.urls')),
 
     path('admin/', admin.site.urls),
 ]

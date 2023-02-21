@@ -13,4 +13,6 @@ urlpatterns = [
     path('settings', views.settings, name='settings'),
     path('createacc', views.createacc, name='createacc'),
 
+    path('test', views.testing, name='test'), # testing
+
 ]

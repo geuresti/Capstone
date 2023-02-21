@@ -34,6 +34,8 @@ body {
     /*background: pink url("images/cattoy.jpg") no-repeat;*/
     background: white;
     margin: 0;
+    
+   
 }
 
 li a, .dropbtn {
@@ -103,6 +105,7 @@ ul {
   .containerB {
     text-align: center;
   }
+
 
   .button {
     background-color: #9CC4E1; 

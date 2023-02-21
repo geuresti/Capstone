@@ -43,19 +43,20 @@
     <b>swell.</b>
     
     <div class="containerB">
-    <form>
-        <label for="fname"><h2>Username:</h2></label><br>
-        <input type="text" id="fname" name="fname"><br>
-        <label for="lname"><h2>Password:</h2></label><br>
-        <input type="text" id="lname" name="lname">
+    <form action="" method="post">
+      {% csrf_token %}
+        <label for="username"><h2>Username:</h2></label><br>
+        <input type="text" id="username" name="username"><br>
+        <label for="password"><h2>Password:</h2></label><br>
+        <input type="text" id="password" name="password">
+        <br><br>
+        <button class="button" type ="submit"> LOG IN</button>
       </form>
     </div>
 </div>
 
     <div class="containerB">
     
-    <button class ="button"> Log In</button>
-    <br><br>
     <h3><a href="createacc">Create an Account</a></h3>
     </div>
 

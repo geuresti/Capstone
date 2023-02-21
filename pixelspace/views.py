@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.template import loader
-
+from django.http import HttpResponseRedirect
 from .models import Account
 from django.contrib.auth.forms import UserCreationForm
 from .forms import AccountForm
+from .forms import NameForm
 from django.contrib import messages
 
 
@@ -38,12 +39,23 @@ def image(request):
 
 def login(request):
     template = loader.get_template('pixelspace/login.html')
-    #return HttpResponse(template.render(request))
-    latest_question_list = [1]
-    context = {
-        'latest_question_list': latest_question_list,
-    }
-    return HttpResponse(template.render(context, request))
+    
+    if request.method == 'POST':
+        form = NameForm(request.POST)
+        if form.is_valid():
+            print("in")
+            user= form.cleaned_data.get("username")
+            password= form.cleaned_data.get("password")
+
+            print(user,password)
+            return HttpResponseRedirect('/thanks/')
+    else:
+        print("NO")
+        form=NameForm()
+
+    #print(form)
+    return render(request, 'pixelspace/login.html', {'form':form})
+    #return HttpResponse(template.render({'form':form}, request))
 
 def logo(request):
     template = loader.get_template('pixelspace/logo.html')

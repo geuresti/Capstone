@@ -2,11 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.template import loader
 from django.http import HttpResponseRedirect
-from .models import Account
+#from .models import Account
 from django.contrib.auth.forms import UserCreationForm
 from .forms import AccountForm
 from .forms import NameForm
+from .forms import LABForm
 from django.contrib import messages
+from colormath.color_objects import LabColor, sRGBColor, AdobeRGBColor
+from colormath.color_conversions import convert_color
 
 
 def index(request):
@@ -21,12 +24,38 @@ def index(request):
 
 def colors(request):
     template = loader.get_template('pixelspace/colors.html')
-    #return HttpResponse(template.render(request))
-    latest_question_list = [1]
-    context = {
-        'latest_question_list': latest_question_list,
-    }
-    return HttpResponse(template.render(context, request))
+    if request.method == 'POST':
+        form = LABForm(request.POST)
+        if form.is_valid():
+            print("in")
+            lightness1 = form.cleaned_data.get("lightness")
+            axisA = form.cleaned_data.get("axisA")
+            axisB = form.cleaned_data.get("axisB")
+            testing = [lightness1, axisA, axisB]
+            print(lightness1,axisA,axisB)
+            #return Response(testing)
+            canRGB = False
+            lab = LabColor(lightness1, axisA, axisB)
+            #print(lab)
+            try:
+                rgb = convert_color(lab, AdobeRGBColor)
+                print(rgb)
+                canRGB =  True
+                hexCode = rgb.get_rgb_hex()
+                #colors = [red,green,blue]
+            except:
+                canRGB = False
+                hexCode = "Not Applicable"
+
+
+            return render(request, 'pixelspace/colors.html', {'form':form, 'canRGB': canRGB, 'hexCode': hexCode})
+           
+    else:
+        print("NO")
+        form=LABForm()
+
+    #print(form)
+    return render(request, 'pixelspace/colors.html', {'form':form})
 
 def image(request):
     template = loader.get_template('pixelspace/image.html')

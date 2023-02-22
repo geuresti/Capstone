@@ -44,55 +44,60 @@
     <div class='flex-parent-element'>
         <div class='flex-child-element'>
             <div class="containerB">
-            <form>
-                <label for="AAx"><h2>A-Axis (Green to Red)</h2></label><br>
-                <input type="text" id="AAx" name="AAx"><br>
-                <label for="BAx"><h2>B-Axis (Blue to Yellow) </h2></label><br>
-                <input type="text" id="BAx" name="BAx">
-                <label for="light"><h2>Lightness </h2></label><br>
-                <input type="text" id="light" name="light">
-              </form>
+              <form action="" method="post">
+                {% csrf_token %}
+                <label for="axisA"><h2>A-Axis (Green to Red)</h2></label><br>
+                <input type="text" id="axisA" name="axisA"><br>
+                <label for="axisB"><h2>B-Axis (Blue to Yellow) </h2></label><br>
+                <input type="text" id="axisB" name="axisB">
+                <label for="lightness"><h2>Lightness </h2></label><br>
+                <input type="text" id="lightness" name="lightness">
+                <br><br>
+
+              
               </div>
 
         </div>
 
         <div class='flex-child-element'>
             <div class="containerB">
-                <form>
+               
                     <label for="RGB"><h2>RGB</h2></label><br>
-                    <input type="text" id="RGB" name="RGB                    "><br>
+                    <h3>{{canRGB}}</h3>
+                    <h3>{{hexCode}}</h3>
+                    <br><br>
                     <label for="SRGB"><h2>SRGB </h2></label><br>
                     <input type="text"  id="SRGB" name="SRGB">
                     <label for="ProPhoto"><h2>ProPhoto </h2></label><br>
                     <input type="text"  id="ProPhoto" name="ProPhoto">
-                  </form>
+                 
                 </div>
 
         </div>
 
         <div class='flex-child-element'>
             <div class="containerB">
-                <form>
+               
                     <label for="RGB"><h2>Alt. RGB</h2></label><br>
-
+                    <p style="background-color:{{hexCode}}" {{hexCode}}>{{hexCode}}</p>
                     <label for="SRGB"><h2>Alt. SRGB </h2></label><br>
 
                     <label for="ProPhoto"><h2>Alt. ProPhoto </h2></label><br>
 
-                  </form>
+                 
                 </div>
 
         </div>
       </div>
 
-
-
-
-
-
-    <div class="containerB">
-        <button class ="button"> Generate</button>
+      <div class="containerB">
+        <button class ="button" type="submit"> Generate</button>
         </div>
+      </form>
+
+
+
+
 
 </body>
 

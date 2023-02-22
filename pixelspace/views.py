@@ -7,6 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 from .forms import AccountForm
 from .forms import NameForm
 from .forms import LABForm
+from .forms import createAccForm
 from django.contrib import messages
 from colormath.color_objects import LabColor, sRGBColor, AdobeRGBColor
 from colormath.color_conversions import convert_color
@@ -138,12 +139,26 @@ def settings(request):
 
 def createacc(request):
     template = loader.get_template('pixelspace/createacc.html')
-    #return HttpResponse(template.render(request))
-    latest_question_list = [1]
-    context = {
-        'latest_question_list': latest_question_list,
-    }
-    return HttpResponse(template.render(context, request))
+    if request.method == 'POST':
+        form = createAccForm(request.POST)
+        if form.is_valid():
+            print("in")
+            newUser= form.cleaned_data.get("newUser")
+            newPass= form.cleaned_data.get("newPass")
+            confirmPass = form.cleaned_data.get("confirmPass")
+
+            print(newUser,newPass, confirmPass)
+            passwordValid = False
+            if newPass == confirmPass:
+                passwordValid = True
+            print(passwordValid)
+            return render(request, 'pixelspace/createacc.html', {'form':form, 'passwordValid' : passwordValid})
+    else:
+        print("NO")
+        form=NameForm()
+
+    #print(form)
+    return render(request, 'pixelspace/createacc.html', {'form':form})
 
 def testing(request):
     # If request = POST, create new user

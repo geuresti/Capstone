@@ -11,7 +11,7 @@ from django.contrib import messages
 from colormath.color_objects import LabColor, sRGBColor, AdobeRGBColor
 from colormath.color_conversions import convert_color
 import re
-
+from colormath.color_diff import delta_e_cie1976
 
 def index(request):
     template = loader.get_template('pixelspace/index.html')

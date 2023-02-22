@@ -11,7 +11,7 @@ class NameForm(forms.Form):
     username = forms.CharField(label='username', max_length=100)
     password = forms.CharField(label='password', max_length=100)
 
-class createAccForm(forms.Form):
+class CreateAccountForm(forms.Form):
     newUser = forms.CharField(label='newUser', max_length=100)
     newPass = forms.CharField(label='newPass', max_length=100)
     confirmPass = forms.CharField(label='newPass', max_length=100)

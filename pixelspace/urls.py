@@ -11,8 +11,5 @@ urlpatterns = [
     path('logo', views.logo, name='logo'),
     path('pixelmap', views.pixelmap, name='pixelmap'),
     path('settings', views.settings, name='settings'),
-    path('createacc', views.createacc, name='createacc'),
-
-    path('test', views.testing, name='test'), # testing
-
+    path('create-account', views.create_account, name='create-account'),
 ]

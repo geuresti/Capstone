@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 
@@ -33,34 +34,47 @@
 
         <div class="container">
           <img src="{% static 'pixelspace/images/banner.png' %}" width="900" height="170">
-          <h1>Login</h1>
+          <h1>Create Account</h1>
         </div>
 
+      <b>swell.</b>
+
+<!--
+      <div class="containerB">
+        <form>
+            <label for="fname"><h2>Username:</h2></label><br>
+            <input type="text" id="fname" name="fname"><br>
+            <label for="lname"><h2>Password:</h2></label><br>
+            <input type="text" id="lname" name="lname">
+            <label for="lname"><h2>Confirm Password:</h2></label><br>
+            <input type="text" id="lname" name="lname">
+        </form>
 
       <div class="container">
         <img src="{% static 'pixelspace/images/banner.png' %}" width="900" height="170">
         <h1>Create Account</h1>
       </div>
-
       <div class="containerB">
         <button class ="button"> Create Account</button>
         <br><br>
         <h3><a href="login">Have an Account? Log In</a></h3>
       </div>
+-->
+<div class="containerB">
+  <form action="" method="post">
+    {% csrf_token %}
+      <label for="newUser"><h2>Username:</h2></label><br>
+      <input type="text" id="newUser" name="newUser"><br>
+      <label for="newPass"><h2>Password:</h2></label><br>
+      <input type="text" id="newPass" name="newPass">
+      <label for="confirmPass"><h2>Confirm Password:</h2></label><br>
+      <input type="text" id="confirmPass" name="confirmPass">
 
-      <div class="containerB">
-        <form method="POST">
-          {% csrf_token %}
+      <br><br>
+      <button class="button" type ="submit"> CREATE</button>
+  </form>
 
-          <br>
-            <div style=width:28%;>
-              {{ form.as_p }}
-            </div>
-          <br>
-          <input type="submit" value="create" name="create">
-
-        </form>
-      </div>
+  {{passwordValid}}
 
   </body>
 

@@ -10,6 +10,7 @@ from .forms import LABForm
 from django.contrib import messages
 from colormath.color_objects import LabColor, sRGBColor, AdobeRGBColor
 from colormath.color_conversions import convert_color
+import re
 
 
 def index(request):
@@ -59,6 +60,16 @@ def colors(request):
                 cansRGB = False
                 shexCode = "#FFFFFF"
                 srgb = "Not Applicable"
+
+            shexCodeCheck = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', shexCode)
+            if not shexCodeCheck:                      
+                shexCode = "#FFFFFF"
+                cansRGB = False
+            
+            hexCodeCheck = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', hexCode)
+            if not hexCodeCheck:                      
+                hexCode = "#FFFFFF"
+                canRGB = False
 
             return render(request, 'pixelspace/colors.html', {'form':form, 'canRGB': canRGB, 'hexCode': hexCode, 'rgb' : rgb, 'cansRGB': cansRGB, 'shexCode': shexCode, 'srgb' : srgb})
            

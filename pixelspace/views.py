@@ -2,10 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.template import loader
 from django.http import HttpResponseRedirect
-from .models import Account
+#from .models import Account
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-
+from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
 from .forms import AccountForm
 from .forms import NameForm
 from .forms import LABForm
@@ -100,10 +101,22 @@ def login(request):
         if form.is_valid():
             print("in")
             user= form.cleaned_data.get("username")
-            password= form.cleaned_data.get("password")
+            password1= form.cleaned_data.get("password")
+            accountValid = False
+            print(user,password1)
+            
+            if User.objects.filter(username=user).exists():
+                print("valid account")
+                accountValid = True
+                user123 = authenticate(username=user, password=password1)
+                if user123:
+                    return render(request, 'pixelspace/index.html', {'form':form, 'accountValid' : accountValid})
+                else:
+                    print("invalid account")
 
-            print(user,password)
-            return HttpResponseRedirect('/thanks/')
+            else:
+                print("invalid account")
+            return render(request, 'pixelspace/login.html', {'form':form, 'accountValid' : accountValid})
     else:
         print("NO")
         form=NameForm()
@@ -163,10 +176,11 @@ def create_account(request):
                     password=newPass,
                 #    email=email
                 )
-
-                account = Account.objects.create(
-                        user=user
-                )
+                #print(User.objects.all())
+                
+                #account = Account.objects.create(
+                #        user=user
+                #)
             else:
                 print("Error: passwords did not match")
                 # send error message

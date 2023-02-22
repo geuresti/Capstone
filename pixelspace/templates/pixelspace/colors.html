@@ -1,44 +1,14 @@
-<!DOCTYPE html>
-<html>
+{% extends 'pixelspace/base.html' %}
 
 {% load static %}
 
-<head>
-<link rel="stylesheet" href="{% static 'pixelspace/style.css' %}">
-</head>
-<body>
+{% block content %}
 
-    <ul>
+    <div class="container">
+      <img src="{% static 'pixelspace/images/banner.png' %}" width="900" height="170">
+      <h1>Colors in The Media</h1>
+    </div>
 
-        <li class="dropdown">
-
-          <a href="javascript:void(0)" class="dropbtn"><img src="{% static 'pixelspace/images/menu.png' %}" width="50" height="50"></img>   </a>
-
-          <div class="dropdown-content">
-            <a href="pixelmap">Pixel Map</a>
-            <a href="colors">Colors in The Media</a>
-            <a href="logo">Logo Generation</a>
-            <a href="image">Image Gallery</a>
-
-            <a href="login">Login</a>
-            <a href="settings">Settings</a>
-          </div>
-
-            
-        </li>
-        <div class="img-container">
-          <img src="{% static 'pixelspace/images/logo2.png' %}" width="300" height="106">
-        </div>
-      </ul>
-    
-
-
-
-      <div class="container">
-        <img src="{% static 'pixelspace/images/banner.png' %}" width="900" height="170">
-        <h1>Colors in The Media</h1>
-      </div>
-    
     <b>swell.</b>
 
     <div class='flex-parent-element'>
@@ -54,14 +24,12 @@
                 <input type="text" id="lightness" name="lightness">
                 <br><br>
 
-              
               </div>
-
         </div>
 
         <div class='flex-child-element'>
             <div class="containerB">
-               
+
                     <label for="RGB"><h2>RGB</h2></label><br>
                     <h3>{{canRGB}}</h3>
                     <h3>{{rgb}}</h3>
@@ -72,21 +40,21 @@
                     <br>
                     <label for="ProPhoto"><h2>ProPhoto </h2></label><br>
                     <input type="text"  id="ProPhoto" name="ProPhoto">
-                 
+
                 </div>
 
         </div>
 
         <div class='flex-child-element'>
             <div class="containerB">
-               
+
                     <label for="RGB"><h2>Alt. RGB</h2></label><br>
                     <div class="containerB"><div class ='rectangle' style="background-color:{{hexCode}}">{{hexCode}}</div></div>
                     <label for="SRGB"><h2>Alt. SRGB </h2></label><br>
                     <div class="containerB"><div class ='rectangle' style="background-color:{{shexCode}}">{{shexCode}}</div></div>
                     <label for="ProPhoto"><h2>Alt. ProPhoto </h2></label><br>
 
-                 
+
                 </div>
 
         </div>
@@ -97,12 +65,4 @@
         </div>
       </form>
 
-
-
-
-
-</body>
-
-
-
-</html>
+{% endblock %}

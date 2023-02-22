@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.template import loader
 from django.http import HttpResponseRedirect
-#from .models import Account
+from .models import Account
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
@@ -104,7 +104,7 @@ def login(request):
             password1= form.cleaned_data.get("password")
             accountValid = False
             print(user,password1)
-            
+
             if User.objects.filter(username=user).exists():
                 print("valid account")
                 accountValid = True
@@ -165,11 +165,9 @@ def create_account(request):
             # ! ERROR CHECK INPUT HERE !
 
             #print(newUser,newPass, confirmPass)
-            passwordValid = False
 
             # If the input is valid, create a new user
             if newPass == confirmPass:
-                passwordValid = True
 
                 user = User.objects.create_user(
                     username=newUser,
@@ -177,16 +175,16 @@ def create_account(request):
                 #    email=email
                 )
                 #print(User.objects.all())
-                
+
                 #account = Account.objects.create(
                 #        user=user
                 #)
             else:
                 print("Error: passwords did not match")
-                # send error message
-                #  to diff page
+                messages.error(request, 'Passwords did not match.')
+                return redirect('create-account')
 
-            return render(request, 'pixelspace/create_account.html', {'form':form, 'passwordValid' : passwordValid})
+            return render(request, 'pixelspace/create_account.html', {'form':form})
     else:
         print("NO")
         form=NameForm()

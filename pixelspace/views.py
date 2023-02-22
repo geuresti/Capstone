@@ -35,6 +35,7 @@ def colors(request):
             print(lightness1,axisA,axisB)
             #return Response(testing)
             canRGB = False
+            cansRGB = False
             lab = LabColor(lightness1, axisA, axisB)
             #print(lab)
             try:
@@ -45,10 +46,21 @@ def colors(request):
                 #colors = [red,green,blue]
             except:
                 canRGB = False
-                hexCode = "Not Applicable"
+                hexCode = "#FFFFFF"
+                rgb = "Not Applicable"
 
+            try:
+                srgb = convert_color(lab, sRGBColor)
+                print(srgb)
+                cansRGB =  True
+                shexCode = srgb.get_rgb_hex()
+                #colors = [red,green,blue]
+            except:
+                cansRGB = False
+                shexCode = "#FFFFFF"
+                srgb = "Not Applicable"
 
-            return render(request, 'pixelspace/colors.html', {'form':form, 'canRGB': canRGB, 'hexCode': hexCode})
+            return render(request, 'pixelspace/colors.html', {'form':form, 'canRGB': canRGB, 'hexCode': hexCode, 'rgb' : rgb, 'cansRGB': cansRGB, 'shexCode': shexCode, 'srgb' : srgb})
            
     else:
         print("NO")

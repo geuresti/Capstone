@@ -38,6 +38,13 @@ body {
    
 }
 
+.rectangle {
+  height: 40px;
+  width: 120px;
+  text-align: center;
+  margin: auto;
+}
+
 li a, .dropbtn {
     display: inline-block;
     color: rgb(255, 255, 255);

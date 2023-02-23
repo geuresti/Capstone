@@ -14,6 +14,7 @@ from .forms import LABForm
 from .forms import CreateAccountForm
 from django.contrib import messages
 from colormath.color_objects import LabColor, sRGBColor, AdobeRGBColor
+from colormath.color_objects import BT2020Color
 from colormath.color_conversions import convert_color
 import re
 from colormath.color_diff import delta_e_cie1976
@@ -71,6 +72,17 @@ def colors(request):
                 shexCode = "#FFFFFF"
                 srgb = "Not Applicable"
 
+            try:
+                btcolor = convert_color(lab, BT2020Color)
+                print(btcolor)
+                canBT =  True
+                BTHexCode = btcolor.get_rgb_hex()
+                #btcolor = [red,green,blue]
+            except:
+                canBT = False
+                BTHexCode = "#FFFFFF"
+                btcolor = "Not Applicable"
+
             shexCodeCheck = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', shexCode)
             if not shexCodeCheck:
                 shexCode = "#FFFFFF"
@@ -81,7 +93,12 @@ def colors(request):
                 hexCode = "#FFFFFF"
                 canRGB = False
 
-            return render(request, 'pixelspace/colors.html', {'form':form, 'canRGB': canRGB, 'hexCode': hexCode, 'rgb' : rgb, 'cansRGB': cansRGB, 'shexCode': shexCode, 'srgb' : srgb})
+            BTHexCodeCheck = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', BTHexCode)
+            if not hexCodeCheck:
+                BTHexCode = "#FFFFFF"
+                canBT = False
+
+            return render(request, 'pixelspace/colors.html', {'form':form, 'canRGB': canRGB, 'hexCode': hexCode, 'rgb' : rgb, 'cansRGB': cansRGB, 'shexCode': shexCode, 'srgb' : srgb, 'canBT': canBT, 'BTHexCode': BTHexCode, 'btcolor' : btcolor,})
 
     else:
         print("NO")

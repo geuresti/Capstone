@@ -9,6 +9,7 @@ from django.contrib.auth import authenticate, login as dj_login, logout
 from django.contrib.auth.decorators import login_required
 from .forms import AccountForm
 from .forms import NameForm
+from .forms import changeForm
 from .forms import LABForm
 from .forms import CreateAccountForm
 from django.contrib import messages
@@ -113,7 +114,14 @@ def login(request):
             if User.objects.filter(username=usern).exists():
                 print("valid account")
                 accountValid = True
-                user = authenticate(request, username=usern, password=password1)
+                test = User.objects.filter(username=usern)
+                for acc in test:
+                    print(acc.username, acc.password)
+                    print(password1)
+                    if acc.password == password1:
+                        print("correct")
+                user = authenticate(request, username =usern, password=password1)
+                #print(user)
                 if user:
                     dj_login(request, user)
                     #if request.user.is_authenticated:
@@ -121,10 +129,10 @@ def login(request):
                     return redirect('/pixelspace')
                     #return render(request, 'pixelspace/index.html', {'form':form, 'accountValid' : accountValid})
                 else:
-                    print("invalid account")
+                    print("invalid account1")
 
             else:
-                print("invalid account")
+                print("invalid account2")
             return render(request, 'pixelspace/login.html', {'form':form, 'accountValid' : accountValid})
     else:
         print("NO")
@@ -160,13 +168,31 @@ def pixelmap(request):
     return HttpResponse(template.render(context, request))
 
 def settings(request):
-    template = loader.get_template('pixelspace/settings.html')
-    #return HttpResponse(template.render(request))
-    latest_question_list = [1]
-    context = {
-        'latest_question_list': latest_question_list,
-    }
-    return HttpResponse(template.render(context, request))
+    if request.method == 'POST':
+        form = changeForm(request.POST)
+        if form.is_valid():
+            print("in")
+            changedPassword= form.cleaned_data.get("newPassword")
+            retypePassword= form.cleaned_data.get("retypePassword")
+            print(changedPassword,retypePassword)
+            if changedPassword == retypePassword:
+                print("passwords equal")
+                currAcc = User.objects.filter(username = request.user.username)
+                for acc in currAcc:
+                    acc.set_password(changedPassword)
+                    acc.save()
+                    print(acc.username, acc.password)
+                    print("okay")
+                    LoggingOut(request) 
+                    return redirect('/pixelspace')
+            else:
+                print("passwords not the same")
+        else:
+            print("form invalid")
+    else:
+        print("nope")       
+        form = changeForm()
+    return render(request, 'pixelspace/settings.html', {'form':form})
 
 def create_account(request):
     template = loader.get_template('pixelspace/create_account.html')
@@ -200,7 +226,7 @@ def create_account(request):
                 messages.error(request, 'Passwords did not match.')
                 return redirect('create-account')
 
-            return render(request, 'pixelspace/create_account.html', {'form':form})
+            return redirect('/pixelspace/login')
     else:
         print("NO")
         form=NameForm()

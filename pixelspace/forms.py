@@ -11,6 +11,10 @@ class NameForm(forms.Form):
     username = forms.CharField(label='username', max_length=100)
     password = forms.CharField(label='password', max_length=100)
 
+class changeForm(forms.Form):
+    newPassword = forms.CharField(label='newPassword', max_length=100, required=False)
+    retypePassword = forms.CharField(label='retypePassword', max_length=100, required=False)
+
 class CreateAccountForm(forms.Form):
     newUser = forms.CharField(label='newUser', max_length=100)
     newPass = forms.CharField(label='newPass', max_length=100)

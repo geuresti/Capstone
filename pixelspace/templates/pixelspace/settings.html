@@ -12,10 +12,10 @@
       <div class="containerB">
         <form action="" method="post">
           {% csrf_token %}
-            <label for="newUsername"><h2>Change your Username:</h2></label><br>
-            <input type="text" id="newUsername" name="newUsername"><br>
             <label for="newPassword"><h2>Change your Password:</h2></label><br>
             <input type="text" id="newPassword" name="newPassword">
+            <label for="retypePassword"><h2>Retype Password:</h2></label><br>
+            <input type="text" id="retypePassword" name="retypePassword">
             <br><br>
             <button class="button" type ="submit"> Change information</button>
           </form>

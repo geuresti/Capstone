@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from .models import Account
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, login as dj_login, logout
 from django.contrib.auth.decorators import login_required
 from .forms import AccountForm
 from .forms import NameForm
@@ -18,8 +18,13 @@ import re
 from colormath.color_diff import delta_e_cie1976
 
 def index(request):
+    
     template = loader.get_template('pixelspace/index.html')
     #return HttpResponse(template.render(request))
+    if request.user.is_authenticated:
+        print("golly")
+    else:
+        print("nop.")
     latest_question_list = [1]
     context = {
         'latest_question_list': latest_question_list,
@@ -100,17 +105,21 @@ def login(request):
         form = NameForm(request.POST)
         if form.is_valid():
             print("in")
-            user= form.cleaned_data.get("username")
+            usern= form.cleaned_data.get("username")
             password1= form.cleaned_data.get("password")
             accountValid = False
-            print(user,password1)
+            print(usern,password1)
 
-            if User.objects.filter(username=user).exists():
+            if User.objects.filter(username=usern).exists():
                 print("valid account")
                 accountValid = True
-                user123 = authenticate(username=user, password=password1)
-                if user123:
-                    return render(request, 'pixelspace/index.html', {'form':form, 'accountValid' : accountValid})
+                user = authenticate(request, username=usern, password=password1)
+                if user:
+                    dj_login(request, user)
+                    #if request.user.is_authenticated:
+                     #   print("golly")
+                    return redirect('/pixelspace')
+                    #return render(request, 'pixelspace/index.html', {'form':form, 'accountValid' : accountValid})
                 else:
                     print("invalid account")
 
@@ -124,6 +133,13 @@ def login(request):
     #print(form)
     return render(request, 'pixelspace/login.html', {'form':form})
     #return HttpResponse(template.render({'form':form}, request))
+
+def LoggingOut(request):
+    if request.user.is_authenticated:
+        logout(request)
+        return redirect('/pixelspace')
+    else:
+        print("nop.")
 
 def logo(request):
     template = loader.get_template('pixelspace/logo.html')

@@ -1,49 +1,26 @@
-<!DOCTYPE html>
-<html>
+{% extends 'pixelspace/base.html' %}
 
 {% load static %}
 
-<head>
-<link rel="stylesheet" href="{% static 'pixelspace/style.css' %}">
-</head>
-<body>
-
-    <ul>
-
-        <li class="dropdown">
-
-          <a href="javascript:void(0)" class="dropbtn"><img src="{% static 'pixelspace/images/menu.png' %}" width="50" height="50"></img>   </a>
-
-          <div class="dropdown-content">
-            <a href="pixelmap">Pixel Map</a>
-            <a href="colors">Colors in The Media</a>
-            <a href="logo">Logo Generation</a>
-            <a href="image">Image Gallery</a>
-
-            <a href="login">Login</a>
-            <a href="settings">Settings</a>
-          </div>
-
-            
-        </li>
-        <div class="img-container">
-          <img src="{% static 'pixelspace/images/logo2.png' %}" width="300" height="106">
-        </div>
-      </ul>
-    
-
-
+{% block content %}
       
       <div class="container">
         <img src="{% static 'pixelspace/images/banner.png' %}" width="900" height="170">
         <h1>Settings</h1>
       </div>
-    
-    <b>swell.</b>
-    {{lightness1}}
+      <br><br>
+      <div class="containerB">
+        <form action="" method="post">
+          {% csrf_token %}
+            <label for="newUsername"><h2>Change your Username:</h2></label><br>
+            <input type="text" id="newUsername" name="newUsername"><br>
+            <label for="newPassword"><h2>Change your Password:</h2></label><br>
+            <input type="text" id="newPassword" name="newPassword">
+            <br><br>
+            <button class="button" type ="submit"> Change information</button>
+          </form>
+        </div>
 
 </body>
 
-
-
-</html>
+{% endblock %}

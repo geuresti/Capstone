@@ -55,6 +55,8 @@ def colors(request):
                 print(rgb)
                 canRGB =  True
                 hexCode = rgb.get_rgb_hex()
+                rgbUpscale = rgb.get_upscaled_value_tuple()
+                print(rgbUpscale)
                 #colors = [red,green,blue]
             except:
                 canRGB = False
@@ -66,6 +68,7 @@ def colors(request):
                 print(srgb)
                 cansRGB =  True
                 shexCode = srgb.get_rgb_hex()
+                srgbUpscale = srgb.get_upscaled_value_tuple()
                 #colors = [red,green,blue]
             except:
                 cansRGB = False
@@ -77,6 +80,7 @@ def colors(request):
                 print(btcolor)
                 canBT =  True
                 BTHexCode = btcolor.get_rgb_hex()
+                BTUpscale = btcolor.get_upscaled_value_tuple()
                 #btcolor = [red,green,blue]
             except:
                 canBT = False
@@ -98,7 +102,7 @@ def colors(request):
                 BTHexCode = "#FFFFFF"
                 canBT = False
 
-            return render(request, 'pixelspace/colors.html', {'form':form, 'canRGB': canRGB, 'hexCode': hexCode, 'rgb' : rgb, 'cansRGB': cansRGB, 'shexCode': shexCode, 'srgb' : srgb, 'canBT': canBT, 'BTHexCode': BTHexCode, 'btcolor' : btcolor,})
+            return render(request, 'pixelspace/colors.html', {'form':form, 'canRGB': canRGB, 'hexCode': hexCode, 'rgb' : rgbUpscale, 'cansRGB': cansRGB, 'shexCode': shexCode, 'srgb' : srgbUpscale, 'canBT': canBT, 'BTHexCode': BTHexCode, 'btcolor' : BTUpscale,})
 
     else:
         print("NO")

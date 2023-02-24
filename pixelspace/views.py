@@ -22,38 +22,40 @@ from colormath.color_diff import delta_e_cie1976
 def index(request):
     
     template = loader.get_template('pixelspace/index.html')
-    #return HttpResponse(template.render(request))
-    if request.user.is_authenticated:
-        print("golly")
-    else:
-        print("nop.")
+
     latest_question_list = [1]
     context = {
         'latest_question_list': latest_question_list,
     }
     return HttpResponse(template.render(context, request))
 
-
+#View Function for the Colors template
 def colors(request):
     template = loader.get_template('pixelspace/colors.html')
     if request.method == 'POST':
+        #take in L*A*B values 
         form = LABForm(request.POST)
+        #if the inputs are valid
         if form.is_valid():
             print("in")
+            #assign form values to variables
             lightness1 = form.cleaned_data.get("lightness")
             axisA = form.cleaned_data.get("axisA")
             axisB = form.cleaned_data.get("axisB")
             testing = [lightness1, axisA, axisB]
             print(lightness1,axisA,axisB)
-            #return Response(testing)
+            #Initialize boolean of whether value can be converted
             canRGB = False
             cansRGB = False
+            canBT = False
             lab = LabColor(lightness1, axisA, axisB)
-            #print(lab)
+            #RGB conversion
             try:
                 rgb = convert_color(lab, AdobeRGBColor)
                 print(rgb)
                 canRGB =  True
+                #format the color into a hex code for output
+                #and upscaled output on client request
                 hexCode = rgb.get_rgb_hex()
                 rgbUpscale = rgb.get_upscaled_value_tuple()
                 print(rgbUpscale)
@@ -62,11 +64,13 @@ def colors(request):
                 canRGB = False
                 hexCode = "#FFFFFF"
                 rgb = "Not Applicable"
-
+            #sRGB conversion
             try:
                 srgb = convert_color(lab, sRGBColor)
                 print(srgb)
                 cansRGB =  True
+                #format the color into a hex code for output
+                #and upscaled output on client request
                 shexCode = srgb.get_rgb_hex()
                 srgbUpscale = srgb.get_upscaled_value_tuple()
                 #colors = [red,green,blue]
@@ -74,11 +78,13 @@ def colors(request):
                 cansRGB = False
                 shexCode = "#FFFFFF"
                 srgb = "Not Applicable"
-
+            #BTColor conversion
             try:
                 btcolor = convert_color(lab, BT2020Color)
                 print(btcolor)
                 canBT =  True
+                #format the color into a hex code for output
+                #and upscaled output on client request
                 BTHexCode = btcolor.get_rgb_hex()
                 BTUpscale = btcolor.get_upscaled_value_tuple()
                 #btcolor = [red,green,blue]
@@ -87,6 +93,7 @@ def colors(request):
                 BTHexCode = "#FFFFFF"
                 btcolor = "Not Applicable"
 
+            #Check to make sure that the hex codes outputted are valid hex codes / the conversion was successful
             shexCodeCheck = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', shexCode)
             if not shexCodeCheck:
                 shexCode = "#FFFFFF"
@@ -103,12 +110,10 @@ def colors(request):
                 canBT = False
 
             return render(request, 'pixelspace/colors.html', {'form':form, 'canRGB': canRGB, 'hexCode': hexCode, 'rgb' : rgbUpscale, 'cansRGB': cansRGB, 'shexCode': shexCode, 'srgb' : srgbUpscale, 'canBT': canBT, 'BTHexCode': BTHexCode, 'btcolor' : BTUpscale,})
-
     else:
         print("NO")
         form=LABForm()
 
-    #print(form)
     return render(request, 'pixelspace/colors.html', {'form':form})
 
 def image(request):
@@ -120,50 +125,43 @@ def image(request):
     }
     return HttpResponse(template.render(context, request))
 
+#login function 
 def login(request):
     template = loader.get_template('pixelspace/login.html')
-
     if request.method == 'POST':
         form = NameForm(request.POST)
+        #acquire login and password from user input
         if form.is_valid():
             print("in")
             usern= form.cleaned_data.get("username")
             password1= form.cleaned_data.get("password")
+            #initialize boolean to check if account exists
             accountValid = False
             print(usern,password1)
-
+            #if username exists in the database
             if User.objects.filter(username=usern).exists():
                 print("valid account")
                 accountValid = True
-                test = User.objects.filter(username=usern)
-                for acc in test:
-                    print(acc.username, acc.password)
-                    print(password1)
-                    if acc.password == password1:
-                        print("correct")
+                #make sure the user can be authentificated
                 user = authenticate(request, username =usern, password=password1)
-                #print(user)
                 if user:
+                    #log the user in and redirect to the homepage
                     dj_login(request, user)
-                    #if request.user.is_authenticated:
-                     #   print("golly")
                     return redirect('/pixelspace')
-                    #return render(request, 'pixelspace/index.html', {'form':form, 'accountValid' : accountValid})
+
                 else:
                     print("invalid account1")
-
             else:
                 print("invalid account2")
             return render(request, 'pixelspace/login.html', {'form':form, 'accountValid' : accountValid})
     else:
         print("NO")
         form=NameForm()
-
-    #print(form)
     return render(request, 'pixelspace/login.html', {'form':form})
-    #return HttpResponse(template.render({'form':form}, request))
 
+#Log out Function
 def LoggingOut(request):
+    #if the user is authenticated when the logout function is called, log them out and redirect to the homepage
     if request.user.is_authenticated:
         logout(request)
         return redirect('/pixelspace')
@@ -188,17 +186,21 @@ def pixelmap(request):
     }
     return HttpResponse(template.render(context, request))
 
+#Settings, currently has change password functionality
 def settings(request):
     if request.method == 'POST':
+        #grab the password to change to
         form = changeForm(request.POST)
         if form.is_valid():
             print("in")
             changedPassword= form.cleaned_data.get("newPassword")
             retypePassword= form.cleaned_data.get("retypePassword")
             print(changedPassword,retypePassword)
+            #if the password matches the confirmation password, go through with the change
             if changedPassword == retypePassword:
                 print("passwords equal")
                 currAcc = User.objects.filter(username = request.user.username)
+                #when the password is changed, log user out and direct them to the homepage
                 for acc in currAcc:
                     acc.set_password(changedPassword)
                     acc.save()
@@ -220,7 +222,7 @@ def create_account(request):
     if request.method == 'POST':
         form = CreateAccountForm(request.POST)
         if form.is_valid():
-
+            #obtain the new username and new password information from the form
             newUser= form.cleaned_data.get("newUser")
             newPass= form.cleaned_data.get("newPass")
             confirmPass = form.cleaned_data.get("confirmPass")
@@ -235,13 +237,9 @@ def create_account(request):
                 user = User.objects.create_user(
                     username=newUser,
                     password=newPass,
-                #    email=email
-                )
-                #print(User.objects.all())
 
-                #account = Account.objects.create(
-                #        user=user
-                #)
+                )
+
             else:
                 print("Error: passwords did not match")
                 messages.error(request, 'Passwords did not match.')

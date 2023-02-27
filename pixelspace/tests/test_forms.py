@@ -1,7 +1,7 @@
 
 from django.test import TestCase
 
-from pixelspace.forms import UserForm, SettingsForm, CreateAccountForm, LABForm
+from pixelspace.forms import UserForm, SettingsForm, CreateAccountForm, LABForm, confirmDeleteForm, AccountForm
 
 """
 class AccountForm(forms.Form):
@@ -28,7 +28,7 @@ class LABForm(forms.Form):
     lightness = forms.FloatField(label='lightness')
     axisA = forms.FloatField(label='axisA')
     axisB = forms.FloatField(label='axisB')
-"""
+
 
 class UserForm(TestCase):
     def test_name_form_field_labels(self):
@@ -47,4 +47,41 @@ class UserForm(TestCase):
             #data={'username':'Jane Doe', 'password':'password123'}
         form.fields['username'] = "Jane Doe"
         form.fields['password'] = "password123"
+        self.assertTrue(form.is_valid())
+"""
+
+class CreateAccountFormTest(TestCase):
+    def testFormsPassMatch(self):
+        testData = {'newUser':'meow', 'newPass':'bark', 'confirmPass': 'bark'}
+        form = CreateAccountForm(data=testData)
+        self.assertTrue(form.is_valid())
+
+class UserFormTest(TestCase):
+    def testForms(self):
+        testData2 = {'username':'meow', 'password':'bark'}
+        form = UserForm(data=testData2)
+        self.assertTrue(form.is_valid())
+
+class UserFormTest(TestCase):
+    def testForms(self):
+        testData = {'username':'meow', 'password':'bark'}
+        form = UserForm(data=testData)
+        self.assertTrue(form.is_valid())
+
+class LABFormTest(TestCase):
+    def testForms(self):
+        testData = {'lightness': 90,'axisA': -90, 'axisB': 100}
+        form = LABForm(data=testData)
+        self.assertTrue(form.is_valid())
+
+class SettingsFormTest(TestCase):
+    def testForms(self):
+        testData = {'newPassword': 'bark','retypePassword': 'bark', 'deleteAccount': True}
+        form = SettingsForm(data=testData)
+        self.assertTrue(form.is_valid())
+
+class confirmDeleteFormTest(TestCase):
+    def testForms(self):
+        testData = {'confirmDelete': True}
+        form = confirmDeleteForm(data=testData)
         self.assertTrue(form.is_valid())

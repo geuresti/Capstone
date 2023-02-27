@@ -7,7 +7,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as dj_login, logout as dj_logout
 from django.contrib.auth.decorators import login_required
-from .forms import AccountForm, UserForm, SettingsForm, LABForm, CreateAccountForm
+from .forms import AccountForm, UserForm, SettingsForm, LABForm, CreateAccountForm, confirmDeleteForm
 from django.contrib import messages
 from colormath.color_objects import LabColor, sRGBColor, AdobeRGBColor
 from colormath.color_objects import BT2020Color
@@ -175,6 +175,17 @@ def pixelmap(request):
     }
     return HttpResponse(template.render(context, request))
 
+def deleteConfirm(request):
+    currAcc = User.objects.get(username = request.user.username)
+    form = confirmDeleteForm(request.POST)
+    if form.is_valid():
+        confirmDelete = form.cleaned_data.get("confirmDelete")
+        if confirmDelete:
+            print("Successfully deleted user:", currAcc.username)
+            currAcc.delete()
+            return redirect('login')
+    return render(request, 'pixelspace/delete-confirm.html', {'form':form})
+
 #Settings, currently has change password functionality
 def settings(request):
     if request.method == 'POST':
@@ -196,9 +207,7 @@ def settings(request):
 
             if deleteAccount:
                 # ! ASK USER TO CONFIRM THAT THEY WANT TO DELETE FIRST !
-                print("Successfully deleted user:", currAcc.username)
-                currAcc.delete()
-                return redirect('login')
+                return redirect('delete-confirm')
 
             #if the password matches the confirmation password, go through with the change
             if changedPassword and changedPassword == retypePassword:

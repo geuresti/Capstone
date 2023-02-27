@@ -1,0 +1,23 @@
+{% extends 'pixelspace\base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+    <div class="container">
+        <img src="{% static 'pixelspace/images/banner.png' %}" width="900" height="170">
+
+        <h1>Confirm Delete</h1>
+    </div>
+
+    <div class="containerB">
+        <form action="" method="post">
+            {% csrf_token %}
+            <br><br>
+            <input type="checkbox" id="confirmDelete" name="confirmDelete">
+            <label for="confirmDelete"><h3>Are you sure? Your account cannot be accessed once deleted. Check the box to confirm your delete.</h3></label><br><br>
+            <button class="button" type ="submit"> Delete Account </button>
+        </form>
+    </div>
+
+{% endblock %}

@@ -13,4 +13,5 @@ urlpatterns = [
     path('settings', views.settings, name='settings'),
     path('create-account', views.create_account, name='create-account'),
     path('logout', views.logout, name='logout'),
+    path('delete-confirm', views.deleteConfirm, name='delete-confirm'),
 ]

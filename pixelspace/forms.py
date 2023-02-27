@@ -25,3 +25,6 @@ class LABForm(forms.Form):
     lightness = forms.FloatField(label='lightness')
     axisA = forms.FloatField(label='axisA')
     axisB = forms.FloatField(label='axisB')
+
+class confirmDeleteForm(forms.Form):
+    confirmDelete = forms.BooleanField(label='confirmDelete', required=False)

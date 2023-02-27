@@ -1,6 +1,9 @@
-from django import forms
-from .models import Account
 
+from django.test import TestCase
+
+from pixelspace.forms import UserForm, SettingsForm, CreateAccountForm, LABForm
+
+"""
 class AccountForm(forms.Form):
     username = forms.CharField(label='username', max_length=100)
     password = forms.CharField(label='password', max_length=100)
@@ -25,3 +28,23 @@ class LABForm(forms.Form):
     lightness = forms.FloatField(label='lightness')
     axisA = forms.FloatField(label='axisA')
     axisB = forms.FloatField(label='axisB')
+"""
+
+class UserForm(TestCase):
+    def test_name_form_field_labels(self):
+        form = UserForm()
+        print("HERE:", form.fields)
+        form.fields['username'] = "abcdefg"
+        form.fields['password'] = "hijlmno"
+
+        self.assertTrue(
+            form.fields['username'].label == "username" and
+            form.fields['password'].label == "password"
+        )
+
+    def test_form_validity(self):
+        form = UserForm()
+            #data={'username':'Jane Doe', 'password':'password123'}
+        form.fields['username'] = "Jane Doe"
+        form.fields['password'] = "password123"
+        self.assertTrue(form.is_valid())

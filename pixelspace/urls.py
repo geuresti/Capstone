@@ -12,5 +12,5 @@ urlpatterns = [
     path('pixelmap', views.pixelmap, name='pixelmap'),
     path('settings', views.settings, name='settings'),
     path('create-account', views.create_account, name='create-account'),
-    path('LoggingOut', views.LoggingOut, name='LoggingOut'),
+    path('logout', views.logout, name='logout'),
 ]

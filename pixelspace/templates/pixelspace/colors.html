@@ -5,66 +5,57 @@
 {% block content %}
 
     <div class="container">
-      <img src="{% static 'pixelspace/images/banner.png' %}" width="900" height="170">
-      <h1>Colors in The Media</h1>
+        <img src="{% static 'pixelspace/images/banner.png' %}" width="900" height="170">
+        <h1>Colors in The Media</h1>
     </div>
-
-    <b>swell.</b>
 
     <div class='flex-parent-element'>
         <div class='flex-child-element'>
             <div class="containerB">
-              <form action="" method="post">
-                {% csrf_token %}
-                <label for="axisA"><h2>A-Axis (Green to Red)</h2></label><br>
-                <input type="text" id="axisA" name="axisA"><br>
-                <label for="axisB"><h2>B-Axis (Blue to Yellow) </h2></label><br>
-                <input type="text" id="axisB" name="axisB">
-                <label for="lightness"><h2>Lightness </h2></label><br>
-                <input type="text" id="lightness" name="lightness">
-                <br><br>
-
-              </div>
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <label for="axisA"><h2>A-Axis (Green to Red)</h2></label><br>
+                    <input type="text" id="axisA" name="axisA"><br>
+                    <label for="axisB"><h2>B-Axis (Blue to Yellow) </h2></label><br>
+                    <input type="text" id="axisB" name="axisB">
+                    <label for="lightness"><h2>Lightness </h2></label><br>
+                    <input type="text" id="lightness" name="lightness">
+                    <br><br>
+            </div>
         </div>
 
         <div class='flex-child-element'>
             <div class="containerB">
-
-                    <label for="RGB"><h2>RGB</h2></label><br>
-                    <h3>{{canRGB}}</h3>
-                    <h3>{{rgb}}</h3>
-                    <br>
-                    <label for="SRGB"><h2>SRGB </h2></label><br>
-                    <h3>{{cansRGB}}</h3>
-                    <h3>{{srgb}}</h3>
-                    <br>
-                    <label for="BTColor"><h2>BTColor </h2></label><br>
-                    <h3>{{canBT}}</h3>
-                    <h3>{{btcolor}}</h3>
-
-                </div>
-
+                <label for="RGB"><h2>RGB</h2></label><br>
+                <h3>{{canRGB}}</h3>
+                <h3>{{rgb}}</h3>
+                <br>
+                <label for="SRGB"><h2>SRGB </h2></label><br>
+                <h3>{{cansRGB}}</h3>
+                <h3>{{srgb}}</h3>
+                <br>
+                <label for="BTColor"><h2>BTColor </h2></label><br>
+                <h3>{{canBT}}</h3>
+                <h3>{{btcolor}}</h3>
+            </div>
         </div>
 
         <div class='flex-child-element'>
             <div class="containerB">
-
-                    <label for="RGB"><h2>Alt. RGB</h2></label><br>
-                    <div class="containerB"><div class ='rectangle' style="background-color:{{hexCode}}">{{hexCode}}</div></div>
-                    <label for="SRGB"><h2>Alt. SRGB </h2></label><br>
-                    <div class="containerB"><div class ='rectangle' style="background-color:{{shexCode}}">{{shexCode}}</div></div>
-                    <label for="BTColor"><h2>Alt. BTColor </h2></label><br>
-                    <div class="containerB"><div class ='rectangle' style="background-color:{{BTHexCode}}">{{BTHexCode}}</div></div>
-
-
-                </div>
-
+                <label for="RGB"><h2>Alt. RGB</h2></label><br>
+                <div class="containerB"><div class ='rectangle' style="background-color:{{hexCode}}">{{hexCode}}</div></div>
+                <label for="SRGB"><h2>Alt. SRGB </h2></label><br>
+                <div class="containerB"><div class ='rectangle' style="background-color:{{shexCode}}">{{shexCode}}</div></div>
+                <label for="BTColor"><h2>Alt. BTColor </h2></label><br>
+                <div class="containerB"><div class ='rectangle' style="background-color:{{BTHexCode}}">{{BTHexCode}}</div></div>
+            </div>
         </div>
-      </div>
+    </div>
 
-      <div class="containerB">
-        <button class ="button" type="submit"> Generate</button>
-        </div>
-      </form>
+    <div class="containerB">
+        <button class ="button" type="submit">Generate</button>
+    </div>
+
+    </form>
 
 {% endblock %}

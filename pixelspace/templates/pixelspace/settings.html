@@ -3,24 +3,22 @@
 {% load static %}
 
 {% block content %}
-      
-      <div class="container">
+
+    <div class="container">
         <img src="{% static 'pixelspace/images/banner.png' %}" width="900" height="170">
         <h1>Settings</h1>
-      </div>
-      <br><br>
-      <div class="containerB">
+    </div>
+    <br><br>
+    <div class="containerB">
         <form action="" method="post">
-          {% csrf_token %}
+            {% csrf_token %}
             <label for="newPassword"><h2>Change your Password:</h2></label><br>
             <input type="text" id="newPassword" name="newPassword">
             <label for="retypePassword"><h2>Retype Password:</h2></label><br>
             <input type="text" id="retypePassword" name="retypePassword">
             <br><br>
-            <button class="button" type ="submit"> Change information</button>
-          </form>
-        </div>
-
-</body>
+            <button class="button" type ="submit"> Reset Password </button>
+        </form>
+    </div>
 
 {% endblock %}

@@ -4,36 +4,25 @@
 
 {% block content %}
 
-
-
-      <div class="container">
+    <div class="container">
         <img src="{% static 'pixelspace/images/banner.png' %}" width="900" height="170">
         <h1>Login</h1>
-      </div>
-
-    <b>swell.</b>
-
-    <div class="containerB">
-    <form action="" method="post">
-      {% csrf_token %}
-        <label for="username"><h2>Username:</h2></label><br>
-        <input type="text" id="username" name="username"><br>
-        <label for="password"><h2>Password:</h2></label><br>
-        <input type="text" id="password" name="password">
-        <br><br>
-        <button class="button" type ="submit"> LOG IN</button>
-      </form>
-    </div>
-</div>
-
-    <div class="containerB">
-
-    <h3><a href="create-account">Create an Account</a></h3>
     </div>
 
+    <div class="containerB">
+        <form action="" method="post">
+            {% csrf_token %}
+            <label for="username"><h2>Username:</h2></label><br>
+            <input type="text" id="username" name="username"><br>
+            <label for="password"><h2>Password:</h2></label><br>
+            <input type="text" id="password" name="password">
+            <br><br>
+            <button class="button" type ="submit"> LOG IN</button>
+        </form>
+    </div>
 
-</body>
-
-
+    <div class="containerB">
+        <h3><a href="create-account">Create an Account</a></h3>
+    </div>
 
 {% endblock %}

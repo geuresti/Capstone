@@ -4,30 +4,22 @@
 
 {% block content %}
 
-
-      
-      <div class="container">
+    <div class="container">
         <img src="{% static 'pixelspace/images/banner.png' %}" width="900" height="170">
         <h1>Pixel Map</h1>
-      </div>
-    
-    <b>swell.</b>
+    </div>
+
     <div class="container">
-    <form>
-      <label for="fname"><h2>Length:</h2></label><br>
-      <input type="number" id="fname" name="fname"><br>
-      <label for="lname"><h2>Width:</h2></label><br>
-      <input type="number" id="lname" name="lname">
-    </form>
-  </div>
-
-
+        <form>
+            <label for="fname"><h2>Length:</h2></label><br>
+            <input type="number" id="fname" name="fname"><br>
+            <label for="lname"><h2>Width:</h2></label><br>
+            <input type="number" id="lname" name="lname">
+        </form>
+    </div>
+    
     <div class="containerB">
-      <button class ="button"> Generate </button>
-      </div>
-</body>
+        <button class ="button"> Generate </button>
+    </div>
+
 {% endblock %}
-
-
-
-

@@ -32,14 +32,12 @@
             <a href="logo">Logo Generation</a>
             <a href="image">Image Gallery</a>
 
-            {% if not user.is_authenticated %}
-              <a href="login">Login</a>
+            {% if request.session.username %}
+                <a href="settings">Settings</a>
+                <a href="logout">Log Out</a> -->
+            {% else %}
+                <a href="login">Login</a>
             {% endif %}
-            {% if user.is_authenticated %}
-              <a href="settings">Settings</a>
-              <a href="logout">Log Out</a>
-            {% endif %}
-
 
           </div>
 

@@ -5,7 +5,8 @@ from django.http import HttpResponseRedirect
 from .models import Account
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login as dj_login, logout as dj_logout
+#from django.contrib.auth import authenticate, login as dj_login, logout as dj_logout
+
 from django.contrib.auth.decorators import login_required
 from .forms import AccountForm, UserForm, SettingsForm, LABForm, CreateAccountForm, confirmDeleteForm
 from django.contrib import messages
@@ -13,20 +14,51 @@ from colormath.color_objects import LabColor, sRGBColor, AdobeRGBColor
 from colormath.color_objects import BT2020Color
 from colormath.color_conversions import convert_color
 from colormath.color_diff import delta_e_cie1976
+
+import pymongo
+
 import re
+
+from .authentication import MongoAuthBackend
+
+#   Connect to the mongodb database
+connect_string = 'mongodb+srv://mongodb_dao:uC3wPbLm7AIhkOUL@cluster0.nem4zbs.mongodb.net/?retryWrites=true&w=majority'
+my_client = pymongo.MongoClient(connect_string)
+
+# database name
+dbname = my_client['pixelspace']
+
+# get collection name (create new collection if it doesn't exist)
+users_collection = dbname["users"]
+
+mongo_auth = MongoAuthBackend()
+
+# ! CAN'T use authenticate() WIP !
 
 def index(request):
 
-    template = loader.get_template('pixelspace/index.html')
+    # There are some weird items in here
+    # "_auth_user_id", "_auth_user_backend", "_auth_user_hash"
+    # I THINK these are leftover values from the sqlite db
+    # need to remove them and see if it causes any issues
+#    del request.session['test']
 
-    latest_question_list = [1]
-    context = {
-        'latest_question_list': latest_question_list,
-    }
-    return HttpResponse(template.render(context, request))
+    print("----------------\n", request.session)
+    #request.session['test'] = 'testing'
+    for data in request.session.keys():
+        print(f'request.session[{data}]:', request.session[data])
+    #print("\n", request.session['test'], "\n----------------")
+    print("----------------")
+
+    return render(request, 'pixelspace/index.html')
 
 #View Function for the Colors template
 def colors(request):
+    print("----------------\n", request.session)
+#    request.session['test'] = 'testing'
+
+    print("\n", request.session['test'], "\n----------------")
+
     template = loader.get_template('pixelspace/colors.html')
     if request.method == 'POST':
         #take in L*A*B values
@@ -130,31 +162,33 @@ def login(request):
         if form.is_valid():
             username = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password")
-            print("USER:", username, "\nPASSWORD:", password)
-            #if username exists in the database
-            if User.objects.filter(username=username).exists():
-                #make sure the user can be authentificated
-                user = authenticate(request, username=username, password=password)
-                if user:
-                    #log the user in and redirect to the homepage
-                    dj_login(request, user)
-                    print("Successful login for user:", username)
-                    return redirect('/pixelspace')
-                else:
-                    print("Unsuccessful login: incorrect password")
+            print("provided USER:", username, "\nprovided PASSWORD:", password)
+
+            # check if a user with the provided username exists in the database
+            user = mongo_auth.authenticate(request, username=username, password=password)
+            #if User.objects.filter(username=username).exists():
+            if user:
+                request.session['username'] = user['username']
+                print("Successfully logged in user:", user['username'])
+                return redirect('/pixelspace')
             else:
-                print("ERROR: No account found with username =", username)
-            return render(request, 'pixelspace/login.html', {'form':form})
+                print("ERROR: Incorrect Credentials", username)
+
+            context = {
+                'form':form,
+            }
+            return render(request, 'pixelspace/login.html', context)
     else:
         form = UserForm()
     return render(request, 'pixelspace/login.html', {'form':form})
 
 #Log out Function
 def logout(request):
-    #if the user is authenticated when the logout function is called, log them out
-    if request.user.is_authenticated:
-        print("Successfully logged out user:", request.user.username)
-        dj_logout(request)
+    #if the user is authenticated when logout() is called, log them out
+    if request.session['username']:
+        print("Successfully logged out user:", request.session['username'])
+        del request.session['username']
+
     return redirect('/pixelspace')
 
 def logo(request):
@@ -175,15 +209,29 @@ def pixelmap(request):
     }
     return HttpResponse(template.render(context, request))
 
+# need to tEST
 def deleteConfirm(request):
-    currAcc = User.objects.get(username = request.user.username)
+    #currAcc = User.objects.get(username = request.user.username)
+
+    if not request.session['username']:
+        return redirect('/pixelspace')
+
+    username = request.session['username']
+
+    curr_account = users_collection.find_one(
+        {'username':username}
+    )
+
     form = confirmDeleteForm(request.POST)
     if form.is_valid():
         confirmDelete = form.cleaned_data.get("confirmDelete")
         if confirmDelete:
-            print("Successfully deleted user:", currAcc.username)
-            currAcc.delete()
-            return redirect('login')
+            print("Successfully deleted user:", username)
+            users_collection.delete_one({'username':username})
+
+            del request.session['username']
+            return redirect('/pixelspace')
+
     return render(request, 'pixelspace/delete-confirm.html', {'form':form})
 
 #Settings, currently has change password functionality
@@ -196,14 +244,21 @@ def settings(request):
             retypePassword = form.cleaned_data.get("retypePassword")
             deleteAccount = form.cleaned_data.get("deleteAccount")
 
-            print("changedPassword:",
-                changedPassword,
-                "\nretypePassword:",
-                retypePassword,
-                "\ndeleteAccount:",
-                deleteAccount)
+        #    print("changedPassword:",
+        #        changedPassword,
+        #        "\nretypePassword:",
+        #        retypePassword,
+        #        "\ndeleteAccount:",
+        #        deleteAccount)
 
-            currAcc = User.objects.get(username = request.user.username)
+            if not request.session['username']:
+                return redirect('login')
+
+            username = request.session['username']
+
+            curr_account = users_collection.find_one(
+                {'username':username}
+            )
 
             if deleteAccount:
                 # ! ASK USER TO CONFIRM THAT THEY WANT TO DELETE FIRST !
@@ -216,11 +271,8 @@ def settings(request):
 
                 print("* The new passwords match *")
                 #when the password is changed, log user out and direct them to the homepage
-                #for acc in currAcc:
-                currAcc.set_password(changedPassword)
-                currAcc.save()
-                print(currAcc.username, currAcc.password)
-                print("Successfully updated settings for:", currAcc.username)
+                users_collection.update_one({'username':username}, {'$set':{'password':changedPassword}})
+                print("Successfully updated settings for:", username)
                 return logout(request)
             else:
                 print("* The new passwords do not match *")
@@ -237,30 +289,42 @@ def create_account(request):
         form = CreateAccountForm(request.POST)
         if form.is_valid():
             #obtain the new username and new password information from the form
-            newUser= form.cleaned_data.get("newUser")
-            newPass= form.cleaned_data.get("newPass")
-            confirmPass = form.cleaned_data.get("confirmPass")
+            new_username = form.cleaned_data.get("newUser")
+            new_password = form.cleaned_data.get("newPass")
+            confirm_password = form.cleaned_data.get("confirmPass")
 
-            # ! ERROR CHECK INPUT HERE !
+            # ! ERROR CHECK INPUT HERE (or in form?) !
 
-            #print(newUser,newPass, confirmPass)
+            print(new_username, new_password, confirm_password)
 
-            currAcc = User.objects.filter(username = newUser)
-            if currAcc:
+            already_exists = users_collection.find_one(
+                {'username':new_username}
+            )
 
+            if already_exists:
                 # ! DISPLAY ERROR NOTIFICATION TO USER !
-
                 print("ERROR: An account with this username already exists")
                 return redirect('create-account')
 
             # If the input is valid, create a new user
-            if newPass == confirmPass:
-
-                user = User.objects.create_user(
-                    username=newUser,
-                    password=newPass,
+            elif new_password == confirm_password:
+                newest_user = users_collection.find_one(
+                    sort=[( '_id', pymongo.DESCENDING )]
                 )
 
+                new_user_id = int(newest_user["user_id"]) + 1
+
+                new_user = {
+                    "user_id": new_user_id,
+                    "username" : new_username,
+                    "password" : new_password,
+                    "email" : "bag@gmail.com",
+                }
+
+                users_collection.insert_one(new_user)
+
+                print("Account successfully created")
+                return redirect('login')
             else:
                 print("Error: passwords did not match")
                 messages.error(request, 'Passwords did not match.')
@@ -271,5 +335,4 @@ def create_account(request):
         print("NO")
         form=UserForm()
 
-    #print(form)
     return render(request, 'pixelspace/create_account.html', {'form':form})

@@ -14,7 +14,7 @@ from colormath.color_objects import LabColor, sRGBColor, AdobeRGBColor
 from colormath.color_objects import BT2020Color
 from colormath.color_conversions import convert_color
 from colormath.color_diff import delta_e_cie1976
-
+from coloraide.everything import ColorAll as Color
 import pymongo
 
 import re
@@ -57,7 +57,7 @@ def colors(request):
     print("----------------\n", request.session)
 #    request.session['test'] = 'testing'
 
-    print("\n", request.session['test'], "\n----------------")
+    #print("\n", request.session['test'], "\n----------------")
 
     template = loader.get_template('pixelspace/colors.html')
     if request.method == 'POST':
@@ -65,61 +65,119 @@ def colors(request):
         form = LABForm(request.POST)
         #if the inputs are valid
         if form.is_valid():
-            print("in")
-            #assign form values to variables
             lightness1 = form.cleaned_data.get("lightness")
             axisA = form.cleaned_data.get("axisA")
             axisB = form.cleaned_data.get("axisB")
             testing = [lightness1, axisA, axisB]
-            print(lightness1,axisA,axisB)
-            #Initialize boolean of whether value can be converted
-            canRGB = False
-            cansRGB = False
-            canBT = False
-            lab = LabColor(lightness1, axisA, axisB)
-            #RGB conversion
-            try:
-                rgb = convert_color(lab, AdobeRGBColor)
-                print(rgb)
-                canRGB =  True
-                #format the color into a hex code for output
-                #and upscaled output on client request
-                hexCode = rgb.get_rgb_hex()
-                rgbUpscale = rgb.get_upscaled_value_tuple()
+            print(testing)
+            #format the Color to be a LAB
+            colorrr = Color("lab", testing)
+            print(colorrr)
+            #check if color is in gamut (an appropriate conversion)
+            if colorrr.in_gamut('a98-rgb'):
+                rgbColor = colorrr.convert("a98-rgb")
+                print(rgbColor)
+                rgbR = rgbColor['r'] * 255
+                rgbG = rgbColor['g'] * 255
+                rgbB = rgbColor['b'] * 255
+                #Upscale color on client request
+                rgbUpscale = "({},{},{})".format(round(rgbR),round(rgbG), round(rgbB) )
                 print(rgbUpscale)
-                #colors = [red,green,blue]
-            except:
+                #format the color into a hex code for output
+                #and upscaled output on client request
+                hexCode = '#{:02x}{:02x}{:02x}'.format(round(rgbR),round(rgbG), round(rgbB))
+                deltaE = colorrr.delta_e(rgbColor, method="2000")
+                print(hexCode, rgbUpscale)
+                print(deltaE , "NEW RGB\n\n")
+                canRGB = True
+            else:
+                print("Not in RGB Gamut")
+                before = colorrr.in_gamut("a98-rgb")
+                #fit color into correct gamut before continuing
+                colorrr.fit("a98-rgb")
+                after = colorrr.in_gamut("a98-rgb")
+                print("before", before, "after", after)
                 canRGB = False
-                hexCode = "#FFFFFF"
-                rgb = "Not Applicable"
-            #sRGB conversion
-            try:
-                srgb = convert_color(lab, sRGBColor)
-                print(srgb)
-                cansRGB =  True
+                rgbColor = colorrr.convert("a98-rgb")
+                rgbR = rgbColor['r'] * 255
+                rgbG = rgbColor['g'] * 255
+                rgbB = rgbColor['b'] * 255
+                #Upscale color on client request
+                hexCode = '#{:02x}{:02x}{:02x}'.format(round(rgbR),round(rgbG), round(rgbB))
+                rgbUpscale = "({},{},{})".format(round(rgbR),round(rgbG), round(rgbB) )
+                deltaE = colorrr.delta_e(rgbColor, method="2000")
+                print(hexCode, rgbUpscale)
+                print(deltaE , "NEW RGB\n\n")
+            #check if color is in gamut (an appropriate conversion)
+            if colorrr.in_gamut('srgb'):
+                srgbColor = colorrr.convert("srgb")
+                print(srgbColor)
+                srgbR = srgbColor['r'] * 255
+                srgbG = srgbColor['g'] * 255
+                srgbB = srgbColor['b'] * 255
+                #Upscale color on client request
+                srgbUpscale = "({},{},{})".format(round(srgbR),round(srgbG), round(srgbB) )
+                print(srgbUpscale)
                 #format the color into a hex code for output
                 #and upscaled output on client request
-                shexCode = srgb.get_rgb_hex()
-                srgbUpscale = srgb.get_upscaled_value_tuple()
-                #colors = [red,green,blue]
-            except:
+                shexCode = '#{:02x}{:02x}{:02x}'.format(round(srgbR),round(srgbG), round(srgbB))
+                deltaE = colorrr.delta_e(srgbColor, method="2000")
+                cansRGB = True
+                print(shexCode, srgbUpscale)
+                print(deltaE , "NEW SRGB Y\n\n")
+            else:
+                print("Not in sRGB Gamut")
+                before = colorrr.in_gamut('srgb')
+                #fit color into correct gamut before continuing
+                colorrr.fit('srgb')
+                after = colorrr.in_gamut('srgb')
+                print("before", before, "after", after)
                 cansRGB = False
-                shexCode = "#FFFFFF"
-                srgb = "Not Applicable"
-            #BTColor conversion
-            try:
-                btcolor = convert_color(lab, BT2020Color)
-                print(btcolor)
-                canBT =  True
+                srgbColor = colorrr.convert("srgb")
+                srgbR = srgbColor['r'] * 255
+                srgbG = srgbColor['g'] * 255
+                srgbB = srgbColor['b'] * 255
+                #Upscale color on client request
+                shexCode = '#{:02x}{:02x}{:02x}'.format(round(srgbR),round(srgbG), round(srgbB))
+                srgbUpscale = "({},{},{})".format(round(srgbR),round(srgbG), round(srgbB) )
+                deltaE = colorrr.delta_e(srgbColor, method="2000")
+                print(shexCode, srgbUpscale)
+                print(deltaE , "NEW SRGB N\n\n")
+            #check if color is in gamut (an appropriate conversion)
+            if colorrr.in_gamut('prophoto-rgb'):
+                ProPhotoColor = colorrr.convert("prophoto-rgb")
+                print(ProPhotoColor)
+                ProR = ProPhotoColor['r'] * 255
+                ProG = ProPhotoColor['g'] * 255
+                ProB = ProPhotoColor['b'] * 255
+                #print(rgbR,rgbG, rgbB )
+                canPro = True
+                proUpscale = "({},{},{})".format(round(ProR),round(ProG), round(ProB) )
+                print(proUpscale)
                 #format the color into a hex code for output
                 #and upscaled output on client request
-                BTHexCode = btcolor.get_rgb_hex()
-                BTUpscale = btcolor.get_upscaled_value_tuple()
-                #btcolor = [red,green,blue]
-            except:
-                canBT = False
-                BTHexCode = "#FFFFFF"
-                btcolor = "Not Applicable"
+                ProHexCode = '#{:02x}{:02x}{:02x}'.format(round(ProR),round(ProG), round(ProB))
+                deltaE = colorrr.delta_e(ProPhotoColor, method="2000")
+                print(ProHexCode, proUpscale)
+                print(deltaE , "NEW PROPHOTO\n\n")
+            else:
+                print("Not in ProPhoto Gamut")
+                before = colorrr.in_gamut("prophoto-rgb")
+                #fit color into correct gamut before continuing
+                colorrr.fit("prophoto-rgb")
+                after = colorrr.in_gamut("prophoto-rgb")
+                print("before", before, "after", after)
+                canPro = False
+                ProPhotoColor = colorrr.convert("prophoto-rgb")
+                ProR = ProPhotoColor['r'] * 255
+                ProG = ProPhotoColor['g'] * 255
+                ProB = ProPhotoColor['b'] * 255
+                #Upscale color on client request
+                ProHexCode = '#{:02x}{:02x}{:02x}'.format(round(ProR),round(ProG), round(ProB))
+                srgbUpscale = "({},{},{})".format(round(ProR),round(ProG), round(ProB) )
+                deltaE = colorrr.delta_e(ProPhotoColor, method="2000")
+                print(ProHexCode, proUpscale)
+                print(deltaE , "NEW PROPHOTO\n\n")
 
             #Check to make sure that the hex codes outputted are valid hex codes / the conversion was successful
             shexCodeCheck = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', shexCode)
@@ -132,12 +190,12 @@ def colors(request):
                 hexCode = "#FFFFFF"
                 canRGB = False
 
-            BTHexCodeCheck = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', BTHexCode)
-            if not hexCodeCheck:
-                BTHexCode = "#FFFFFF"
-                canBT = False
+            ProHexCodeCheck = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', ProHexCode)
+            if not ProHexCodeCheck:
+                ProHexCode = "#FFFFFF"
+                canPro = False
 
-            return render(request, 'pixelspace/colors.html', {'form':form, 'canRGB': canRGB, 'hexCode': hexCode, 'rgb' : rgbUpscale, 'cansRGB': cansRGB, 'shexCode': shexCode, 'srgb' : srgbUpscale, 'canBT': canBT, 'BTHexCode': BTHexCode, 'btcolor' : BTUpscale,})
+            return render(request, 'pixelspace/colors.html', {'form':form, 'canRGB': canRGB, 'hexCode': hexCode, 'rgb' : rgbUpscale, 'cansRGB': cansRGB, 'shexCode': shexCode, 'srgb' : srgbUpscale, 'canPro': canPro, 'ProHexCode': ProHexCode, 'proUpscale' : proUpscale,})
     else:
         print("NO")
         form=LABForm()

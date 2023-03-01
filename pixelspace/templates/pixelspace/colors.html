@@ -14,12 +14,12 @@
             <div class="containerB">
                 <form action="" method="post">
                     {% csrf_token %}
+                    <label for="lightness"><h2>Lightness </h2></label><br>
+                    <input type="text" id="lightness" name="lightness">
                     <label for="axisA"><h2>A-Axis (Green to Red)</h2></label><br>
                     <input type="text" id="axisA" name="axisA"><br>
                     <label for="axisB"><h2>B-Axis (Blue to Yellow) </h2></label><br>
                     <input type="text" id="axisB" name="axisB">
-                    <label for="lightness"><h2>Lightness </h2></label><br>
-                    <input type="text" id="lightness" name="lightness">
                     <br><br>
             </div>
         </div>
@@ -34,9 +34,9 @@
                 <h3>{{cansRGB}}</h3>
                 <h3>{{srgb}}</h3>
                 <br>
-                <label for="BTColor"><h2>BTColor </h2></label><br>
-                <h3>{{canBT}}</h3>
-                <h3>{{btcolor}}</h3>
+                <label for="Pro"><h2>ProPhoto </h2></label><br>
+                <h3>{{canPro}}</h3>
+                <h3>{{proUpscale}}</h3>
             </div>
         </div>
 
@@ -47,7 +47,7 @@
                 <label for="SRGB"><h2>Alt. SRGB </h2></label><br>
                 <div class="containerB"><div class ='rectangle' style="background-color:{{shexCode}}">{{shexCode}}</div></div>
                 <label for="BTColor"><h2>Alt. BTColor </h2></label><br>
-                <div class="containerB"><div class ='rectangle' style="background-color:{{BTHexCode}}">{{BTHexCode}}</div></div>
+                <div class="containerB"><div class ='rectangle' style="background-color:{{ProHexCode}}">{{ProHexCode}}</div></div>
             </div>
         </div>
     </div>

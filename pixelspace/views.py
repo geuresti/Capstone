@@ -2,13 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.template import loader
 from django.http import HttpResponseRedirect
-from .models import Account
+from .models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-#from django.contrib.auth import authenticate, login as dj_login, logout as dj_logout
+
+from http import HTTPStatus
 
 from django.contrib.auth.decorators import login_required
-from .forms import AccountForm, UserForm, SettingsForm, LABForm, CreateAccountForm, confirmDeleteForm
+from .forms import AccountForm, UserForm, SettingsForm, LABForm, confirmDeleteForm
 from django.contrib import messages
 from colormath.color_objects import LabColor, sRGBColor, AdobeRGBColor
 from colormath.color_objects import BT2020Color
@@ -54,11 +55,6 @@ def index(request):
 
 #View Function for the Colors template
 def colors(request):
-    print("----------------\n", request.session)
-#    request.session['test'] = 'testing'
-
-    #print("\n", request.session['test'], "\n----------------")
-
     template = loader.get_template('pixelspace/colors.html')
     if request.method == 'POST':
         #take in L*A*B values
@@ -197,7 +193,6 @@ def colors(request):
 
             return render(request, 'pixelspace/colors.html', {'form':form, 'canRGB': canRGB, 'hexCode': hexCode, 'rgb' : rgbUpscale, 'cansRGB': cansRGB, 'shexCode': shexCode, 'srgb' : srgbUpscale, 'canPro': canPro, 'ProHexCode': ProHexCode, 'proUpscale' : proUpscale,})
     else:
-        print("NO")
         form=LABForm()
 
     return render(request, 'pixelspace/colors.html', {'form':form})
@@ -222,20 +217,22 @@ def login(request):
             password = form.cleaned_data.get("password")
             print("provided USER:", username, "\nprovided PASSWORD:", password)
 
-            # check if a user with the provided username exists in the database
-            user = mongo_auth.authenticate(request, username=username, password=password)
-            #if User.objects.filter(username=username).exists():
+            # authenticate credentials
+            user = mongo_auth.authenticate(username=username, password=password)
+
             if user:
-                request.session['username'] = user['username']
+                # log user into the session
+                mongo_auth.login(request, user)
                 print("Successfully logged in user:", user['username'])
                 return redirect('/pixelspace')
             else:
                 print("ERROR: Incorrect Credentials", username)
-
-            context = {
-                'form':form,
-            }
-            return render(request, 'pixelspace/login.html', context)
+                return render(
+                    request,
+                    'pixelspace/login.html',
+                    {'form':form},
+                    status=HTTPStatus.BAD_REQUEST,
+                )
     else:
         form = UserForm()
     return render(request, 'pixelspace/login.html', {'form':form})
@@ -243,11 +240,17 @@ def login(request):
 #Log out Function
 def logout(request):
     #if the user is authenticated when logout() is called, log them out
-    if request.session['username']:
-        print("Successfully logged out user:", request.session['username'])
-        del request.session['username']
-
-    return redirect('/pixelspace')
+    try:
+        if request.session['username']:
+            print("Successfully logged out user:", request.session['username'])
+            del request.session['username']
+            return redirect('/pixelspace')
+    except:
+        return render(
+            request,
+            'pixelspace/login.html',
+            status=HTTPStatus.FOUND,
+        )
 
 def logo(request):
     template = loader.get_template('pixelspace/logo.html')
@@ -302,42 +305,35 @@ def settings(request):
             retypePassword = form.cleaned_data.get("retypePassword")
             deleteAccount = form.cleaned_data.get("deleteAccount")
 
-        #    print("changedPassword:",
-        #        changedPassword,
-        #        "\nretypePassword:",
-        #        retypePassword,
-        #        "\ndeleteAccount:",
-        #        deleteAccount)
+            try:
+                if request.session['username']:
+                    username = request.session['username']
 
-            if not request.session['username']:
+                    curr_account = users_collection.find_one(
+                        {'username':username}
+                    )
+
+                if deleteAccount:
+                    # ! ASK USER TO CONFIRM THAT THEY WANT TO DELETE FIRST !
+                    return redirect('delete-confirm')
+
+                #if the password matches the confirmation password, go through with the change
+                if changedPassword and changedPassword == retypePassword:
+
+                    # ! ERROR CHECK NEW PASSWORDS HERE !
+
+                    print("* The new passwords match *")
+                    #when the password is changed, log user out and direct them to the homepage
+                    users_collection.update_one({'username':username}, {'$set':{'password':changedPassword}})
+                    print("Successfully updated settings for:", username)
+                    return logout(request)
+                else:
+                    print("* The new passwords do not match *")
+            except:
                 return redirect('login')
-
-            username = request.session['username']
-
-            curr_account = users_collection.find_one(
-                {'username':username}
-            )
-
-            if deleteAccount:
-                # ! ASK USER TO CONFIRM THAT THEY WANT TO DELETE FIRST !
-                return redirect('delete-confirm')
-
-            #if the password matches the confirmation password, go through with the change
-            if changedPassword and changedPassword == retypePassword:
-
-                # ! ERROR CHECK NEW PASSWORDS HERE !
-
-                print("* The new passwords match *")
-                #when the password is changed, log user out and direct them to the homepage
-                users_collection.update_one({'username':username}, {'$set':{'password':changedPassword}})
-                print("Successfully updated settings for:", username)
-                return logout(request)
-            else:
-                print("* The new passwords do not match *")
         else:
             print("* Invalid settings form *")
     else:
-        print("REQUEST = GET for settings view")
         form = SettingsForm()
     return render(request, 'pixelspace/settings.html', {'form':form})
 
@@ -390,7 +386,6 @@ def create_account(request):
 
             return redirect('/pixelspace/login')
     else:
-        print("NO")
         form=UserForm()
 
     return render(request, 'pixelspace/create_account.html', {'form':form})

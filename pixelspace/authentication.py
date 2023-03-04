@@ -12,16 +12,28 @@ users_collection = dbname["users"]
 # the credentials. MongoDB documents are DICTIONARIES and do
 # not have the .backend attribute.
 class MongoAuthBackend(BaseBackend):
-    def authenticate(self, request, username=None, password=None):
-        user = users_collection.find_one({"username": username})
-        #print("AUTH.PY USER:", user)
+    def authenticate(self, collection_name="users", username=None, password=None):
+        collection = dbname[collection_name]
+        user = collection.find_one({"username": username})
         if user:
             if user['password'] == password:
                 return user
         return None
 
-    def get_user(self, user_id):
+    def login(self, request, user):
+        request.session['username'] = user['username']
+
+    @classmethod
+    def already_exists(self, collection_name="users", username=None):
+        collection = dbname[collection_name]
+        user = collection.find_one({"username": username})
+        if user:
+            return True
+
+        return False
+
+    def get_user(self, collection_name="users", user_id=None):
         try:
-            return users_collection.find_one({"user_id": user_id})
+            return collection_name.find_one({"user_id": user_id})
         except:
             return None

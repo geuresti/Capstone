@@ -1,28 +1,27 @@
 from django.db import models
-from django.contrib.auth.models import User
-"""
-from mongoengine import * # Document, fields
 
-class Account(Document):
-    user_id = IntField()
-    pixel_map_ids = ListField(IntField())
-    placeholder_image_ids = ListField(IntField())
-"""
-"""
-class Account(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+# This file should manage account creation
+# there are some fields we didn't include in the initial kickoff
+# of the user database (pixel_map_ids, placeholder_image_ids, email)
+# The User model should have a create() function, login(), logout()
+# as well as functionality to check for valid passwords
 
-    pixel_map_ids = models.CharField(max_length=100)
-    placeholder_image_ids = models.CharField(max_length=100)
+# what does extending models.Model do?
+class User(): #models.Model):
+    user_id = None
+    username = None
+    password = None
+    email = None
+    pixel_map_ids = []
+    placeholder_image_ids = []
+
+    def create_user(username, password, confirm_password, email):
+        return 0
+
+    def authenticate_user(username, password):
+        return 0
+
+#    def logout_user(username, password):
 
     def __str__(self):
-        return self.user.first_name
-"""
-#from django_mongoengine import Document, EmbeddedDocument, fields
-#from mongoengine import *
-
-class Account(models.Model): #EmbeddedDocument):
-    placeholder = 0
-#    user_id = fields.IntField()
-#    pixel_map_ids = fields.ListField(fields.IntField())
-#    placeholder_image_ids = fields.ListField(fields.IntField())
+        return self.username

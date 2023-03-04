@@ -4,7 +4,7 @@ import pymongo
 connect_string = 'mongodb+srv://mongodb_dao:uC3wPbLm7AIhkOUL@cluster0.nem4zbs.mongodb.net/?retryWrites=true&w=majority'
 
 my_client = pymongo.MongoClient(connect_string)
-print("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+
 # First define the database name
 dbname = my_client['pixelspace']
 
@@ -13,13 +13,12 @@ collection_name = dbname["users"]
 
 # Read the documents
 user_details = collection_name.find({})
-print("SDKJFSHJKFHJKGHKJSHJSKDG")
+
 # Print out all user documents
 gol = collection_name.find_one({"username": "Gol"})
 
 #for user in user_details:
     #print(f'USER #{user["user_id"]}:', user["username"])
-print("wahoo")
 '''
 # Create a user document
 user = {

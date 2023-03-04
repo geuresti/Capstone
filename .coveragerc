@@ -1,0 +1,16 @@
+[run]
+omit =
+    capstone\asgi.py
+    capstone\__init__.py
+    capstone\settings.py
+    capstone\urls.py
+    capstone\wsgi.py
+    manage.py
+    pixelspace\admin.py
+    pixelspace\apps.py
+    pixelspace\db_test.py
+    pixelspace\__init__.py
+    pixelspace\migrations\0001_initial.py
+    pixelspace\migrations\__init__.py
+    pixelspace\urls.py
+    pixelspace\tests\__init__.py

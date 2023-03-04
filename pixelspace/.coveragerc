@@ -1,0 +1,7 @@
+[run]
+omit =
+    capstone\asgi.py
+    capstone\__init__.py
+    capstone\wsgi.py
+    pixelspace\db_test.py
+    manage.py

@@ -30,5 +30,10 @@ class PixelForm(forms.Form):
     width = forms.IntegerField(label='width')
     greyscale = forms.BooleanField(label='greyscale', required=False)
 
+class SaveForm(forms.Form):
+    png = forms.BooleanField(label='png', required=False)
+    jpg = forms.BooleanField(label='jpg', required=False)
+    tif = forms.BooleanField(label='tif', required=False)
+
 class confirmDeleteForm(forms.Form):
     confirmDelete = forms.BooleanField(label='confirmDelete', required=False)

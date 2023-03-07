@@ -9,7 +9,7 @@ import base64
 from http import HTTPStatus
 import os, sys
 from django.contrib.auth.decorators import login_required
-from .forms import AccountForm, UserForm, SettingsForm, LABForm, confirmDeleteForm, PixelForm
+from .forms import AccountForm, UserForm, SettingsForm, LABForm, confirmDeleteForm, PixelForm, CreateAccountForm, SaveForm
 from django.contrib import messages
 from colormath.color_objects import LabColor, sRGBColor, AdobeRGBColor
 from colormath.color_objects import BT2020Color
@@ -210,6 +210,31 @@ def image(request):
     }
     return HttpResponse(template.render(context, request))
 
+def results(request, data_url, image):
+    if request.method == 'POST':
+            print('testing1')
+            form = SaveForm(request.POST)
+            #acquire login and password from user input
+            if form.is_valid():
+                print('testing')
+                savePNG = form.cleaned_data.get("png")
+                saveJPG = form.cleaned_data.get("jpg")
+                saveTIF = form.cleaned_data.get("tif")
+
+                if savePNG:
+                    image.save("image.png")
+                    print("png saved")
+                if saveJPG:
+                    image.save("image.jpeg")
+                    print("jpg saved")
+                if saveTIF:
+                    image.save("image.tif")
+                    print("tif saved")
+            return render(request, 'pixelspace/results.html', {'form': form, 'Image': data_url})
+    else:
+        form = SaveForm()
+        return render(request, 'pixelspace/results.html', {'form': form, 'Image': data_url})
+
 #login function
 def login(request):
     template = loader.get_template('pixelspace/login.html')
@@ -325,7 +350,9 @@ def pixelmap(request):
                 pixelmaps_collection.insert_one(pixelmap)
 
                 print("PixelMap successfully created")
-                return render(request, 'pixelspace/results.html', {'form':form, 'Image': data_url})
+                return results(request, data_url, img)
+                #return redirect('results', Image = data_url)
+                #return render(request, 'pixelspace/results.html', {'form':form, 'Image': data_url})
                 
     else:
         form = PixelForm()

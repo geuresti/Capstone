@@ -17,6 +17,10 @@ user_details = collection_name.find({})
 # Print out all user documents
 gol = collection_name.find_one({"username": "Gol"})
 
+
+does_user_exist = collection_name.find_one({"username": "Gol"})
+print("TEST:", does_user_exist)
+print(does_user_exist['email'])
 #for user in user_details:
     #print(f'USER #{user["user_id"]}:', user["username"])
 '''
@@ -45,10 +49,10 @@ latest_user = collection_name.find_one(
 )
 #print(latest_user)
 
-# Check if user exists
+ Check if user exists
 does_user_exist = collection_name.find_one({"username": "Gol"})
 print("TEST:", does_user_exist)
-#print(does_user_exist['email'])
+print(does_user_exist['email'])
 
 # Update one document
 update_data = collection_name.update_one({'medicine_id':'RR000123456'}, {'$set':{'common_name':'Paracetamol 500'}})

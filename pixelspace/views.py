@@ -210,7 +210,30 @@ def image(request):
     }
     return HttpResponse(template.render(context, request))
 
-def results(request, data_url, image):
+def results(request):
+    newest_map = pixelmaps_collection.find_one(
+        sort=[( '_id', pymongo.DESCENDING )]
+        )
+    data = newest_map['PixelMap']
+    length = newest_map['length']
+    width = newest_map['width']
+    #newImg = BytesIO(data)
+    #newImg = Image.open(image)
+    newImg = Image.frombytes("RGB",(length,width), data)
+    print(newImg)
+    output = BytesIO()
+    newImg.save(output, format="PNG")
+    imgData = output.getvalue()
+
+    image_data = base64.b64encode(imgData)
+    if not isinstance(image_data, str):
+        # Python 3, decode from bytes to string
+        image_data = image_data.decode()
+    data_url = 'data:image/jpg;base64,' + image_data                
+    #print(data_url)
+    #data_url = 'data:image/jpg;base64,' + data
+    #print("TESTING" , data_url) 
+    #binaryMap = newest_map[pixelmap]
     if request.method == 'POST':
             print('testing1')
             form = SaveForm(request.POST)
@@ -222,13 +245,13 @@ def results(request, data_url, image):
                 saveTIF = form.cleaned_data.get("tif")
 
                 if savePNG:
-                    image.save("image.png")
+                    newImg.save("image.png")
                     print("png saved")
                 if saveJPG:
-                    image.save("image.jpeg")
+                    newImg.save("image.jpeg")
                     print("jpg saved")
                 if saveTIF:
-                    image.save("image.tif")
+                    newImg.save("image.tif")
                     print("tif saved")
             return render(request, 'pixelspace/results.html', {'form': form, 'Image': data_url})
     else:
@@ -329,7 +352,7 @@ def pixelmap(request):
                 )
 
                 newest_map_id = int(newest_map["pixelmap_id"]) + 1
-                bin = img.tobytes("xbm", "rgb")
+                bin = img.tobytes()
 
                 output = BytesIO()
                 img.save(output, format="PNG")
@@ -346,12 +369,14 @@ def pixelmap(request):
                     "creator" : username,
                     "caption" : "temp",
                     "PixelMap" : bin,
+                    "width" : width,
+                    "length" : length,
                     }
                 pixelmaps_collection.insert_one(pixelmap)
 
                 print("PixelMap successfully created")
-                return results(request, data_url, img)
-                #return redirect('results', Image = data_url)
+                #return results(request, data_url, img)
+                return redirect('results')
                 #return render(request, 'pixelspace/results.html', {'form':form, 'Image': data_url})
                 
     else:

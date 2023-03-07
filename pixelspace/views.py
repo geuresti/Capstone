@@ -19,7 +19,7 @@ from coloraide.everything import ColorAll as Color
 import pymongo
 from PIL import Image
 import random
-
+from bson.binary import Binary
 import re
 
 from .authentication import MongoAuthBackend
@@ -33,6 +33,7 @@ dbname = my_client['pixelspace']
 
 # get collection name (create new collection if it doesn't exist)
 users_collection = dbname["users"]
+pixelmaps_collection = dbname["pixelmaps"]
 
 mongo_auth = MongoAuthBackend()
 
@@ -265,6 +266,10 @@ def logo(request):
 
 def pixelmap(request):
     template = loader.get_template('pixelspace/pixelmap.html')
+    if request.session['username']:
+        username = request.session['username']
+    else:
+        username = "Guest_User"
     if request.method == 'POST':
             form = PixelForm(request.POST)
             #acquire login and password from user input
@@ -291,6 +296,27 @@ def pixelmap(request):
                         listColor[x] = (r,g,b)
                     img.putdata(listColor)
                     img.show()
+
+
+                newest_map = pixelmaps_collection.find_one(
+                    sort=[( '_id', pymongo.DESCENDING )]
+                )
+
+                newest_map_id = int(newest_map["pixelmap_id"]) + 1
+                bin = img.tobytes("xbm", "rgb")
+                print(img)
+                pixelmap = {
+                    "pixelmap_id": newest_map_id,
+                    "creator" : username,
+                    "caption" : "temp",
+                    "PixelMap" : bin,
+                    }
+                pixelmaps_collection.insert_one(pixelmap)
+
+                print("PixelMap successfully created")
+                
+    else:
+        form = PixelForm()
     return render(request, 'pixelspace/pixelmap.html', {'form':form})
 
 # need to tEST

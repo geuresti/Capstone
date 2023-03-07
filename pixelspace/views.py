@@ -259,8 +259,8 @@ def results(request):
                     newImg.save("image.jpeg")
                     print("jpg saved")
                 if saveTIF:
-                    newImg.save("image.tif")
-                    print("tif saved")
+                    newImg.save("image.tiff")
+                    print("tiff saved")
             return render(request, 'pixelspace/results.html', {'form': form, 'Image': data_url})
     else:
         form = SaveForm()

@@ -5,9 +5,9 @@ from django.http import HttpResponseRedirect
 from .models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-
+import base64
 from http import HTTPStatus
-
+import os, sys
 from django.contrib.auth.decorators import login_required
 from .forms import AccountForm, UserForm, SettingsForm, LABForm, confirmDeleteForm, PixelForm
 from django.contrib import messages
@@ -21,6 +21,7 @@ from PIL import Image
 import random
 from bson.binary import Binary
 import re
+from io import BytesIO  
 
 from .authentication import MongoAuthBackend
 
@@ -304,6 +305,16 @@ def pixelmap(request):
 
                 newest_map_id = int(newest_map["pixelmap_id"]) + 1
                 bin = img.tobytes("xbm", "rgb")
+
+                output = BytesIO()
+                img.save(output, format="PNG")
+                imgData = output.getvalue()
+
+                image_data = base64.b64encode(imgData)
+                if not isinstance(image_data, str):
+                    # Python 3, decode from bytes to string
+                    image_data = image_data.decode()
+                data_url = 'data:image/jpg;base64,' + image_data                
                 print(img)
                 pixelmap = {
                     "pixelmap_id": newest_map_id,
@@ -314,6 +325,7 @@ def pixelmap(request):
                 pixelmaps_collection.insert_one(pixelmap)
 
                 print("PixelMap successfully created")
+                return render(request, 'pixelspace/results.html', {'form':form, 'Image': data_url})
                 
     else:
         form = PixelForm()

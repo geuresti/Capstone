@@ -217,6 +217,14 @@ def results(request):
     data = newest_map['PixelMap']
     length = newest_map['length']
     width = newest_map['width']
+    mapID = newest_map['pixelmap_id']
+
+    if request.session['username']:
+        username = request.session['username']
+        users_collection.update_one({'username':username}, {'$push':{'pixelmap_ids':mapID}})
+        print("UPDATED")
+
+
     #newImg = BytesIO(data)
     #newImg = Image.open(image)
     newImg = Image.frombytes("RGB",(length,width), data)
@@ -485,6 +493,7 @@ def create_account(request):
                     "user_id": new_user_id,
                     "username" : new_username,
                     "password" : new_password,
+                    "pixelmap_ids": [],
                     "email" : "bag@gmail.com",
                 }
 

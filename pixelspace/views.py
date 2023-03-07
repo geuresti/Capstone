@@ -210,48 +210,59 @@ def image(request):
     }
     return HttpResponse(template.render(context, request))
 
+#processes the results of the pixelmap generation and displays it on a new page
 def results(request):
+    #grab the most recent pixelmap added to the database (the current one)
     newest_map = pixelmaps_collection.find_one(
         sort=[( '_id', pymongo.DESCENDING )]
         )
+    
     data = newest_map['PixelMap']
     length = newest_map['length']
     width = newest_map['width']
     mapID = newest_map['pixelmap_id']
 
+    #if the user is logged in, add this generated pixelmap (its ID) to their account
     if request.session['username']:
         username = request.session['username']
         users_collection.update_one({'username':username}, {'$push':{'pixelmap_ids':mapID}})
         print("UPDATED")
 
-
-    #newImg = BytesIO(data)
-    #newImg = Image.open(image)
+    #take the binary encoding of the image and translate it back into an image object
     newImg = Image.frombytes("RGB",(length,width), data)
-    print(newImg)
+    #print(newImg)
+
+    #save the image to be encoded into base64
     output = BytesIO()
     newImg.save(output, format="PNG")
     imgData = output.getvalue()
 
+    #encode the image data/ output of the image into base64 in order to pass it to an HTML page 
+    #and display the image to the user
     image_data = base64.b64encode(imgData)
     if not isinstance(image_data, str):
         # Python 3, decode from bytes to string
         image_data = image_data.decode()
-    data_url = 'data:image/jpg;base64,' + image_data                
+
+    #format image data into HTML readable
+    data_url = 'data:image/jpg;base64,' + image_data   
+
     #print(data_url)
     #data_url = 'data:image/jpg;base64,' + data
     #print("TESTING" , data_url) 
     #binaryMap = newest_map[pixelmap]
+
+    #if the saving form is valid, proceed
     if request.method == 'POST':
             print('testing1')
             form = SaveForm(request.POST)
-            #acquire login and password from user input
             if form.is_valid():
                 print('testing')
                 savePNG = form.cleaned_data.get("png")
                 saveJPG = form.cleaned_data.get("jpg")
                 saveTIF = form.cleaned_data.get("tif")
 
+                #check to see what formats the user wants to save in, and make the necessary image saves
                 if savePNG:
                     newImg.save("image.png")
                     print("png saved")
@@ -323,20 +334,27 @@ def logo(request):
 
 def pixelmap(request):
     template = loader.get_template('pixelspace/pixelmap.html')
+
+    #set username to username or guest username depending on if the user is logged in
     if request.session['username']:
         username = request.session['username']
     else:
         username = "Guest_User"
     if request.method == 'POST':
             form = PixelForm(request.POST)
-            #acquire login and password from user input
+            #acquire acquire length, width, and greyscale from user input
             if form.is_valid():
                 length = form.cleaned_data.get("length")
                 width = form.cleaned_data.get("width")
                 greyscale = form.cleaned_data.get("greyscale")
                 print("provided length:", length, "\nprovided width:", width)
+
+                #generate placeholder image in which to fill in with pixels
                 img = Image.new('RGB', [length,width], 'pink')
 
+                #the process is similar for if the maps are greyscale or color
+                #generate a random value between 1-255, and apply to rgb balues
+                #append onto a list of values, which then gets mapped to the image
                 if greyscale == True:
                     listGrey= [0] * (width * length )
                     for x in range(width * length ):
@@ -354,24 +372,18 @@ def pixelmap(request):
                     img.putdata(listColor)
                     img.show()
 
-
+                #get the previous map
                 newest_map = pixelmaps_collection.find_one(
                     sort=[( '_id', pymongo.DESCENDING )]
                 )
 
+                #increment the id of the previous map to get the id for the current map
                 newest_map_id = int(newest_map["pixelmap_id"]) + 1
+
+                #convert image to binary in order to store in the database
                 bin = img.tobytes()
 
-                output = BytesIO()
-                img.save(output, format="PNG")
-                imgData = output.getvalue()
-
-                image_data = base64.b64encode(imgData)
-                if not isinstance(image_data, str):
-                    # Python 3, decode from bytes to string
-                    image_data = image_data.decode()
-                data_url = 'data:image/jpg;base64,' + image_data                
-                print(img)
+                #insert pixelmap into database
                 pixelmap = {
                     "pixelmap_id": newest_map_id,
                     "creator" : username,

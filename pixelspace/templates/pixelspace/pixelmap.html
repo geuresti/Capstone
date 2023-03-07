@@ -10,16 +10,20 @@
     </div>
 
     <div class="container">
-        <form>
-            <label for="fname"><h2>Length:</h2></label><br>
-            <input type="number" id="fname" name="fname"><br>
-            <label for="lname"><h2>Width:</h2></label><br>
-            <input type="number" id="lname" name="lname">
+        <form action="" method="post">
+            {% csrf_token %}
+            <label for="length"><h2>Length:</h2></label><br>
+            <input type="number" id="length" name="length"><br>
+            <label for="width"><h2>Width:</h2></label><br>
+            <input type="number" id="width" name="width">
+            <br><br>
+            <input type="checkbox" id="greyscale" name="greyscale">
+            <label for="greyscale"><h2>Greyscale?</h2></label><br>
+            <br><br>
+            <button class="button" type ="submit"> Generate</button>
         </form>
     </div>
     
-    <div class="containerB">
-        <button class ="button"> Generate </button>
-    </div>
+
 
 {% endblock %}

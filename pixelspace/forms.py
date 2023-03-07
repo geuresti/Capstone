@@ -25,5 +25,10 @@ class LABForm(forms.Form):
     axisA = forms.FloatField(label='axisA')
     axisB = forms.FloatField(label='axisB')
 
+class PixelForm(forms.Form):
+    length = forms.IntegerField(label='length')
+    width = forms.IntegerField(label='width')
+    greyscale = forms.BooleanField(label='greyscale', required=False)
+
 class confirmDeleteForm(forms.Form):
     confirmDelete = forms.BooleanField(label='confirmDelete', required=False)

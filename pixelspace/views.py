@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from http import HTTPStatus
 
 from django.contrib.auth.decorators import login_required
-from .forms import AccountForm, UserForm, SettingsForm, LABForm, confirmDeleteForm
+from .forms import AccountForm, UserForm, SettingsForm, LABForm, confirmDeleteForm, PixelForm
 from django.contrib import messages
 from colormath.color_objects import LabColor, sRGBColor, AdobeRGBColor
 from colormath.color_objects import BT2020Color
@@ -17,6 +17,8 @@ from colormath.color_conversions import convert_color
 from colormath.color_diff import delta_e_cie1976
 from coloraide.everything import ColorAll as Color
 import pymongo
+from PIL import Image
+import random
 
 import re
 
@@ -263,12 +265,33 @@ def logo(request):
 
 def pixelmap(request):
     template = loader.get_template('pixelspace/pixelmap.html')
-    #return HttpResponse(template.render(request))
-    latest_question_list = [1]
-    context = {
-        'latest_question_list': latest_question_list,
-    }
-    return HttpResponse(template.render(context, request))
+    if request.method == 'POST':
+            form = PixelForm(request.POST)
+            #acquire login and password from user input
+            if form.is_valid():
+                length = form.cleaned_data.get("length")
+                width = form.cleaned_data.get("width")
+                greyscale = form.cleaned_data.get("greyscale")
+                print("provided length:", length, "\nprovided width:", width)
+                img = Image.new('RGB', [length,width], 'pink')
+
+                if greyscale == True:
+                    listGrey= [0] * (width * length )
+                    for x in range(width * length ):
+                        Grey = random.randint(1,255)
+                        listGrey[x] = (Grey,Grey,Grey)
+                    img.putdata(listGrey)
+                    img.show()
+                else:
+                    listColor= [0] * (width * length )
+                    for x in range(width * length ):
+                        r = random.randint(1,255)
+                        g = random.randint(1,255)
+                        b = random.randint(1,255)
+                        listColor[x] = (r,g,b)
+                    img.putdata(listColor)
+                    img.show()
+    return render(request, 'pixelspace/pixelmap.html', {'form':form})
 
 # need to tEST
 def deleteConfirm(request):

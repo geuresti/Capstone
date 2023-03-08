@@ -4,21 +4,45 @@
 
 {% block content %}
 
-<div class="container">
-    <form action="" method="post">
-        {% csrf_token %}
-        <input type="checkbox" id="png" name="png">
-        <label for="png"><h2>Save as .PNG</h2></label><br>
-        <input type="checkbox" id="jpg" name="jpg">
-        <label for="jpg"><h2>Save as .JPEG</h2></label><br>
-        <input type="checkbox" id="tif" name="tif">
-        <label for="tif"><h2>Save as .TIF</h2></label><br>
-        <br><br>
-        <button class="button" type ="submit"> Save</button>
-    </form>
-</div>
+
+
+<div class='flex-parent-element'>
+    <div class='flex-child-element'>
+        <div class="container">
+            <h2>Save Options</h2>
+            <br><br>
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="checkbox" id="png" name="png">
+                <label for="png"><h2>Save as .PNG</h2></label><br>
+                <input type="checkbox" id="jpg" name="jpg">
+                <label for="jpg"><h2>Save as .JPEG</h2></label><br>
+                <input type="checkbox" id="tif" name="tif">
+                <label for="tif"><h2>Save as .TIF</h2></label><br>
+                <br><br>
+                <button class="button" type ="submit"> Save</button>
+            </form>
+        </div>
+    </div>
+
+    <div class='flex-child-element'>
+        <div class="containerB">
+            <br><br>
+            <h2>Account Options</h2>
+            <br><br>
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="checkbox" id="deleteMap" name="deleteMap">
+                <label for="deleteMap"><h2>Delete Map</h2></label><br>
+                <br><br>
+                <button class="button" type ="submit"> Submit</button>
+        </form>
+        </div>
+    </div>
+    </div>
     <div class="container">
     <img src="{{Image}}">
+    
 
 
 

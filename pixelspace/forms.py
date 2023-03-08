@@ -35,5 +35,12 @@ class SaveForm(forms.Form):
     jpg = forms.BooleanField(label='jpg', required=False)
     tif = forms.BooleanField(label='tif', required=False)
 
+class MapForm(forms.Form):
+    deleteMap = forms.BooleanField(label='deleteMap', required=False)
+
+
 class confirmDeleteForm(forms.Form):
     confirmDelete = forms.BooleanField(label='confirmDelete', required=False)
+
+class confirmMapDeleteForm(forms.Form):
+    confirmMapDelete = forms.BooleanField(label='confirmMapDelete', required=False)

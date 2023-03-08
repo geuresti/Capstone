@@ -9,7 +9,7 @@ import base64
 from http import HTTPStatus
 import os, sys
 from django.contrib.auth.decorators import login_required
-from .forms import AccountForm, UserForm, SettingsForm, LABForm, confirmDeleteForm, PixelForm, CreateAccountForm, SaveForm
+from .forms import AccountForm, UserForm, SettingsForm, LABForm, confirmDeleteForm, PixelForm, CreateAccountForm, SaveForm, MapForm, confirmMapDeleteForm
 from django.contrib import messages
 from colormath.color_objects import LabColor, sRGBColor, AdobeRGBColor
 from colormath.color_objects import BT2020Color
@@ -222,12 +222,13 @@ def results(request):
     width = newest_map['width']
     mapID = newest_map['pixelmap_id']
 
+    '''
     #if the user is logged in, add this generated pixelmap (its ID) to their account
     if request.session['username']:
         username = request.session['username']
         users_collection.update_one({'username':username}, {'$push':{'pixelmap_ids':mapID}})
         print("UPDATED")
-
+    '''
     #take the binary encoding of the image and translate it back into an image object
     newImg = Image.frombytes("RGB",(length,width), data)
     #print(newImg)
@@ -256,11 +257,14 @@ def results(request):
     if request.method == 'POST':
             print('testing1')
             form = SaveForm(request.POST)
-            if form.is_valid():
+            form2 = MapForm(request.POST)
+            if form.is_valid() and form2.is_valid():
                 print('testing')
                 savePNG = form.cleaned_data.get("png")
                 saveJPG = form.cleaned_data.get("jpg")
                 saveTIF = form.cleaned_data.get("tif")
+
+                deleteMap = form2.cleaned_data.get("deleteMap")
 
                 #check to see what formats the user wants to save in, and make the necessary image saves
                 if savePNG:
@@ -272,11 +276,34 @@ def results(request):
                 if saveTIF:
                     newImg.save("image.tiff")
                     print("tiff saved")
-            return render(request, 'pixelspace/results.html', {'form': form, 'Image': data_url})
+                #if map delete is true, delete the map
+                if deleteMap:
+                    print("testing3")
+                    return redirect('delete-map-confirm')
+                return render(request, 'pixelspace/results.html', {'form': form,'form2':form2, 'Image': data_url})
     else:
         form = SaveForm()
-        return render(request, 'pixelspace/results.html', {'form': form, 'Image': data_url})
+        form2 = MapForm()
+        return render(request, 'pixelspace/results.html', {'form': form, 'form2':form2, 'Image': data_url})
+    #return render(request, 'pixelspace/results.html', {'form': form, 'Image': data_url})
+    '''
+    if request.method == 'POST':
+            print('testing1')
+            form2 = MapForm(request.POST)
+            if form2.is_valid():
+                print('testing')
+                deleteMap = form2.cleaned_data.get("deleteMap")
 
+                if deleteMap:
+                    print("testing3")
+                    return redirect('delete-map-confirm')
+
+
+            return render(request, 'pixelspace/results.html', {'form': form, 'Image': data_url})
+    else:
+        form = MapForm()
+        return render(request, 'pixelspace/results.html', {'form': form, 'Image': data_url})
+'''
 #login function
 def login(request):
     template = loader.get_template('pixelspace/login.html')
@@ -394,6 +421,12 @@ def pixelmap(request):
                     }
                 pixelmaps_collection.insert_one(pixelmap)
 
+                #if the user is logged in, add this generated pixelmap (its ID) to their account
+                if request.session['username']:
+                    username = request.session['username']
+                    users_collection.update_one({'username':username}, {'$push':{'pixelmap_ids':newest_map_id}})
+                    print("UPDATED")
+
                 print("PixelMap successfully created")
                 #return results(request, data_url, img)
                 return redirect('results')
@@ -427,6 +460,39 @@ def deleteConfirm(request):
             return redirect('/pixelspace')
 
     return render(request, 'pixelspace/delete-confirm.html', {'form':form})
+
+
+def deleteMapConfirm(request):
+    #currAcc = User.objects.get(username = request.user.username)
+    #check to make sure user is logged in
+    if not request.session['username']:
+        return redirect('/pixelspace')
+
+    username = request.session['username']
+
+    curr_account = users_collection.find_one(
+        {'username':username}
+    )
+
+    newest_map = pixelmaps_collection.find_one(
+        sort=[( '_id', pymongo.DESCENDING )]
+        )
+
+    mapID = newest_map['pixelmap_id']
+    #confirm that the map is deleted properly (the box is ticked)
+    form = confirmMapDeleteForm(request.POST)
+    if form.is_valid():
+        confirmMapDelete = form.cleaned_data.get("confirmMapDelete")
+        #delete from map and delete from user's owned maps array
+        if confirmMapDelete:
+            print("Successfully deleted Map", mapID)
+            pixelmaps_collection.delete_one({'pixelmap_id':mapID})
+            users_collection.update_one({'username':username}, {'$pop':{'pixelmap_ids':1}})
+
+            
+            return redirect('/pixelspace')
+
+    return render(request, 'pixelspace/delete-map-confirm.html', {'form':form})
 
 #Settings, currently has change password functionality
 def settings(request):

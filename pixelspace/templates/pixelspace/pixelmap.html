@@ -9,20 +9,48 @@
         <h1>Pixel Map</h1>
     </div>
 
-    <div class="container">
-        <form action="" method="post">
-            {% csrf_token %}
-            <label for="length"><h2>Length:</h2></label><br>
-            <input type="number" id="length" name="length"><br>
-            <label for="width"><h2>Width:</h2></label><br>
-            <input type="number" id="width" name="width">
-            <br><br>
-            <input type="checkbox" id="greyscale" name="greyscale">
-            <label for="greyscale"><h2>Greyscale?</h2></label><br>
-            <br><br>
-            <button class="button" type ="submit"> Generate</button>
-        </form>
+
+    <div class='flex-parent-element'>
+        <div class='flex-child-element'>
+            <div class="container">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <label for="length"><h2>Length:</h2></label><br>
+                    <input type="number" id="length" name="length"><br>
+                    <label for="width"><h2>Width:</h2></label><br>
+                    <input type="number" id="width" name="width">
+                    <br><br>
+                    <input type="checkbox" id="greyscale" name="greyscale">
+                    <label for="greyscale"><h2>Greyscale?</h2></label><br>
+
+            </div>
+        </div>
+        <div class='flex-child-element'>
+            <div class="container">
+
+                    <label for="custom"><h2>Check this box to enable custom ranges</h2></label><br>
+                    <input type="checkbox" id="custom" name="custom">
+                    <br><br>
+                    <h2>Lower and Upper Range for R (0-255):</h2>
+                    <input type="number" id="rrangeLow" name="rrangeLow">&nbsp;&nbsp;<input type="number" id="rrangeHigh" name="rrangeHigh"><br>
+                    <h2>Lower and Upper Range for G (0-255):</h2>
+                    <input type="number" id="grangeLow" name="grangeLow">&nbsp;&nbsp;<input type="number" id="grangeHigh" name="grangeHigh"><br>
+                    <h2>Lower and Upper Range for B (0-255):</h2>
+                    <input type="number" id="brangeLow" name="brangeLow">&nbsp;&nbsp;<input type="number" id="brangeHigh" name="brangeHigh"><br>
+                    <br><br>
+
+            </div>
+        </div>
+
+
+
+
+    
     </div>
+    <div class="containerB">
+        <button class ="button" type="submit">Generate</button>
+    </div>
+</form>
     
 
 

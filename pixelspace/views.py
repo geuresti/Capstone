@@ -9,7 +9,7 @@ import base64
 from http import HTTPStatus
 import os, sys
 from django.contrib.auth.decorators import login_required
-from .forms import AccountForm, UserForm, SettingsForm, LABForm, confirmDeleteForm, PixelForm, CreateAccountForm, SaveForm, MapForm, confirmMapDeleteForm
+from .forms import AccountForm, UserForm, SettingsForm, LABForm, confirmDeleteForm, PixelForm, CreateAccountForm, SaveForm, MapForm, confirmMapDeleteForm, CustomForm
 from django.contrib import messages
 from colormath.color_objects import LabColor, sRGBColor, AdobeRGBColor
 from colormath.color_objects import BT2020Color
@@ -363,18 +363,33 @@ def pixelmap(request):
     template = loader.get_template('pixelspace/pixelmap.html')
 
     #set username to username or guest username depending on if the user is logged in
-    if request.session['username']:
+    try:
+        request.session['username']
         username = request.session['username']
-    else:
+    except:
         username = "Guest_User"
     if request.method == 'POST':
             form = PixelForm(request.POST)
+            #form2 = CustomForm(request.POST)
             #acquire acquire length, width, and greyscale from user input
             if form.is_valid():
                 length = form.cleaned_data.get("length")
                 width = form.cleaned_data.get("width")
                 greyscale = form.cleaned_data.get("greyscale")
+
+                rrangeLow = form.cleaned_data.get("rrangeLow")
+                grangeLow = form.cleaned_data.get("grangeLow")
+                brangeLow = form.cleaned_data.get("brangeLow")
+
+                rrangeHigh = form.cleaned_data.get("rrangeHigh")
+                grangeHigh = form.cleaned_data.get("grangeHigh")
+                brangeHigh = form.cleaned_data.get("brangeHigh")
+
+                custom = form.cleaned_data.get("custom")
+
+
                 print("provided length:", length, "\nprovided width:", width)
+                print(custom, "provided length:", rrangeLow, "\nprovided width:", rrangeHigh)
 
                 #generate placeholder image in which to fill in with pixels
                 img = Image.new('RGB', [length,width], 'pink')
@@ -382,7 +397,17 @@ def pixelmap(request):
                 #the process is similar for if the maps are greyscale or color
                 #generate a random value between 1-255, and apply to rgb balues
                 #append onto a list of values, which then gets mapped to the image
-                if greyscale == True:
+                if custom == True:
+                    listCustom= [0] * (width * length )
+                    for x in range(width * length ):
+                        r = random.randint(rrangeLow,rrangeHigh)
+                        g = random.randint(grangeLow,grangeHigh)
+                        b = random.randint(brangeLow,brangeHigh)
+                        listCustom[x] = (r,g,b)
+                    img.putdata(listCustom)
+                    img.show()
+
+                elif greyscale == True:
                     listGrey= [0] * (width * length )
                     for x in range(width * length ):
                         Grey = random.randint(1,255)
@@ -422,10 +447,12 @@ def pixelmap(request):
                 pixelmaps_collection.insert_one(pixelmap)
 
                 #if the user is logged in, add this generated pixelmap (its ID) to their account
-                if request.session['username']:
+                try:
                     username = request.session['username']
                     users_collection.update_one({'username':username}, {'$push':{'pixelmap_ids':newest_map_id}})
                     print("UPDATED")
+                except:
+                    print("As Guest")
 
                 print("PixelMap successfully created")
                 #return results(request, data_url, img)
@@ -434,13 +461,15 @@ def pixelmap(request):
                 
     else:
         form = PixelForm()
+        
     return render(request, 'pixelspace/pixelmap.html', {'form':form})
 
 # need to tEST
 def deleteConfirm(request):
     #currAcc = User.objects.get(username = request.user.username)
-
-    if not request.session['username']:
+    try:
+        request.session['username']
+    except:
         return redirect('/pixelspace')
 
     username = request.session['username']
@@ -465,7 +494,9 @@ def deleteConfirm(request):
 def deleteMapConfirm(request):
     #currAcc = User.objects.get(username = request.user.username)
     #check to make sure user is logged in
-    if not request.session['username']:
+    try:
+        request.session['username']
+    except:
         return redirect('/pixelspace')
 
     username = request.session['username']

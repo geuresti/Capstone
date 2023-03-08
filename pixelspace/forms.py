@@ -29,7 +29,22 @@ class PixelForm(forms.Form):
     length = forms.IntegerField(label='length')
     width = forms.IntegerField(label='width')
     greyscale = forms.BooleanField(label='greyscale', required=False)
+    custom = forms.BooleanField(label='custom', required=False)
+    rrangeLow= forms.IntegerField(label='rrangeLow', required=False)
+    brangeLow= forms.IntegerField(label='brangeLow', required=False)
+    grangeLow= forms.IntegerField(label='grangeLow', required=False)
+    rrangeHigh= forms.IntegerField(label='rrangeHigh', required=False)
+    brangeHigh= forms.IntegerField(label='brangeHigh', required=False)
+    grangeHigh= forms.IntegerField(label='grangeHigh', required=False)
 
+class CustomForm(forms.Form):
+    custom = forms.BooleanField(label='custom', required=False)
+    rrangeLow= forms.IntegerField(label='rrangeLow', required=False)
+    brangeLow= forms.IntegerField(label='brangeLow', required=False)
+    grangeLow= forms.IntegerField(label='grangeLow', required=False)
+    rrangeHigh= forms.IntegerField(label='rrangeHigh', required=False)
+    brangeHigh= forms.IntegerField(label='brangeHigh', required=False)
+    grangeHigh= forms.IntegerField(label='grangeHigh', required=False)
 class SaveForm(forms.Form):
     png = forms.BooleanField(label='png', required=False)
     jpg = forms.BooleanField(label='jpg', required=False)

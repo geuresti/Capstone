@@ -398,11 +398,19 @@ def pixelmap(request):
                 #generate a random value between 1-255, and apply to rgb balues
                 #append onto a list of values, which then gets mapped to the image
                 if custom == True:
+                    colorRange = [rrangeLow,brangeLow,grangeLow,rrangeHigh,brangeHigh,grangeHigh]
+                    for item in range(len(colorRange)):
+                        if colorRange[item] == None and item < 3:
+                            print(colorRange[item])
+                            colorRange[item] = 1
+                        if colorRange[item] == None and item >= 3:
+                            print(colorRange[item])
+                            colorRange[item] = 255
                     listCustom= [0] * (width * length )
                     for x in range(width * length ):
-                        r = random.randint(rrangeLow,rrangeHigh)
-                        g = random.randint(grangeLow,grangeHigh)
-                        b = random.randint(brangeLow,brangeHigh)
+                        r = random.randint(colorRange[0],colorRange[3])
+                        g = random.randint(colorRange[2],colorRange[5])
+                        b = random.randint(colorRange[1],colorRange[4])
                         listCustom[x] = (r,g,b)
                     img.putdata(listCustom)
                     img.show()

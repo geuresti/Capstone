@@ -71,11 +71,13 @@ def colors(request):
             testing = [lightness1, axisA, axisB]
             print(testing)
             #format the Color to be a LAB
-            colorrr = Color("lab", testing)
-            print(colorrr)
+            colorRGB = Color("lab", testing)
+            colorsRGB = Color("lab", testing)
+            colorPro = Color("lab", testing)
+            print(colorPro)
             #check if color is in gamut (an appropriate conversion)
-            if colorrr.in_gamut('a98-rgb'):
-                rgbColor = colorrr.convert("a98-rgb")
+            if colorRGB.in_gamut('a98-rgb'):
+                rgbColor = colorRGB.convert("a98-rgb")
                 print(rgbColor)
                 rgbR = rgbColor['r'] * 255
                 rgbG = rgbColor['g'] * 255
@@ -86,31 +88,31 @@ def colors(request):
                 #format the color into a hex code for output
                 #and upscaled output on client request
                 hexCode = '#{:02x}{:02x}{:02x}'.format(round(rgbR),round(rgbG), round(rgbB))
-                deltaE = colorrr.delta_e(rgbColor, method="2000")
+                deltaE = colorRGB.delta_e(rgbColor, method="2000")
                 print(hexCode, rgbUpscale)
                 print(deltaE , "NEW RGB\n\n")
                 canRGB = True
             else:
                 print("Not in RGB Gamut")
-                before = colorrr.in_gamut("a98-rgb")
+                before = colorRGB.in_gamut("a98-rgb")
                 #fit color into correct gamut before continuing
-                colorrr.fit("a98-rgb")
-                after = colorrr.in_gamut("a98-rgb")
+                colorRGB.fit("a98-rgb")
+                after = colorRGB.in_gamut("a98-rgb")
                 print("before", before, "after", after)
                 canRGB = False
-                rgbColor = colorrr.convert("a98-rgb")
+                rgbColor = colorRGB.convert("a98-rgb")
                 rgbR = rgbColor['r'] * 255
                 rgbG = rgbColor['g'] * 255
                 rgbB = rgbColor['b'] * 255
                 #Upscale color on client request
                 hexCode = '#{:02x}{:02x}{:02x}'.format(round(rgbR),round(rgbG), round(rgbB))
                 rgbUpscale = "({},{},{})".format(round(rgbR),round(rgbG), round(rgbB) )
-                deltaE = colorrr.delta_e(rgbColor, method="2000")
+                deltaE = colorRGB.delta_e(rgbColor, method="2000")
                 print(hexCode, rgbUpscale)
                 print(deltaE , "NEW RGB\n\n")
             #check if color is in gamut (an appropriate conversion)
-            if colorrr.in_gamut('srgb'):
-                srgbColor = colorrr.convert("srgb")
+            if colorsRGB.in_gamut('srgb'):
+                srgbColor = colorsRGB.convert("srgb")
                 print(srgbColor)
                 srgbR = srgbColor['r'] * 255
                 srgbG = srgbColor['g'] * 255
@@ -121,31 +123,31 @@ def colors(request):
                 #format the color into a hex code for output
                 #and upscaled output on client request
                 shexCode = '#{:02x}{:02x}{:02x}'.format(round(srgbR),round(srgbG), round(srgbB))
-                deltaE = colorrr.delta_e(srgbColor, method="2000")
+                deltaE = colorsRGB.delta_e(srgbColor, method="2000")
                 cansRGB = True
                 print(shexCode, srgbUpscale)
                 print(deltaE , "NEW SRGB Y\n\n")
             else:
                 print("Not in sRGB Gamut")
-                before = colorrr.in_gamut('srgb')
+                before = colorsRGB.in_gamut('srgb')
                 #fit color into correct gamut before continuing
-                colorrr.fit('srgb')
-                after = colorrr.in_gamut('srgb')
+                colorsRGB.fit('srgb')
+                after = colorsRGB.in_gamut('srgb')
                 print("before", before, "after", after)
                 cansRGB = False
-                srgbColor = colorrr.convert("srgb")
+                srgbColor = colorsRGB.convert("srgb")
                 srgbR = srgbColor['r'] * 255
                 srgbG = srgbColor['g'] * 255
                 srgbB = srgbColor['b'] * 255
                 #Upscale color on client request
                 shexCode = '#{:02x}{:02x}{:02x}'.format(round(srgbR),round(srgbG), round(srgbB))
                 srgbUpscale = "({},{},{})".format(round(srgbR),round(srgbG), round(srgbB) )
-                deltaE = colorrr.delta_e(srgbColor, method="2000")
+                deltaE = colorsRGB.delta_e(srgbColor, method="2000")
                 print(shexCode, srgbUpscale)
                 print(deltaE , "NEW SRGB N\n\n")
             #check if color is in gamut (an appropriate conversion)
-            if colorrr.in_gamut('prophoto-rgb'):
-                ProPhotoColor = colorrr.convert("prophoto-rgb")
+            if colorPro.in_gamut('prophoto-rgb'):
+                ProPhotoColor = colorPro.convert("prophoto-rgb")
                 print(ProPhotoColor)
                 ProR = ProPhotoColor['r'] * 255
                 ProG = ProPhotoColor['g'] * 255
@@ -157,28 +159,28 @@ def colors(request):
                 #format the color into a hex code for output
                 #and upscaled output on client request
                 ProHexCode = '#{:02x}{:02x}{:02x}'.format(round(ProR),round(ProG), round(ProB))
-                deltaE = colorrr.delta_e(ProPhotoColor, method="2000")
+                deltaE = colorPro.delta_e(ProPhotoColor, method="2000")
                 print(ProHexCode, proUpscale)
                 print(deltaE , "NEW PROPHOTO\n\n")
             else:
                 print("Not in ProPhoto Gamut")
-                before = colorrr.in_gamut("prophoto-rgb")
+                before = colorPro.in_gamut("prophoto-rgb")
                 #fit color into correct gamut before continuing
-                colorrr.fit("prophoto-rgb")
-                after = colorrr.in_gamut("prophoto-rgb")
+                colorPro.fit("prophoto-rgb")
+                after = colorPro.in_gamut("prophoto-rgb")
                 print("before", before, "after", after)
                 canPro = False
-                ProPhotoColor = colorrr.convert("prophoto-rgb")
+                ProPhotoColor = colorPro.convert("prophoto-rgb")
                 ProR = ProPhotoColor['r'] * 255
                 ProG = ProPhotoColor['g'] * 255
                 ProB = ProPhotoColor['b'] * 255
                 #Upscale color on client request
                 ProHexCode = '#{:02x}{:02x}{:02x}'.format(round(ProR),round(ProG), round(ProB))
-                srgbUpscale = "({},{},{})".format(round(ProR),round(ProG), round(ProB) )
-                deltaE = colorrr.delta_e(ProPhotoColor, method="2000")
+                proUpscale = "({},{},{})".format(round(ProR),round(ProG), round(ProB) )
+                deltaE = colorPro.delta_e(ProPhotoColor, method="2000")
                 print(ProHexCode, proUpscale)
                 print(deltaE , "NEW PROPHOTO\n\n")
-
+            '''
             #Check to make sure that the hex codes outputted are valid hex codes / the conversion was successful
             shexCodeCheck = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', shexCode)
             if not shexCodeCheck:
@@ -194,7 +196,7 @@ def colors(request):
             if not ProHexCodeCheck:
                 ProHexCode = "#FFFFFF"
                 canPro = False
-
+            '''
             return render(request, 'pixelspace/colors.html', {'form':form, 'canRGB': canRGB, 'hexCode': hexCode, 'rgb' : rgbUpscale, 'cansRGB': cansRGB, 'shexCode': shexCode, 'srgb' : srgbUpscale, 'canPro': canPro, 'ProHexCode': ProHexCode, 'proUpscale' : proUpscale,})
     else:
         form=LABForm()

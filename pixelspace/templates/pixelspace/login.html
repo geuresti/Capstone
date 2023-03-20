@@ -10,14 +10,10 @@
     </div>
 
     <div class="containerB">
-        <form action="" method="post">
-            {% csrf_token %}
-            <label for="username"><h2>Username:</h2></label><br>
-            <input type="text" id="username" name="username"><br>
-            <label for="password"><h2>Password:</h2></label><br>
-            <input type="text" id="password" name="password">
-            <br><br>
-            <button class="button" type ="submit"> LOG IN</button>
+        <form id="django_form" action="" method="post">
+          {% csrf_token %}
+          {{ form }}
+          <button class="button" type ="submit"> LOG IN </button>
         </form>
     </div>
 

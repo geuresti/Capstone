@@ -34,8 +34,8 @@ body {
     /*background: pink url("images/cattoy.jpg") no-repeat;*/
     background: white;
     margin: 0;
-    
-   
+
+
 }
 
 .rectangle {
@@ -65,14 +65,14 @@ li a, .dropbtn {
 
   .dropdown:hover .dropdown-content {
     display: block;
-    
+
   }
   .dropdown-content {
     display: none;
     position: absolute;
     background-color: #9CC4E1;
     min-width: 0px;
-    
+
     box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
     z-index: 1;
   }
@@ -92,14 +92,14 @@ ul {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    
+
     background-color: #9CC4E1;
   }
 
   .img-container {
     text-align: center;
     margin: 0;
-    
+
   }
 
   .container {
@@ -113,9 +113,12 @@ ul {
     text-align: center;
   }
 
+  .containerB h3 {
+    margin-top: 10px;
+  }
 
   .button {
-    background-color: #9CC4E1; 
+    background-color: #9CC4E1;
     border: none;
     color: white;
     padding: 15px 32px;
@@ -129,8 +132,31 @@ ul {
   }
 
   .button:hover {
-    background-color: #9CC4E1; 
+    background-color: #9CC4E1;
     color: #406783;
+  }
+
+  #django_form {
+    font-family: 'Iceland-Regular';
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    margin-top: 15px;
+  }
+
+  #django_form input {
+    width: 20%;
+    padding: 10px 25px;
+    margin: 8px 10px;
+    box-sizing: border-box;
+    border: none;
+    background-color: #D9E5FC;
+    align-self: center;
+  }
+
+  #django_form button {
+    margin-top: 15px;
+    align-self: center;
   }
 
   input[type=text] {
@@ -143,6 +169,7 @@ ul {
     border: none;
     background-color: #D9E5FC;
     color: #406783;
+    justify-content: space-around;
   }
   input[type=number] {
     width: 30%;
@@ -171,12 +198,12 @@ ul {
 
   .flex-parent-element{
     display: flex;
-    width: 100%; 
+    width: 100%;
 
   }
   .flex-child-element {
     flex: 1;
-    width: 100%; 
+    width: 100%;
     margin: 10px;
   }
 

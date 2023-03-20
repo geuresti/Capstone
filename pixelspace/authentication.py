@@ -1,5 +1,6 @@
 from django.contrib.auth.backends import BaseBackend
 import pymongo
+import bcrypt
 
 connect_string = 'mongodb+srv://mongodb_dao:uC3wPbLm7AIhkOUL@cluster0.nem4zbs.mongodb.net/?retryWrites=true&w=majority'
 my_client = pymongo.MongoClient(connect_string)
@@ -16,8 +17,10 @@ class MongoAuthBackend(BaseBackend):
         collection = dbname[collection_name]
         user = collection.find_one({"username": username})
         if user:
-            if user['password'] == password:
-                return user
+            encoded_password = password.encode('utf-8')
+
+            if bcrypt.checkpw(encoded_password, user['password']):
+                    return user
         return None
 
     def login(self, request, user):

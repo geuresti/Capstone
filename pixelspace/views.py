@@ -5,11 +5,11 @@ from django.http import HttpResponseRedirect
 from .models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.contrib import messages
 import base64
 from http import HTTPStatus
 import os, sys
-from django.contrib.auth.decorators import login_required
-from .forms import AccountForm, UserForm, SettingsForm, LABForm, confirmDeleteForm, PixelForm, CreateAccountForm, SaveForm, MapForm, confirmMapDeleteForm, CustomForm
+from .forms import AccountForm, UserForm, SettingsForm, LABForm, confirmDeleteForm, PixelForm, SaveForm, MapForm, confirmMapDeleteForm, CustomForm
 from django.contrib import messages
 from colormath.color_objects import LabColor, sRGBColor, AdobeRGBColor
 from colormath.color_objects import BT2020Color
@@ -21,7 +21,8 @@ from PIL import Image
 import random
 from bson.binary import Binary
 import re
-from io import BytesIO  
+import bcrypt
+from io import BytesIO
 
 from .authentication import MongoAuthBackend
 
@@ -37,8 +38,6 @@ users_collection = dbname["users"]
 pixelmaps_collection = dbname["pixelmaps"]
 
 mongo_auth = MongoAuthBackend()
-
-# ! CAN'T use authenticate() WIP !
 
 def index(request):
 
@@ -218,7 +217,7 @@ def results(request):
     newest_map = pixelmaps_collection.find_one(
         sort=[( '_id', pymongo.DESCENDING )]
         )
-    
+
     data = newest_map['PixelMap']
     length = newest_map['length']
     width = newest_map['width']
@@ -240,7 +239,7 @@ def results(request):
     newImg.save(output, format="PNG")
     imgData = output.getvalue()
 
-    #encode the image data/ output of the image into base64 in order to pass it to an HTML page 
+    #encode the image data/ output of the image into base64 in order to pass it to an HTML page
     #and display the image to the user
     image_data = base64.b64encode(imgData)
     if not isinstance(image_data, str):
@@ -248,11 +247,11 @@ def results(request):
         image_data = image_data.decode()
 
     #format image data into HTML readable
-    data_url = 'data:image/jpg;base64,' + image_data   
+    data_url = 'data:image/jpg;base64,' + image_data
 
     #print(data_url)
     #data_url = 'data:image/jpg;base64,' + data
-    #print("TESTING" , data_url) 
+    #print("TESTING" , data_url)
     #binaryMap = newest_map[pixelmap]
 
     #if the saving form is valid, proceed
@@ -306,8 +305,9 @@ def results(request):
         form = MapForm()
         return render(request, 'pixelspace/results.html', {'form': form, 'Image': data_url})
 '''
-#login function
+
 def login(request):
+
     template = loader.get_template('pixelspace/login.html')
     if request.method == 'POST':
         form = UserForm(request.POST)
@@ -323,6 +323,7 @@ def login(request):
             if user:
                 # log user into the session
                 mongo_auth.login(request, user)
+                #messages.success(request, "LOGGED IN ALERT") # DOES NOT WORK !!!!!!!!!!!!!!!
                 print("Successfully logged in user:", user['username'])
                 return redirect('/pixelspace')
             else:
@@ -468,10 +469,10 @@ def pixelmap(request):
                 #return results(request, data_url, img)
                 return redirect('results')
                 #return render(request, 'pixelspace/results.html', {'form':form, 'Image': data_url})
-                
+
     else:
         form = PixelForm()
-        
+
     return render(request, 'pixelspace/pixelmap.html', {'form':form})
 
 # need to tEST
@@ -530,7 +531,7 @@ def deleteMapConfirm(request):
             pixelmaps_collection.delete_one({'pixelmap_id':mapID})
             users_collection.update_one({'username':username}, {'$pop':{'pixelmap_ids':1}})
 
-            
+
             return redirect('/pixelspace')
 
     return render(request, 'pixelspace/delete-map-confirm.html', {'form':form})
@@ -580,16 +581,17 @@ def settings(request):
 def create_account(request):
     template = loader.get_template('pixelspace/create_account.html')
     if request.method == 'POST':
-        form = CreateAccountForm(request.POST)
+        form = AccountForm(request.POST)
         if form.is_valid():
-            #obtain the new username and new password information from the form
-            new_username = form.cleaned_data.get("newUser")
-            new_password = form.cleaned_data.get("newPass")
-            confirm_password = form.cleaned_data.get("confirmPass")
+            # obtain the new username and new password information from the form
+            new_username = form.cleaned_data.get("username")
+            new_password = form.cleaned_data.get("password")
+            confirm_password = form.cleaned_data.get("confirm_password")
+            new_email = form.cleaned_data.get("email")
 
             # ! ERROR CHECK INPUT HERE (or in form?) !
 
-            print(new_username, new_password, confirm_password)
+            print(f'NEW USER: {new_username} \n NEW_PASS: {new_password} \n CON_PASS: {confirm_password} \n EMAIL: {new_email}')
 
             already_exists = users_collection.find_one(
                 {'username':new_username}
@@ -608,12 +610,15 @@ def create_account(request):
 
                 new_user_id = int(newest_user["user_id"]) + 1
 
+                encrypted_password = new_password.encode('utf-8')
+                hashed_password = bcrypt.hashpw(encrypted_password, bcrypt.gensalt(10))
+
                 new_user = {
                     "user_id": new_user_id,
                     "username" : new_username,
-                    "password" : new_password,
+                    "password" : hashed_password,
                     "pixelmap_ids": [],
-                    "email" : "bag@gmail.com",
+                    "email" : new_email,
                 }
 
                 users_collection.insert_one(new_user)
@@ -627,6 +632,6 @@ def create_account(request):
 
             return redirect('/pixelspace/login')
     else:
-        form=UserForm()
+        form=AccountForm()
 
     return render(request, 'pixelspace/create_account.html', {'form':form})

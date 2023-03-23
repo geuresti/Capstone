@@ -1,5 +1,6 @@
 from django.test import TestCase
 from pixelspace import authentication as auth
+import bcrypt
 import pymongo
 
 connect_string = 'mongodb+srv://mongodb_dao:uC3wPbLm7AIhkOUL@cluster0.nem4zbs.mongodb.net/?retryWrites=true&w=majority'
@@ -19,10 +20,13 @@ class ViewTests(TestCase):
 
     def setUp(self):
         # Set up user document to use in all tests
+        encoded_password = "password".encode('utf-8')
+        encrypted_password = bcrypt.hashpw(encoded_password, bcrypt.gensalt(10))
+
         user = {
             "user_id": "999",
             "username" : "Lod",
-            "password" : "password",
+            "password" : encrypted_password,
             "email" : "lod@gmail.com",
         }
 
@@ -31,7 +35,9 @@ class ViewTests(TestCase):
 
     def tearDown(self):
         # Delete dummy test account once tests are done
-        delete_data = collection.delete_one({'user_id':'999'})
+        #delete_data = collection.delete_one({'user_id':'999'})
+
+        collection.delete_many({})
 
     def test_index_view(self):
         response = self.client.get('/pixelspace/')
@@ -87,11 +93,11 @@ class ViewTests(TestCase):
 
     # logs in user from main db
     def test_login_view_with_credentials(self):
-        response = self.client.post('/pixelspace/login', {'username': 'Gol', 'password': 'password'})
+        response = self.client.post('/pixelspace/login', {'username': 'Tak', 'password': 'password123'})
         self.assertEqual(response.status_code, 302)
 
     def test_login_view_with_bad_credentials(self):
-        response = self.client.post('/pixelspace/login', {'username': 'Wal', 'password': 'password'})
+        response = self.client.post('/pixelspace/login', {'username': 'Tak', 'password': 'asodkoakds'})
         self.assertEqual(response.status_code, 400)
 
     def test_pixel_map_view(self):
@@ -111,7 +117,56 @@ class ViewTests(TestCase):
         response = self.client.get('/pixelspace/create-account')
         self.assertEqual(response.status_code, 200)
 
+    def test_create_account_view_new_user(self):
+        mongo_auth.create_account("Jeff", "password", "jeff@gmail.com")
+        user = mongo_auth.authenticate("test_users", username="Jeff", password="password")
+
+        self.assertIsNotNone(user)
+
+    def test_create_account_view_new_user(self):
+        response = self.client.post('/pixelspace/create-account', {
+            "username":"Jeff",
+            "password":"ghj",
+            "confirm_password":"asd",
+            "email":"jeff@gmail.com"
+        })
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_create_account_valid_arguments(self):
+        response = self.client.post('/pixelspace/create-account', {
+            "username":"ckoisjpowkfekpor",
+            "password":"mkmk",
+            "confirm_password":"mkmk",
+            "email":"ckoisjpowkfekpor@gmail.com"
+        })
+
+        mongo_auth.delete_user("ckoisjpowkfekpor", "users")
+
+        self.assertEqual(response.status_code, 302)
+
+    def test_create_account_invalid_arguments(self):
+        response = self.client.post('/pixelspace/create-account', {
+            "username":"ckoisjpowkfekpor",
+            "password":"asdasd",
+            "confirm_password":"mkmk",
+            "email":"ckoisjpowkfekpor@gmail.com"
+        })
+
+        #mongo_auth.delete_user("ckoisjpowkfekpor", "users")
+
+        self.assertEqual(response.status_code, 302)
+
     def test_logout_view(self):
         response = self.client.get('/pixelspace/logout')
         # no account is logged in; redirect to index page
         self.assertEqual(response.status_code, 302)
+
+    def test_results_view(self):
+        response = self.client.get('/pixelspace/results')
+        self.assertEqual(response.status_code, 200)
+
+#    def test_results_view_with_arguments(self):
+#        response = self.client.post('/pixelspace/results', {"newPassword":"password", "retypePassword":"password", "deleteAccount":False})
+#
+#        self.assertEqual(response.status_code, 200)

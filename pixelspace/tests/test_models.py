@@ -1,7 +1,6 @@
 from django.test import TestCase
-
 from pixelspace import authentication as auth
-
+import bcrypt
 import pymongo
 
 connect_string = 'mongodb+srv://mongodb_dao:uC3wPbLm7AIhkOUL@cluster0.nem4zbs.mongodb.net/?retryWrites=true&w=majority'
@@ -17,11 +16,14 @@ mongo_auth = auth.MongoAuthBackend()
 class UserModelTest(TestCase):
 
     def setUp(self):
+        encoded_password = "password".encode('utf-8')
+        encrypted_password = bcrypt.hashpw(encoded_password, bcrypt.gensalt(10))
+
         # Set up user document to use in all tests
         user = {
             "user_id": "999",
             "username" : "Lod",
-            "password" : "password",
+            "password" : encrypted_password,
             "email" : "lod@gmail.com",
         }
 
@@ -39,10 +41,13 @@ class UserModelTest(TestCase):
     def test_user_already_exists(self):
         username = "Lod"
 
+        encoded_password = "password".encode('utf-8')
+        encrypted_password = bcrypt.hashpw(encoded_password, bcrypt.gensalt(10))
+
         user = {
             "user_id": "55",
             "username" : username,
-            "password" : "password",
+            "password" : encrypted_password,
             "email" : "lod123@gmail.com",
         }
 

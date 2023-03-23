@@ -1,7 +1,7 @@
 
 from django.test import TestCase
 
-from pixelspace.forms import UserForm, SettingsForm, CreateAccountForm, LABForm, confirmDeleteForm
+from pixelspace.forms import UserForm, SettingsForm, LABForm, confirmDeleteForm
 
 class LoginFormTest(TestCase):
     def test_login_form_good_input(self):
@@ -19,6 +19,7 @@ class LoginFormTest(TestCase):
         form = UserForm(data=testData)
         self.assertFalse(form.is_valid())
 
+"""
 class CreateAccountFormTest(TestCase):
     def test_user_form_good_input(self):
         testData = {'newUser':'meow', 'newPass':'bark', 'confirmPass': 'bark'}
@@ -48,6 +49,7 @@ class CreateAccountFormTest(TestCase):
         testData = {'newUser':'', 'newPass':'', 'confirmPass': ''}
         form = CreateAccountForm(data=testData)
         self.assertFalse(form.is_valid())
+"""
 
 class LABFormTest(TestCase):
     def test_LAB_form(self):

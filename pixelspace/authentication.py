@@ -5,7 +5,6 @@ import bcrypt
 connect_string = 'mongodb+srv://mongodb_dao:uC3wPbLm7AIhkOUL@cluster0.nem4zbs.mongodb.net/?retryWrites=true&w=majority'
 my_client = pymongo.MongoClient(connect_string)
 dbname = my_client['pixelspace']
-users_collection = dbname["users"]
 
 # django.contrib.auth authenticate does not work because
 # djang Users have an attribute ".backend" which keeps track
@@ -26,8 +25,46 @@ class MongoAuthBackend(BaseBackend):
     def login(self, request, user):
         request.session['username'] = user['username']
 
+    def change_password(self, collection_name="users", username=None, new_password=None):
+        if username and new_password:
+            collection = dbname[collection_name]
+            user = collection.find_one({"username": username})
+
+            if user:
+                encrypted_password = new_password.encode('utf-8')
+                hashed_password = bcrypt.hashpw(encrypted_password, bcrypt.gensalt(10))
+
+                collection.update_one({'username':username}, {'$set':{'password':hashed_password}})
+
+    def delete_user(self, username, collection_name="test_users"):
+        collection = dbname[collection_name]
+        collection.delete_one({'username':username})
+        print("Successfully deleted user:", username)
+
+    def create_account(self, username, password, email, collection_name="test_users"):
+        collection = dbname[collection_name]
+        newest_user = collection.find_one(
+            sort=[( '_id', pymongo.DESCENDING )]
+        )
+
+        new_user_id = int(newest_user["user_id"]) + 1
+
+        encoded_password = password.encode('utf-8')
+        encrypted_password = bcrypt.hashpw(encoded_password, bcrypt.gensalt(10))
+
+        new_user = {
+            "user_id": new_user_id,
+            "username" : username,
+            "password" : encrypted_password,
+            "pixelmap_ids": [],
+            "email" : email,
+        }
+
+        collection.insert_one(new_user)
+        print("Account successfully created")
+
     @classmethod
-    def already_exists(self, collection_name="users", username=None):
+    def already_exists(self, collection_name="test_users", username=None):
         collection = dbname[collection_name]
         user = collection.find_one({"username": username})
         if user:

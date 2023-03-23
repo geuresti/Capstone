@@ -306,6 +306,7 @@ def results(request):
         return render(request, 'pixelspace/results.html', {'form': form, 'Image': data_url})
 '''
 
+# MESSAGES WIP
 def login(request):
 
     template = loader.get_template('pixelspace/login.html')
@@ -323,7 +324,9 @@ def login(request):
             if user:
                 # log user into the session
                 mongo_auth.login(request, user)
-                #messages.success(request, "LOGGED IN ALERT") # DOES NOT WORK !!!!!!!!!!!!!!!
+                #messages.success(request, "LOGGED IN ALERT") # WIP !!!!!!!!!!!
+                messages.add_message(request, messages.SUCCESS, 'Sucessfully Logged In') #, extra_tags='login_alert')
+
                 print("Successfully logged in user:", user['username'])
                 return redirect('/pixelspace')
             else:
@@ -493,14 +496,13 @@ def deleteConfirm(request):
     if form.is_valid():
         confirmDelete = form.cleaned_data.get("confirmDelete")
         if confirmDelete:
-            print("Successfully deleted user:", username)
-            users_collection.delete_one({'username':username})
+            #users_collection.delete_one({'username':username})
+            mongo_auth.delete_user(username, "users")
 
             del request.session['username']
             return redirect('/pixelspace')
 
     return render(request, 'pixelspace/delete-confirm.html', {'form':form})
-
 
 def deleteMapConfirm(request):
     #currAcc = User.objects.get(username = request.user.username)
@@ -554,18 +556,16 @@ def settings(request):
                         {'username':username}
                     )
 
+                # user can confirm that they want to delete their account
                 if deleteAccount:
-                    # ! ASK USER TO CONFIRM THAT THEY WANT TO DELETE FIRST !
                     return redirect('delete-confirm')
 
                 #if the password matches the confirmation password, go through with the change
                 if changedPassword and changedPassword == retypePassword:
 
-                    # ! ERROR CHECK NEW PASSWORDS HERE !
-
                     print("* The new passwords match *")
                     #when the password is changed, log user out and direct them to the homepage
-                    users_collection.update_one({'username':username}, {'$set':{'password':changedPassword}})
+                    mongo_auth.change_password("users", username, changedPassword)
                     print("Successfully updated settings for:", username)
                     return logout(request)
                 else:
@@ -593,37 +593,19 @@ def create_account(request):
 
             print(f'NEW USER: {new_username} \n NEW_PASS: {new_password} \n CON_PASS: {confirm_password} \n EMAIL: {new_email}')
 
-            already_exists = users_collection.find_one(
-                {'username':new_username}
-            )
-
-            if already_exists:
+            if mongo_auth.already_exists("users", new_username):
                 # ! DISPLAY ERROR NOTIFICATION TO USER !
-                print("ERROR: An account with this username already exists")
+                print("An Account with that Username Already Exists")
                 return redirect('create-account')
 
             # If the input is valid, create a new user
             elif new_password == confirm_password:
-                newest_user = users_collection.find_one(
-                    sort=[( '_id', pymongo.DESCENDING )]
+                mongo_auth.create_account(
+                    new_username,
+                    new_password,
+                    new_email,
+                    "users"
                 )
-
-                new_user_id = int(newest_user["user_id"]) + 1
-
-                encrypted_password = new_password.encode('utf-8')
-                hashed_password = bcrypt.hashpw(encrypted_password, bcrypt.gensalt(10))
-
-                new_user = {
-                    "user_id": new_user_id,
-                    "username" : new_username,
-                    "password" : hashed_password,
-                    "pixelmap_ids": [],
-                    "email" : new_email,
-                }
-
-                users_collection.insert_one(new_user)
-
-                print("Account successfully created")
                 return redirect('login')
             else:
                 print("Error: passwords did not match")

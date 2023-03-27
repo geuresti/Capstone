@@ -32,6 +32,9 @@
             <br><br>
             <form action="" method="post">
                 {% csrf_token %}
+
+                <input type="checkbox" id="submitMap" name="submitMap">
+                <label for="submitMap"><h2>Submit Map to Gallery</h2></label><br>
                 <input type="checkbox" id="deleteMap" name="deleteMap">
                 <label for="deleteMap"><h2>Delete Map</h2></label><br>
                 <br><br>

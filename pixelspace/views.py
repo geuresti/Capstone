@@ -36,6 +36,8 @@ dbname = my_client['pixelspace']
 # get collection name (create new collection if it doesn't exist)
 users_collection = dbname["users"]
 pixelmaps_collection = dbname["pixelmaps"]
+gallery_collection = dbname["gallery"]
+comments_collection = dbname["comment"]
 
 mongo_auth = MongoAuthBackend()
 
@@ -219,22 +221,52 @@ def URLConverter(img):
     print(data_url)
     return data_url
 
-def image(request):
-    template = loader.get_template('pixelspace/image.html')
-    #return HttpResponse(template.render(request))
-    latest_question_list = [1]
-    context = {
-        'latest_question_list': latest_question_list,
-    }
-    return HttpResponse(template.render(context, request))
 
+def image(request):
+    #locate gallery
+    currGallery = gallery_collection.find_one(
+        {'gallery':0}
+    )
+    #get dictionary
+    urlID = {}
+    arrayOfURLs = []
+    #for every image that has been posted to the gallery
+    for item in currGallery['gallery_images']:
+        currMap = pixelmaps_collection.find_one(
+        {'pixelmap_id':item}
+        )
+
+        mapWidth = currMap['width']
+        print(mapWidth)
+        data = currMap['PixelMap']
+        length = currMap['length']
+        width = currMap['width']
+        #take the binary encoding of the image and translate it back into an image object
+        newImg = Image.frombytes("RGB",(length,width), data)
+        #print(newImg)
+
+        
+        data_url = URLConverter(newImg)
+        arrayOfURLs.append(data_url)
+        #urlID.add(item,data_url)
+
+        #Add to the dictionary of IDs and HTML readable URL to display
+        urlID[item] = data_url  
+    #print(len(arrayOfURLs))
+    print(urlID.keys())
+    #print(urlID.values())
+
+
+    return render(request, 'pixelspace/image.html', {'gallery': urlID})
+
+#processes the results of the pixelmap generation and displays it on a new page
 #processes the results of the pixelmap generation and displays it on a new page
 def results(request):
     #grab the most recent pixelmap added to the database (the current one)
     newest_map = pixelmaps_collection.find_one(
         sort=[( '_id', pymongo.DESCENDING )]
         )
-
+    
     data = newest_map['PixelMap']
     length = newest_map['length']
     width = newest_map['width']
@@ -249,10 +281,15 @@ def results(request):
     '''
     #take the binary encoding of the image and translate it back into an image object
     newImg = Image.frombytes("RGB",(length,width), data)
+    #print(newImg)
 
     #format image data into HTML readable
-    data_url = URLConverter(newImg)
+    data_url = URLConverter(newImg)  
 
+    #print(data_url)
+    #data_url = 'data:image/jpg;base64,' + data
+    #print("TESTING" , data_url) 
+    #binaryMap = newest_map[pixelmap]
 
     #if the saving form is valid, proceed
     if request.method == 'POST':
@@ -266,6 +303,7 @@ def results(request):
                 saveTIF = form.cleaned_data.get("tif")
 
                 deleteMap = form2.cleaned_data.get("deleteMap")
+                submitMap = form2.cleaned_data.get("submitMap")
 
                 #check to see what formats the user wants to save in, and make the necessary image saves
                 if savePNG:
@@ -278,6 +316,22 @@ def results(request):
                     newImg.save("image.tiff")
                     print("tiff saved")
                 #if map delete is true, delete the map
+                print("BEFORE SUBMIT", submitMap, deleteMap)
+                if submitMap:
+                    print("submitting...")
+                    try:
+                        request.session['username']
+                        #insert pixelmap into database
+                        newest_map = pixelmaps_collection.find_one(
+                                sort=[( '_id', pymongo.DESCENDING )]
+                        )
+                        mapID = newest_map['pixelmap_id']
+                        gallery_collection.update_one({'gallery':0}, {'$push':{'gallery_images':mapID}})
+                        return redirect('image')
+
+                    except:
+                        return redirect('/pixelspace')
+
                 if deleteMap:
                     print("testing3")
                     return redirect('delete-map-confirm')
@@ -287,6 +341,7 @@ def results(request):
         form2 = MapForm()
         return render(request, 'pixelspace/results.html', {'form': form, 'form2':form2, 'Image': data_url})
     #return render(request, 'pixelspace/results.html', {'form': form, 'Image': data_url})
+
     '''
     if request.method == 'POST':
             print('testing1')

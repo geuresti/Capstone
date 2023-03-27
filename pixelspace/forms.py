@@ -47,6 +47,7 @@ class SaveForm(forms.Form):
 
 class MapForm(forms.Form):
     deleteMap = forms.BooleanField(label='deleteMap', required=False)
+    submitMap = forms.BooleanField(label='submitMap', required=False)
 
 
 class confirmDeleteForm(forms.Form):

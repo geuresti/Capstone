@@ -202,6 +202,23 @@ def colors(request):
 
     return render(request, 'pixelspace/colors.html', {'form':form})
 
+def URLConverter(img):
+    output = BytesIO()
+    img.save(output, format="PNG")
+    imgData = output.getvalue()
+
+    #encode the image data/ output of the image into base64 in order to pass it to an HTML page 
+    #and display the image to the user
+    image_data = base64.b64encode(imgData)
+    if not isinstance(image_data, str):
+        # Python 3, decode from bytes to string
+        image_data = image_data.decode()
+
+    #format image data into HTML readable
+    data_url = 'data:image/jpg;base64,' + image_data  
+    print(data_url)
+    return data_url
+
 def image(request):
     template = loader.get_template('pixelspace/image.html')
     #return HttpResponse(template.render(request))
@@ -232,27 +249,10 @@ def results(request):
     '''
     #take the binary encoding of the image and translate it back into an image object
     newImg = Image.frombytes("RGB",(length,width), data)
-    #print(newImg)
-
-    #save the image to be encoded into base64
-    output = BytesIO()
-    newImg.save(output, format="PNG")
-    imgData = output.getvalue()
-
-    #encode the image data/ output of the image into base64 in order to pass it to an HTML page
-    #and display the image to the user
-    image_data = base64.b64encode(imgData)
-    if not isinstance(image_data, str):
-        # Python 3, decode from bytes to string
-        image_data = image_data.decode()
 
     #format image data into HTML readable
-    data_url = 'data:image/jpg;base64,' + image_data
+    data_url = URLConverter(newImg)
 
-    #print(data_url)
-    #data_url = 'data:image/jpg;base64,' + data
-    #print("TESTING" , data_url)
-    #binaryMap = newest_map[pixelmap]
 
     #if the saving form is valid, proceed
     if request.method == 'POST':

@@ -1,0 +1,51 @@
+{% extends 'pixelspace/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<head>
+    <base href="/pixelspace/">
+</head>
+
+    <div class="container">
+        <img src="{% static 'pixelspace/images/banner2.png' %}" width="900" height="170">
+        <h1>Gallery</h1>
+    </div>
+
+    <div class="containerB">
+    
+
+    <img src="{{dataURL}}">
+
+
+
+    </div> 
+
+    {% for author, comment in commentAuthor %}
+    <h2>{{author}} : {{comment}}</h2>
+    {% endfor %}
+
+    <div class="containerB">
+    <form action="" method="post">
+        {% csrf_token %}
+        <label for="content"><h2>Post a Comment:</h2></label><br>
+        <input type="text" id="content" name="content"><br>
+        <br><br>
+        <button class="button" type ="submit"> POST</button>
+        </form>
+
+        <br><br>
+
+        <form action='' method='POST'>
+            {% csrf_token %}
+            <input type="hidden" id="IDofMap" name="IDofMap" value= {{mapID}}>
+            <input type="hidden" id="commentAuthor" name="commentAuthor" value= {{commentAuthor}}>
+            <input type="hidden" id="dataURL" name="dataURL" value= {{dataURL}}>
+            <button class='button' type='submit'> ♥ Like ({{currMapLikes}}) </button>
+            </form>
+    </div>
+
+
+
+{% endblock %}

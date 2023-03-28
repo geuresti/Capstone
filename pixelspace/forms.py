@@ -49,6 +49,15 @@ class MapForm(forms.Form):
     deleteMap = forms.BooleanField(label='deleteMap', required=False)
     submitMap = forms.BooleanField(label='submitMap', required=False)
 
+class commentForm(forms.Form):
+    content = forms.CharField(label='content')
+
+class LikeForm(forms.Form):
+    IDofMap = forms.IntegerField(widget=forms.HiddenInput())
+    commentAuthor = forms.CharField(widget=forms.HiddenInput())
+    dataURL = forms.CharField(widget=forms.HiddenInput())
+
+
 
 class confirmDeleteForm(forms.Form):
     confirmDelete = forms.BooleanField(label='confirmDelete', required=False)

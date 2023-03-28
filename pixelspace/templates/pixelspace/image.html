@@ -15,7 +15,7 @@
 
     <div class="containerB">
     {% for key, value in gallery.items %}
-    <img src="{{value}}" width="200" height="200"></a>
+    <a href="{% url 'detail' key %}"><img src="{{value}}" width="200" height="200"></a>
     {% endfor %}
 </div>
 

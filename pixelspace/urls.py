@@ -16,4 +16,5 @@ urlpatterns = [
     path('delete-confirm', views.deleteConfirm, name='delete-confirm'),
     path('delete-map-confirm', views.deleteMapConfirm, name='delete-map-confirm'),
     path('results', views.results, name='results'),
+    path('detail/<int:map_id>/', views.detail, name='detail'),
 ]

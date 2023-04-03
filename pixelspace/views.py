@@ -93,6 +93,7 @@ def colors(request):
                 print(hexCode, rgbUpscale)
                 print(deltaE , "NEW RGB\n\n")
                 canRGB = True
+                canRGBText = "Convertible"
             else:
                 print("Not in RGB Gamut")
                 before = colorRGB.in_gamut("a98-rgb")
@@ -101,6 +102,7 @@ def colors(request):
                 after = colorRGB.in_gamut("a98-rgb")
                 print("before", before, "after", after)
                 canRGB = False
+                canRGBText = "Unconvertible"
                 rgbColor = colorRGB.convert("a98-rgb")
                 rgbR = rgbColor['r'] * 255
                 rgbG = rgbColor['g'] * 255
@@ -126,6 +128,7 @@ def colors(request):
                 shexCode = '#{:02x}{:02x}{:02x}'.format(round(srgbR),round(srgbG), round(srgbB))
                 deltaE = colorsRGB.delta_e(srgbColor, method="2000")
                 cansRGB = True
+                cansRGBText = "Convertible"
                 print(shexCode, srgbUpscale)
                 print(deltaE , "NEW SRGB Y\n\n")
             else:
@@ -136,6 +139,7 @@ def colors(request):
                 after = colorsRGB.in_gamut('srgb')
                 print("before", before, "after", after)
                 cansRGB = False
+                cansRGBText = "Unconvertible"
                 srgbColor = colorsRGB.convert("srgb")
                 srgbR = srgbColor['r'] * 255
                 srgbG = srgbColor['g'] * 255
@@ -155,6 +159,7 @@ def colors(request):
                 ProB = ProPhotoColor['b'] * 255
                 #print(rgbR,rgbG, rgbB )
                 canPro = True
+                canProText = "Convertible"
                 proUpscale = "({},{},{})".format(round(ProR),round(ProG), round(ProB) )
                 print(proUpscale)
                 #format the color into a hex code for output
@@ -171,6 +176,7 @@ def colors(request):
                 after = colorPro.in_gamut("prophoto-rgb")
                 print("before", before, "after", after)
                 canPro = False
+                canProText = "Unconvertible"
                 ProPhotoColor = colorPro.convert("prophoto-rgb")
                 ProR = ProPhotoColor['r'] * 255
                 ProG = ProPhotoColor['g'] * 255
@@ -198,7 +204,7 @@ def colors(request):
                 ProHexCode = "#FFFFFF"
                 canPro = False
             '''
-            return render(request, 'pixelspace/colors.html', {'form':form, 'canRGB': canRGB, 'hexCode': hexCode, 'rgb' : rgbUpscale, 'cansRGB': cansRGB, 'shexCode': shexCode, 'srgb' : srgbUpscale, 'canPro': canPro, 'ProHexCode': ProHexCode, 'proUpscale' : proUpscale,})
+            return render(request, 'pixelspace/colors.html', {'form':form, 'canRGB': canRGBText, 'hexCode': hexCode, 'rgb' : rgbUpscale, 'cansRGB': cansRGBText, 'shexCode': shexCode, 'srgb' : srgbUpscale, 'canPro': canProText, 'ProHexCode': ProHexCode, 'proUpscale' : proUpscale,})
     else:
         form=LABForm()
 
@@ -231,7 +237,7 @@ def image(request):
     urlID = {}
     arrayOfURLs = []
     #for every image that has been posted to the gallery
-    for item in currGallery['gallery_images']:
+    for item in reversed(currGallery['gallery_images']):
         currMap = pixelmaps_collection.find_one(
         {'pixelmap_id':item}
         )

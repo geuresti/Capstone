@@ -209,7 +209,7 @@ def URLConverter(img):
     img.save(output, format="PNG")
     imgData = output.getvalue()
 
-    #encode the image data/ output of the image into base64 in order to pass it to an HTML page 
+    #encode the image data/ output of the image into base64 in order to pass it to an HTML page
     #and display the image to the user
     image_data = base64.b64encode(imgData)
     if not isinstance(image_data, str):
@@ -217,7 +217,7 @@ def URLConverter(img):
         image_data = image_data.decode()
 
     #format image data into HTML readable
-    data_url = 'data:image/jpg;base64,' + image_data  
+    data_url = 'data:image/jpg;base64,' + image_data
     print(data_url)
     return data_url
 
@@ -245,13 +245,13 @@ def image(request):
         newImg = Image.frombytes("RGB",(length,width), data)
         #print(newImg)
 
-        
+
         data_url = URLConverter(newImg)
         arrayOfURLs.append(data_url)
         #urlID.add(item,data_url)
 
         #Add to the dictionary of IDs and HTML readable URL to display
-        urlID[item] = data_url  
+        urlID[item] = data_url
     #print(len(arrayOfURLs))
     print(urlID.keys())
     #print(urlID.values())
@@ -266,7 +266,7 @@ def results(request):
     newest_map = pixelmaps_collection.find_one(
         sort=[( '_id', pymongo.DESCENDING )]
         )
-    
+
     data = newest_map['PixelMap']
     length = newest_map['length']
     width = newest_map['width']
@@ -284,11 +284,11 @@ def results(request):
     #print(newImg)
 
     #format image data into HTML readable
-    data_url = URLConverter(newImg)  
+    data_url = URLConverter(newImg)
 
     #print(data_url)
     #data_url = 'data:image/jpg;base64,' + data
-    #print("TESTING" , data_url) 
+    #print("TESTING" , data_url)
     #binaryMap = newest_map[pixelmap]
 
     #if the saving form is valid, proceed
@@ -393,13 +393,13 @@ def detail(request, map_id):
         )
 
         newest_comment_id = int(newestComment["ID"]) + 1
-        
+
         #Find the current comments that are already on the submission
         currComments = comments_collection.find(
         {'pixelmap_id':mapID}
         )
 
-        #Create a list of tuples with the author name and the content of the comment 
+        #Create a list of tuples with the author name and the content of the comment
         #since multiple people can leave the same comment, and a person can leave more than one comment
         #a dictionary is infeasible for this task
         for item in currComments:
@@ -409,7 +409,7 @@ def detail(request, map_id):
 
         for a,b in commentAuthor:
             print(a,b)
-            
+
         #retrieve current amount of likes to be displayed
         currMap = pixelmaps_collection.find_one(
             {'pixelmap_id':mapID}
@@ -427,12 +427,12 @@ def detail(request, map_id):
                 currMapLikes = currMapLikes + 1
                 pixelmaps_collection.update_one({'pixelmap_id':mapID}, {'$set':{'likes':currMapLikes}})
                 return render(request, 'pixelspace/detail.html', {'form':form ,'form2':form2 ,'mapID':mapID, 'dataURL': data_url, 'commentAuthor': commentAuthor, 'currMapLikes': currMapLikes})
-            
+
             #if the button is not pressed, return empty form
             elif not form2.is_valid():
                 form2 = LikeForm()
 
-            #handles commenting 
+            #handles commenting
             if form.is_valid():
                 #get content from user, and add a comment to the database
                 content = form.cleaned_data.get("content")
@@ -712,7 +712,6 @@ def settings(request):
 
                 #if the password matches the confirmation password, go through with the change
                 if changedPassword and changedPassword == retypePassword:
-
                     print("* The new passwords match *")
                     #when the password is changed, log user out and direct them to the homepage
                     mongo_auth.change_password("users", username, changedPassword)

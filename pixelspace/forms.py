@@ -11,8 +11,9 @@ class UserForm(forms.Form):
     password = forms.CharField(widget=forms.PasswordInput, label='password', max_length=100)
 
 class SettingsForm(forms.Form):
-    newPassword = forms.CharField(label='newPassword', max_length=100, required=False)
-    retypePassword = forms.CharField(label='retypePassword', max_length=100, required=False)
+    newPassword = forms.CharField(widget=forms.PasswordInput, label='newPassword', max_length=100)
+    retypePassword = forms.CharField(widget=forms.PasswordInput, label='retypePassword', max_length=100)
+
     deleteAccount = forms.BooleanField(label='deleteAccount', required=False)
 
 class LABForm(forms.Form):

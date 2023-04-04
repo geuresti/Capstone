@@ -23,29 +23,39 @@
     <div>
       <ul>
 
-        <li class="dropdown">
+        <div id="top-banner-container">
+          <div id="top-banner-element">
 
-        <a href="javascript:void(0)" class="dropbtn"><img src="{% static 'pixelspace/images/menu.png' %}" width="50" height="50"></img>   </a>
+            <li class="dropdown">
 
-          <div class="dropdown-content">
-            <a href="pixelmap">Pixel Map</a>
-            <a href="colors">Colors in The Media</a>
-            <a href="logo">Logo Generation</a>
-            <a href="image">Image Gallery</a>
+            <a href="javascript:void(0)" class="dropbtn"><img src="{% static 'pixelspace/images/menu.png' %}" width="50" height="50"></img>   </a>
+              <div class="dropdown-content">
+                <a href="pixelmap">Pixel Map</a>
+                <a href="colors">Colors in The Media</a>
+                <a href="logo">Logo Generation</a>
+                <a href="image">Image Gallery</a>
 
-            {% if request.session.username %}
-                <a href="settings">Settings</a>
-                <a href="logout">Log Out</a> -->
-            {% else %}
-                <a href="login">Login</a>
-            {% endif %}
-
+                {% if request.session.username %}
+                    <a href="settings">Settings</a>
+                    <a href="logout">Log Out</a>
+                {% else %}
+                    <a href="login">Login</a>
+                {% endif %}
+              </div>
+            </li>
           </div>
 
-        </li>
+          <div id="top-banner-element">
+            <div class="img-container">
+              <img src="{% static 'pixelspace/images/logo2.png' %}" width="300" height="106">
+            </div>
+          </div>
 
-        <div class="img-container">
-          <img src="{% static 'pixelspace/images/logo2.png' %}" width="300" height="106">
+          <div id="top-banner-element">
+            {% if request.session.username %}
+              <p id="logged_in_as"> Logged in as: {{ request.session.username }} </p>
+            {% endif %}
+          </div>
         </div>
       </ul>
 

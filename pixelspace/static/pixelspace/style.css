@@ -15,27 +15,24 @@ h1 {
     top: 20%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
 
-  }
-
-  h2 {
+h2 {
     font-family: 'Iceland-Regular';
     color: #327FAC;
     margin: 0px;
-  }
+}
 
-  h3 {
+h3 {
     font-family: 'Iceland-Regular';
     color: #327FAC;
     margin: 0px;
-  }
+}
 
 body {
     /*background: pink url("images/cattoy.jpg") no-repeat;*/
     background: white;
     margin: 0;
-
-
 }
 
 .rectangle {
@@ -46,182 +43,212 @@ body {
 }
 
 li a, .dropbtn {
-    display: inline-block;
-    color: rgb(255, 255, 255);
-    text-align: left;
-    padding: 14px 16px;
-    text-decoration: none;
-  }
+  display: inline-block;
+  color: rgb(255, 255, 255);
+  text-align: left;
+  padding: 14px 16px;
+  text-decoration: none;
+}
 
-  li a:hover, .dropdown:hover .dropbtn {
-    background-color: #6A9CBF;
-  }
+li a:hover, .dropdown:hover .dropbtn {
+  background-color: #6A9CBF;
+}
 
-  li.dropdown {
-    display: inline-block;
-    text-align: left;
-    padding: 0px;
-  }
+li.dropdown {
+  display: inline-block;
+  text-align: left;
+  padding: 0px;
+}
 
-  .dropdown:hover .dropdown-content {
-    display: block;
+.dropdown:hover .dropdown-content {
+  display: block;
+}
 
-  }
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #9CC4E1;
-    min-width: 0px;
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #9CC4E1;
+  min-width: 0px;
 
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-  }
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
 
-  .dropdown-content a {
-    color: rgb(255, 255, 255);
-    padding: 50px 85px;
-    font-size: 20px;
-    text-decoration: none;
-    display: block;
-    text-align: left;
-  }
+.dropdown-content a {
+  color: rgb(255, 255, 255);
+  padding: 50px 85px;
+  font-size: 25px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
 
 
 ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 
-    background-color: #9CC4E1;
-  }
+  background-color: #9CC4E1;
+}
 
-  .img-container {
-    text-align: center;
-    margin: 0;
+.img-container {
+  text-align: center;
+  margin: 5px;
 
-  }
+  width: 500px;
+}
 
-  .container {
-    position: relative;
-    text-align: center;
-    color: white;
-    margin-top:30px;
-  }
+.container {
+  position: relative;
+  text-align: center;
+  color: white;
+  margin-top:30px;
+}
 
-  .containerB {
-    text-align: center;
-  }
+.containerB {
+  text-align: center;
+}
 
-  .containerC {
-    text-align: left;
-    
-  }
+.containerC {
+  text-align: left;
+}
 
-  .containerCScroll{
-    text-align:left;
-    height:350px;
-    overflow-y:auto;
-    
-  }
+.containerCScroll{
+  text-align:left;
+  height:350px;
+  overflow-y:auto;
 
-  .containerB h3 {
-    margin-top: 10px;
-  }
+}
 
-  .button {
-    background-color: #9CC4E1;
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    font-family: 'Iceland-Regular';
-    text-decoration: none;
-    display: inline-block;
-    font-size: 30px;
-    border-radius: 4px;
-    transition-duration: 0.4s;
-  }
+.containerB h3 {
+  margin-top: 10px;
+}
 
-  .button:hover {
-    background-color: #9CC4E1;
-    color: #406783;
-  }
+.button {
+  background-color: #9CC4E1;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  font-family: 'Iceland-Regular';
+  text-decoration: none;
+  display: inline-block;
+  font-size: 30px;
+  border-radius: 4px;
+  transition-duration: 0.4s;
+}
 
-  #django_form {
-    font-family: 'Iceland-Regular';
-    font-weight: bold;
-    font-size: 22px;
-    color: #327FAC;
-    display: flex;
-    flex-direction: column;
-    margin-top: 15px;
-  }
+.button:hover {
+  background-color: #9CC4E1;
+  color: #406783;
+}
 
-  #django_form input {
-    width: 20%;
-    padding: 10px 25px;
-    margin: 8px 10px;
-    box-sizing: border-box;
-    border: none;
-    background-color: #D9E5FC;
-    align-self: center;
-  }
+#django_form {
+  font-family: 'Iceland-Regular';
+  font-weight: bold;
+  font-size: 22px;
+  color: #327FAC;
+  display: flex;
+  flex-direction: column;
+  margin-top: 15px;
+}
 
-  #django_form button {
-    margin-top: 15px;
-    align-self: center;
-  }
+#django_form input {
+  width: 20%;
+  padding: 10px 25px;
+  margin: 8px 10px;
+  box-sizing: border-box;
+  border: none;
+  background-color: #D9E5FC;
+  align-self: center;
+}
 
-  input[type=text] {
-    width: 20%;
-    font-family: 'Iceland-Regular';
-    padding: 10px 15px;
-    font-weight: bold;
-    margin: 8px 0;
-    box-sizing: border-box;
-    border: none;
-    background-color: #D9E5FC;
-    color: #406783;
-    justify-content: space-around;
-  }
-  input[type=number] {
-    width: 30%;
-    font-family: 'Iceland-Regular';
-    font-size: 15px;
-    font-weight: bold;
-    padding: 10px 15px;
-    margin: 8px 0;
-    box-sizing: border-box;
-    border: none;
-    background-color: #D9E5FC;
-    color: #406783;
-  }
+#django_form button {
+  margin-top: 15px;
+  align-self: center;
+}
 
-  output{
-    width: 100%;
-    font-family: 'Iceland-Regular';
-    padding: 10px 15px;
-    font-weight: bold;
-    margin: 8px 0;
-    box-sizing: border-box;
-    border: none;
-    background-color: #D9E5FC;
-    color: #406783;
-  }
+input[type=text] {
+  width: 20%;
+  font-family: 'Iceland-Regular';
+  padding: 10px 15px;
+  font-weight: bold;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: none;
+  background-color: #D9E5FC;
+  color: #406783;
+  justify-content: space-around;
+}
+input[type=number] {
+  width: 30%;
+  font-family: 'Iceland-Regular';
+  font-size: 15px;
+  font-weight: bold;
+  padding: 10px 15px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: none;
+  background-color: #D9E5FC;
+  color: #406783;
+}
 
-  .flex-parent-element{
-    display: flex;
-    width: 100%;
+output{
+  width: 100%;
+  font-family: 'Iceland-Regular';
+  padding: 10px 15px;
+  font-weight: bold;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: none;
+  background-color: #D9E5FC;
+  color: #406783;
+}
 
-  }
-  .flex-child-element {
-    flex: 1;
-    width: 100%;
-    margin: 10px;
-  }
+.flex-parent-element{
+  display: flex;
+  width: 100%;
+}
 
-  .flex-child-element:first-child {
-    margin-right: 20px;
-    flex: 1;
-  }
+.flex-child-element {
+  flex: 1;
+  width: 100%;
+}
+
+.flex-child-element:first-child {
+  margin-right: 20px;
+  flex: 1;
+}
+
+/*
+ Top banner related CSS is for the dropdown, logo,
+ and "Logged in as: ..." message
+*/
+#top-banner-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+#top-banner-element {
+  flex: 1;
+  display: flex;
+}
+
+#top-banner-element:first-child {
+  margin-right: auto;
+}
+
+#top-banner-element:last-child {
+  margin-left: auto;
+  justify-content: flex-end;
+  padding-right: 15px;
+  padding-bottom: 10px;
+}
+
+#logged_in_as {
+  font-size: 25px;
+  font-family: 'Iceland-Regular';
+  color: white;
+}

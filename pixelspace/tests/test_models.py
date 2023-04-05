@@ -7,7 +7,7 @@ connect_string = 'mongodb+srv://mongodb_dao:uC3wPbLm7AIhkOUL@cluster0.nem4zbs.mo
 my_client = pymongo.MongoClient(connect_string)
 dbname = my_client['pixelspace']
 
-# CREATE A NEW COLLECTION FOR TESTING
+# using a specific collection for testing
 collection_name = "test_users"
 collection = dbname[collection_name]
 

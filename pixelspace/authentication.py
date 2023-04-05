@@ -47,7 +47,11 @@ class MongoAuthBackend(BaseBackend):
             sort=[( '_id', pymongo.DESCENDING )]
         )
 
-        new_user_id = int(newest_user["user_id"]) + 1
+        try:
+            new_user_id = int(newest_user["user_id"]) + 1
+        except:
+            # if the database has no user in it yet
+            new_user_id = 0
 
         encoded_password = password.encode('utf-8')
         encrypted_password = bcrypt.hashpw(encoded_password, bcrypt.gensalt(10))

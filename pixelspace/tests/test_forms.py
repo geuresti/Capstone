@@ -1,7 +1,17 @@
-
 from django.test import TestCase
-
 from pixelspace.forms import UserForm, SettingsForm, LABForm, confirmDeleteForm
+from pixelspace import authentication as auth
+import pymongo
+
+connect_string = 'mongodb+srv://mongodb_dao:uC3wPbLm7AIhkOUL@cluster0.nem4zbs.mongodb.net/?retryWrites=true&w=majority'
+my_client = pymongo.MongoClient(connect_string)
+dbname = my_client['pixelspace']
+
+# created a new collection for testing
+collection_name = "test_users"
+collection = dbname[collection_name]
+
+mongo_auth = auth.MongoAuthBackend()
 
 class LoginFormTest(TestCase):
     def test_login_form_good_input(self):
@@ -82,8 +92,20 @@ class SettingsFormTest(TestCase):
         testData = {'newPassword': 'bark','retypePassword': '', 'deleteAccount': True}
         form = SettingsForm(data=testData)
 
-        # (only one password)
-        self.assertTrue(form.is_valid())
+        self.assertFalse(form.is_valid())
+
+    def test_setting_form_change_password(self):
+        mongo_auth.create_account("dummy", "password", "asd@gmail.com")
+
+        testData = {'newPassword': 'new_password','retypePassword': 'new_password', 'deleteAccount': False}
+        form = SettingsForm(data=testData)
+
+        user_original = mongo_auth.authenticate(collection_name="test_users", username="dummy", password="password")
+        if user_original:
+            mongo_auth.change_password(collection_name="test_users", username="dummy", new_password="new_password")
+            user_new = mongo_auth.authenticate(collection_name="test_users", username=None, password=None)
+
+        return (self.assertTrue(form.is_valid()) and user_new)
 
     def test_setting_form_mismtached_passwords(self):
         testData = {'newPassword': 'meow','retypePassword': 'bark', 'deleteAccount': True}
@@ -93,11 +115,10 @@ class SettingsFormTest(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_setting_form_no_input(self):
-        testData = {'newPassword': '','retypePassword': '', 'deleteAccount': None}
+        testData = {'newPassword': '', 'retypePassword': '', 'deleteAccount': None}
         form = SettingsForm(data=testData)
 
-        # (no input)
-        self.assertTrue(form.is_valid())
+        self.assertFalse(form.is_valid())
 
 class confirmDeleteFormTest(TestCase):
     def test_confirm_delete_form_delete_true(self):

@@ -79,8 +79,8 @@ class ViewTests(TestCase):
         response = self.client.post('/pixelspace/colors', {"lightness":1, "axisA":2, "axisB":3})
         self.assertEqual(response.status_code, 200)
 
-    def test_image_view(self):
-        response = self.client.get('/pixelspace/image')
+    def test_gallery_view(self):
+        response = self.client.get('/pixelspace/gallery')
         self.assertEqual(response.status_code, 200)
 
     def test_logo_view(self):

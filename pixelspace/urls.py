@@ -6,7 +6,8 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('colors', views.colors, name='colors'),
-    path('image', views.image, name='image'),
+    #path('image', views.image, name='image'),
+    path('gallery', views.gallery, name='gallery'),
     path('login', views.login, name='login'),
     path('logo', views.logo, name='logo'),
     path('pixelmap', views.pixelmap, name='pixelmap'),
@@ -17,4 +18,5 @@ urlpatterns = [
     path('delete-map-confirm', views.deleteMapConfirm, name='delete-map-confirm'),
     path('results', views.results, name='results'),
     path('detail/<int:map_id>/', views.detail, name='detail'),
+    path('comment-delete/<int:map_id>/<int:pk>', views.comment_delete, name='comment_delete'),
 ]

@@ -227,8 +227,8 @@ def URLConverter(img):
     print(data_url)
     return data_url
 
-
-def image(request):
+# was previously 'image'
+def gallery(request):
     #locate gallery
     currGallery = gallery_collection.find_one(
         {'gallery':0}
@@ -239,18 +239,17 @@ def image(request):
     #for every image that has been posted to the gallery
     for item in reversed(currGallery['gallery_images']):
         currMap = pixelmaps_collection.find_one(
-        {'pixelmap_id':item}
+            {'pixelmap_id':item}
         )
 
         mapWidth = currMap['width']
-        print(mapWidth)
+        #print(mapWidth)
         data = currMap['PixelMap']
         length = currMap['length']
         width = currMap['width']
         #take the binary encoding of the image and translate it back into an image object
         newImg = Image.frombytes("RGB",(length,width), data)
         #print(newImg)
-
 
         data_url = URLConverter(newImg)
         arrayOfURLs.append(data_url)
@@ -259,13 +258,10 @@ def image(request):
         #Add to the dictionary of IDs and HTML readable URL to display
         urlID[item] = data_url
     #print(len(arrayOfURLs))
-    print(urlID.keys())
+    #print(urlID.keys())
     #print(urlID.values())
+    return render(request, 'pixelspace/gallery.html', {'gallery': urlID})
 
-
-    return render(request, 'pixelspace/image.html', {'gallery': urlID})
-
-#processes the results of the pixelmap generation and displays it on a new page
 #processes the results of the pixelmap generation and displays it on a new page
 def results(request):
     #grab the most recent pixelmap added to the database (the current one)
@@ -366,6 +362,16 @@ def results(request):
         form = MapForm()
         return render(request, 'pixelspace/results.html', {'form': form, 'Image': data_url})
 '''
+def comment_delete(request, map_id=-1, pk=-1):
+    if pk == -1 or map_id == -1:
+        return redirect('/pixelspace')
+    else:
+        collection = dbname['comment']
+        collection.delete_one({'ID':pk})
+        print("DELETED COMMENT ID =", pk)
+
+    return detail(request, map_id)
+
 def detail(request, map_id):
         #check to see if User is logged in, if not, assign Guest User
         try:
@@ -374,47 +380,45 @@ def detail(request, map_id):
         except:
             username = "Guest_User"
         mapID = map_id
-        print("pgffffft", map_id)
-
+        #print("pgffffft", map_id)
         commentAuthor = []
 
         currMap = pixelmaps_collection.find_one(
-        {'pixelmap_id':mapID}
+            {'pixelmap_id':mapID}
         )
         data = currMap['PixelMap']
         length = currMap['length']
         width = currMap['width']
         #take the binary encoding of the image and translate it back into an image object
         newImg = Image.frombytes("RGB",(length,width), data)
-        #print(newImg)
+        print("NEW IMAGE:", newImg)
 
         data_url = URLConverter(newImg)
 
-       # if request.GET.get('like'):
-        #    print("AAAAAAAAA")
-
         #in preparation to add another comment, find its ID
         newestComment = comments_collection.find_one(
-        sort=[( '_id', pymongo.DESCENDING )]
+            sort=[( '_id', pymongo.DESCENDING )]
         )
 
         newest_comment_id = int(newestComment["ID"]) + 1
 
         #Find the current comments that are already on the submission
         currComments = comments_collection.find(
-        {'pixelmap_id':mapID}
+            {'pixelmap_id':mapID}
         )
+
+        print("CURRENT COMMENTS:", currComments)
 
         #Create a list of tuples with the author name and the content of the comment
         #since multiple people can leave the same comment, and a person can leave more than one comment
         #a dictionary is infeasible for this task
         for item in currComments:
             print(item)
-            commentAuthor.append((item['author'], item['content']))
+            commentAuthor.append((item['author'], item['content'], item['ID']))
             #commentAuthor[item] = data_url
 
-        for a,b in commentAuthor:
-            print(a,b)
+        for author, comment, ID in commentAuthor:
+            print(author, comment, ID)
 
         #retrieve current amount of likes to be displayed
         currMap = pixelmaps_collection.find_one(
@@ -423,12 +427,11 @@ def detail(request, map_id):
         currMapLikes = int(currMap["likes"])
 
         if request.method == 'POST':
-            print('testing1')
             form = commentForm(request.POST)
             form2 = LikeForm(request.POST)
             #handle liking
             if form2.is_valid():
-                print("liking..")
+                #print("liking..")
                 #increment the amount of likes, and update it in the database
                 currMapLikes = currMapLikes + 1
                 pixelmaps_collection.update_one({'pixelmap_id':mapID}, {'$set':{'likes':currMapLikes}})
@@ -447,7 +450,7 @@ def detail(request, map_id):
                     "author" : username,
                     "content" : content,
                     "pixelmap_id" : mapID,
-                    }
+                }
                 comments_collection.insert_one(comment)
 
                 return render(request, 'pixelspace/detail.html', {'form':form , 'form2':form2, 'dataURL': data_url, 'commentAuthor': commentAuthor, 'currMapLikes': currMapLikes})
@@ -461,7 +464,7 @@ def detail(request, map_id):
 
         #return HttpResponse("You're looking at map %s." % map_id)
         return render(request, 'pixelspace/detail.html', {'mapID':mapID, 'dataURL': data_url, 'commentAuthor': commentAuthor})
-# MESSAGES WIP
+
 def login(request):
 
     template = loader.get_template('pixelspace/login.html')

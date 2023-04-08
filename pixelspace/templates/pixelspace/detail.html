@@ -4,61 +4,63 @@
 
 {% block content %}
 
-<head>
-    <base href="/pixelspace/">
-</head>
+    <head>
+        <base href="/pixelspace/">
+    </head>
 
     <div class="container">
         <img src="{% static 'pixelspace/images/banner2.png' %}" width="900" height="170">
         <h1>Gallery</h1>
     </div>
 
-
     <div class='flex-parent-element'>
-    <div class='flex-child-element'>
-    <div class="containerB">
-    
-        <br>
-    <img src="{{dataURL}}">
-    <br><br>
+        <div class='flex-child-element'>
+            <div class="containerB">
 
-    <form action='' method='POST'>
-        {% csrf_token %}
-        <input type="hidden" id="IDofMap" name="IDofMap" value= {{mapID}}>
-        <input type="hidden" id="commentAuthor" name="commentAuthor" value= {{commentAuthor}}>
-        <input type="hidden" id="dataURL" name="dataURL" value= {{dataURL}}>
-        <button class='button' type='submit'> ♥ Like ({{currMapLikes}}) </button>
-        </form>
+            <br>
+            <img src="{{dataURL}}">
+            <br><br>
 
-    </div> 
-    </div> 
+                <form action='' method='POST'>
+                    {% csrf_token %}
+                    <input type="hidden" id="IDofMap" name="IDofMap" value= {{mapID}}>
+                    <input type="hidden" id="commentAuthor" name="commentAuthor" value= {{commentAuthor}}>
+                    <input type="hidden" id="dataURL" name="dataURL" value= {{dataURL}}>
+                    <button class='button' type='submit'> ♥ Like ({{currMapLikes}}) </button>
+                </form>
 
-    <div class='flex-child-element'>
-    <br>
-    <div class="containerCScroll" style="padding-left:0px;">
-    {% for author, comment in commentAuthor %}
-    <h2>{{author}} : {{comment}}</h2>
-    {% endfor %}
+            </div>
+        </div>
+
+        <div class='flex-child-element'>
+            <br>
+            <div class="containerCScroll" style="padding-left:0px; width:500px;">
+                {% for author, comment, comment_id in commentAuthor %}
+                    <div class="comment">
+                        <p style="font-weight:bold; text-decoration:underline;">{{author}}:</p>
+                        <p>{{comment}}</p>
+                        {% if request.session.username == author %}
+                            <a href="{% url 'comment_delete' map_id=mapID pk=comment_id %}">
+                              <img id="comment-delete" src="{% static 'pixelspace/images/trash.png' %}">
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            <br>
+            <br>
+            <br>
+
+            <div class="containerCScroll">
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <label for="content"><h2>Post a Comment:</h2></label><br>
+                    <input size="100" type="text" id="content" name="content" ><br>
+                    <br><br>
+                    <button class="button" type ="submit"> POST</button>
+                </form>
+            </div>
+        </div>
     </div>
-    <br>
-    <br>
-    <br>
-
-    <div class="containerCScroll">
-    <form action="" method="post">
-        {% csrf_token %}
-        <label for="content"><h2>Post a Comment:</h2></label><br>
-        <input size="100" type="text" id="content" name="content" ><br>
-        <br><br>
-        <button class="button" type ="submit"> POST</button>
-        </form>
-
-
-    </div>
-</div>
-</div>
-
-
-
 
 {% endblock %}

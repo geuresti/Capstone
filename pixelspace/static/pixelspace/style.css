@@ -252,3 +252,24 @@ output{
   font-family: 'Iceland-Regular';
   color: white;
 }
+
+#comment-delete {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 10px;
+}
+
+#comment-delete:hover {
+  background-color: #9CC4E1;
+}
+
+.comment {
+  width: 450px;
+  word-wrap: break-word;
+  font-size: 20px;
+  border: 2px solid black;
+  border-radius: 10px;
+  padding-left: 15px;
+  padding-right: 6px;
+  margin-bottom: 10px;
+}

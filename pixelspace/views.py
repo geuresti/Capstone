@@ -224,7 +224,7 @@ def URLConverter(img):
 
     #format image data into HTML readable
     data_url = 'data:image/jpg;base64,' + image_data
-    print(data_url)
+    #print(data_url)
     return data_url
 
 # was previously 'image'
@@ -369,8 +369,8 @@ def comment_delete(request, map_id=-1, pk=-1):
         collection = dbname['comment']
         collection.delete_one({'ID':pk})
         print("DELETED COMMENT ID =", pk)
-
-    return detail(request, map_id)
+    # err
+    return redirect('detail', map_id)
 
 def detail(request, map_id):
         #check to see if User is logged in, if not, assign Guest User
@@ -379,30 +379,26 @@ def detail(request, map_id):
             username = request.session['username']
         except:
             username = "Guest_User"
+
         mapID = map_id
-        #print("pgffffft", map_id)
         commentAuthor = []
 
+        # grab the pixel map whose detail we want to view
         currMap = pixelmaps_collection.find_one(
             {'pixelmap_id':mapID}
         )
+
         data = currMap['PixelMap']
         length = currMap['length']
         width = currMap['width']
+
         #take the binary encoding of the image and translate it back into an image object
         newImg = Image.frombytes("RGB",(length,width), data)
-        print("NEW IMAGE:", newImg)
+        #print("NEW IMAGE:", newImg)
 
         data_url = URLConverter(newImg)
 
-        #in preparation to add another comment, find its ID
-        newestComment = comments_collection.find_one(
-            sort=[( '_id', pymongo.DESCENDING )]
-        )
-
-        newest_comment_id = int(newestComment["ID"]) + 1
-
-        #Find the current comments that are already on the submission
+        # Find comments associated with current pixelmap
         currComments = comments_collection.find(
             {'pixelmap_id':mapID}
         )
@@ -413,12 +409,12 @@ def detail(request, map_id):
         #since multiple people can leave the same comment, and a person can leave more than one comment
         #a dictionary is infeasible for this task
         for item in currComments:
-            print(item)
+            #print(item)
             commentAuthor.append((item['author'], item['content'], item['ID']))
             #commentAuthor[item] = data_url
 
-        for author, comment, ID in commentAuthor:
-            print(author, comment, ID)
+    #    for author, comment, ID in commentAuthor:
+    #        print(author, comment, ID)
 
         #retrieve current amount of likes to be displayed
         currMap = pixelmaps_collection.find_one(
@@ -427,24 +423,34 @@ def detail(request, map_id):
         currMapLikes = int(currMap["likes"])
 
         if request.method == 'POST':
-            form = commentForm(request.POST)
-            form2 = LikeForm(request.POST)
+            comment_form = commentForm(request.POST)
+            like_form = LikeForm(request.POST)
             #handle liking
-            if form2.is_valid():
+            if like_form.is_valid():
                 #print("liking..")
                 #increment the amount of likes, and update it in the database
                 currMapLikes = currMapLikes + 1
                 pixelmaps_collection.update_one({'pixelmap_id':mapID}, {'$set':{'likes':currMapLikes}})
-                return render(request, 'pixelspace/detail.html', {'form':form ,'form2':form2 ,'mapID':mapID, 'dataURL': data_url, 'commentAuthor': commentAuthor, 'currMapLikes': currMapLikes})
+                return render(request, 'pixelspace/detail.html', {'form':comment_form ,'form2':like_form ,'mapID':mapID, 'dataURL': data_url, 'commentAuthor': commentAuthor, 'currMapLikes': currMapLikes})
 
             #if the button is not pressed, return empty form
-            elif not form2.is_valid():
-                form2 = LikeForm()
+            elif not like_form.is_valid():
+                like_form = LikeForm()
 
             #handles commenting
-            if form.is_valid():
+            if comment_form.is_valid():
+                newestComment = comments_collection.find_one(
+                    sort=[( '_id', pymongo.DESCENDING )]
+                )
+
+                try:
+                    newest_comment_id = int(newestComment["ID"]) + 1
+                except:
+                    # if the db has no comments yet
+                    newest_comment_id = 0
+
                 #get content from user, and add a comment to the database
-                content = form.cleaned_data.get("content")
+                content = comment_form.cleaned_data.get("content")
                 comment = {
                     "ID": newest_comment_id,
                     "author" : username,
@@ -453,14 +459,18 @@ def detail(request, map_id):
                 }
                 comments_collection.insert_one(comment)
 
-                return render(request, 'pixelspace/detail.html', {'form':form , 'form2':form2, 'dataURL': data_url, 'commentAuthor': commentAuthor, 'currMapLikes': currMapLikes})
+                print(comment_form , like_form, data_url, commentAuthor, currMapLikes)
+
+                commentAuthor.append((comment['author'], comment['content'], comment['ID']))
+
+                return render(request, 'pixelspace/detail.html', {'form':comment_form , 'form2':like_form, 'mapID':mapID, 'dataURL': data_url, 'commentAuthor': commentAuthor, 'currMapLikes': currMapLikes})
             else:
-                form = commentForm()
-                #return render(request, 'pixelspace/detail.html', {'form':form , 'form2':form2, 'dataURL': data_url,  'commentAuthor': commentAuthor})
+                comment_form = commentForm()
+                return render(request, 'pixelspace/detail.html', {'form':comment_form , 'form2':like_form, 'dataURL': data_url,  'commentAuthor': commentAuthor})
         else:
-            form = commentForm()
-            form2 = LikeForm()
-            return render(request, 'pixelspace/detail.html', {'form':form , 'form2':form2 , 'mapID':mapID, 'dataURL': data_url,  'commentAuthor': commentAuthor, 'currMapLikes': currMapLikes})
+            comment_form = commentForm()
+            like_form = LikeForm()
+            return render(request, 'pixelspace/detail.html', {'form':comment_form , 'form2':like_form , 'mapID':mapID, 'dataURL': data_url,  'commentAuthor': commentAuthor, 'currMapLikes': currMapLikes})
 
         #return HttpResponse("You're looking at map %s." % map_id)
         return render(request, 'pixelspace/detail.html', {'mapID':mapID, 'dataURL': data_url, 'commentAuthor': commentAuthor})

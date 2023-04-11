@@ -288,3 +288,11 @@ output{
   margin-bottom: 10px;
   color: #327FAC;
 }
+
+.field{
+  float:left;
+}
+
+.field2{
+  float:right;
+}

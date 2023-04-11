@@ -3,14 +3,116 @@
 {% load static %}
 
 {% block content %}
-
+<head>
+    <base href="/pixelspace/">
+</head>
     <div class="container">
         <img src="{% static 'pixelspace/images/banner2.png' %}" width="900" height="170">
         <h1>Logo Generator</h1>
     </div>
     
-    <div class="containerB">
-        <button class ="button"> Generate</button>
+    <br>
+    
+    <div class='flex-parent-element'>
+        
+        <div class='flex-child-element'>
+            <div class="containerB">   
+
+
+        <form action="" method="post">
+            {% csrf_token %}
+            
+                <select id="shape" name="shape">
+                    <h2><option value="rectangle">Rectangle</option></h2>
+                    <option value="oval">Oval</option>
+                    <option value="polygon">Polygon</option>
+                    
+                </select>
+            
+        
+            <br><br>
+            <button class="button" type ="submit"> Choose Shape </button>
+    </form>
     </div>
+    </div>
+    
+    <div class='flex-child-element'>
+        <div class="containerB">
+    {% if shape == "rectangle" %}
+    <br>
+    <h2 style="font-size:40px;"><u>Rectangle</u></h2> 
+    <br><br>
+    <form action="" method="post">
+        {% csrf_token %}
+        <label for="logoLen"><h2>Length:</h2></label><br>
+        <input type="number" id="logoLen" name="logoLen"><br>
+        <label for="logoWid"><h2>Width:</h2></label><br>
+        <input type="number" id="logoWid" name="logoWid">
+        <label for="color"><h2>Color of Shape:</h2></label><br>
+        <input type="text" id="color" name="color"><br>
+        <br>
+        <label for="text"><h2>Text:</h2></label><br>
+        <input type="text" id="text" name="text"><br>
+        <label for="textColor"><h2>Text Color:</h2></label><br>
+        <input type="text" id="textColor" name="textColor"><br>
+        <input type="hidden" id="shape" name="shape" value= {{shape}}>
+        <br><br>
+        <button class="button" type ="submit"> Create</button>
+    </form>
+    {% elif shape == "oval" %}
+    <br>
+    <h2 style="font-size:40px;"><u>Oval</u></h2> 
+
+    <br><br>
+    <form action="" method="post">
+        {% csrf_token %}
+        <label for="ovalLen"><h2>Oval Length:</h2></label><br>
+        <input type="number" id="ovalLen" name="ovalLen"><br>
+        <label for="ovalWid"><h2>Oval Width:</h2></label><br>
+        <input type="number" id="ovalWid" name="ovalWid">
+        <label for="color"><h2>Color of Shape:</h2></label><br>
+        <input type="text" id="color" name="color"><br>
+        <br>
+        <label for="text"><h2>Text:</h2></label><br>
+        <input type="text" id="text" name="text"><br>
+        <label for="textColor"><h2>Text Color:</h2></label><br>
+        <input type="text" id="textColor" name="textColor"><br>
+        <input type="hidden" id="shape" name="shape" value= {{shape}}>
+        <br><br>
+        <button class="button" type ="submit"> Create</button>
+    </form>
+    {% elif shape == "polygon" %}
+    <br>
+    <h2 style="font-size:40px;"><u>Polygon</u></h2> 
+
+    <br><br>
+    <form action="" method="post">
+        {% csrf_token %}
+        <label for="polySize"><h2>Size of Polygon:</h2></label><br>
+        <input type="number" id="polySize" name="polySize"><br>
+        <label for="noSides"><h2>Number of Sides:</h2></label><br>
+        <input type="number" id="noSides" name="noSides">
+        <label for="color"><h2>Color of Shape:</h2></label><br>
+        <input type="text" id="color" name="color"><br>
+        <br>
+        <label for="text"><h2>Text:</h2></label><br>
+        <input type="text" id="text" name="text"><br>
+        <label for="textColor"><h2>Text Color:</h2></label><br>
+        <input type="text" id="textColor" name="textColor"><br>
+        <input type="hidden" id="shape" name="shape" value= {{shape}}>
+        <br><br>
+        <button class="button" type ="submit"> Create</button>
+    </form>
+    {% endif %}
+</div>
+</div>
+<div class='flex-child-element'>
+    <div class="containerB">
+    <img src="{{data_url}}">
+
+</div>
+</div>
+</div>
 
 {% endblock %}
+

@@ -224,16 +224,16 @@ output{
 #comment-input {
   width: 600px;
   height: 150px;
-  padding: 12px 20px;
   box-sizing: border-box;
   border: 2px solid #cdcfdf;
   border-radius: 4px;
   background-color: #edf3f6;
   font-size: 16px;
   resize: none;
-
+  padding: 12px 20px;
   text-align:left;
-  overflow-y:auto;
+  word-break: break-all; 
+  
 }
 
 /*

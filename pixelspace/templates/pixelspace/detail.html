@@ -55,9 +55,9 @@
                 <form action="" method="post">
                     {% csrf_token %}
                     <label for="content"><h2>Post a Comment:</h2></label><br>
-                    <input type="textarea" id="comment-input" name="content"><br>
+                    <textarea  rows="2" cols="20" wrap="soft" id="comment-input" name="content"></textarea><br>
                     <br><br>
-                    <button class="button" type ="submit"> POST</button>
+                    <button class="button" input type ="submit"> POST</button>
                 </form>
             </div>
         </div>

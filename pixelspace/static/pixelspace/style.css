@@ -222,18 +222,18 @@ output{
 }
 
 #comment-input {
-  width: 200px;
+  width: 600px;
   height: 150px;
-  padding: 12px 20px;
   box-sizing: border-box;
-  border: 2px solid #ccc;
+  border: 2px solid #cdcfdf;
   border-radius: 4px;
-  background-color: #f8f8f8;
+  background-color: #edf3f6;
   font-size: 16px;
   resize: none;
-
+  padding: 12px 20px;
   text-align:left;
-  overflow-y:auto;
+  word-break: break-all; 
+  
 }
 
 /*
@@ -278,12 +278,21 @@ output{
 }
 
 .comment {
-  width: 450px;
+  width: 600px;
   word-wrap: break-word;
   font-size: 20px;
-  border: 2px solid black;
+  border: 2px solid #327FAC;
   border-radius: 10px;
   padding-left: 15px;
   padding-right: 6px;
   margin-bottom: 10px;
+  color: #327FAC;
+}
+
+.field{
+  float:left;
+}
+
+.field2{
+  float:right;
 }

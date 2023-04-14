@@ -7,7 +7,7 @@ from django.contrib import messages
 import base64
 from http import HTTPStatus
 import os, sys
-from .forms import AccountForm, UserForm, SettingsForm, LABForm, confirmDeleteForm, PixelForm, SaveForm, MapForm, confirmMapDeleteForm, CustomForm, LikeForm, commentForm
+from .forms import AccountForm, UserForm, SettingsForm, LABForm, confirmDeleteForm, PixelForm, SaveForm, MapForm, confirmMapDeleteForm, CustomForm, LikeForm, commentForm, ShapeForm, RectangleForm, OvalForm, PolyForm
 from django.contrib import messages
 from colormath.color_objects import LabColor, sRGBColor, AdobeRGBColor
 from colormath.color_objects import BT2020Color
@@ -15,7 +15,7 @@ from colormath.color_conversions import convert_color
 from colormath.color_diff import delta_e_cie1976
 from coloraide.everything import ColorAll as Color
 import pymongo
-from PIL import Image
+from PIL import Image,ImageDraw, ImageFont
 import random
 from bson.binary import Binary
 import re
@@ -525,11 +525,147 @@ def logout(request):
 def logo(request):
     template = loader.get_template('pixelspace/logo.html')
     #return HttpResponse(template.render(request))
-    latest_question_list = [1]
-    context = {
-        'latest_question_list': latest_question_list,
-    }
-    return HttpResponse(template.render(context, request))
+    print("here")
+    if request.method == "POST":
+        print("also here")
+        #initialize forms
+        form = ShapeForm(request.POST)
+        form2 = RectangleForm()
+        form3 = OvalForm()
+        form4 = PolyForm()
+        data_url = ""
+        #obtain the shape chosen, and store it into a hidden variable so that it can be passed onto subsequent forms
+        if form.is_valid():
+            shape = form.cleaned_data.get("shape")
+            print(shape)
+            #For each shape, request information from that form, and pass empty forms for the other shapes
+            if shape == "rectangle":
+                form2 = RectangleForm(request.POST)
+                form3 = OvalForm()
+                form4 = PolyForm()
+                if form2.is_valid():
+                    logoLen = form2.cleaned_data.get("logoLen")
+                    logoWid = form2.cleaned_data.get("logoWid")
+                    color = form2.cleaned_data.get("color")
+                    text = form2.cleaned_data.get("text")
+                    textColor = form2.cleaned_data.get("textColor")
+                    print(logoLen, shape, logoWid)
+                    #make the border of the image slightly larger than the shape
+                    scaledLBorder = int(logoLen * 0.2) + logoLen
+                    scaledWBorder = int(logoWid * 0.2) + logoWid
+                    img = Image.new('RGB', [scaledLBorder,scaledWBorder], 'white')
+                    #create the bounding box for the shape. Start the top left point a few pixels away from the edge of the image
+                    #And place the bottom right point length and width number of pixels away to make a shape of the specified size
+                    draw = ImageDraw.Draw(img)
+                    draw.rectangle([(int(logoLen * 0.1),int(logoWid * 0.1)), (int(logoLen * 0.1) + logoLen, int(logoWid * 0.1) + logoWid)], fill=color)
+
+                    if logoLen < logoWid:
+                        fontsize = int(logoLen/4)
+                    else:
+                        fontsize = int(logoWid/4)
+                    font = ImageFont.truetype("arial.ttf", fontsize)
+                    
+                    #_,_,length, width = draw3.textbbox((0,0),text, font=font)
+                    newL= int((scaledLBorder/2))
+                    newW = int((scaledWBorder/2))
+                    #print(newL,newW)
+                    draw.text((newL,newW), text, fill=textColor,font=font, align='center', anchor='mm')
+                    img.show()
+                    #convert to URL to be displayed
+                    data_url = URLConverter(img)
+                    
+                else:
+                    form2 = RectangleForm()
+                            
+            elif shape == "oval":
+                form2 = RectangleForm()
+                form3 = OvalForm(request.POST)
+                form4 = PolyForm()
+                if form3.is_valid():
+                    ovalLen = form3.cleaned_data.get("ovalLen")
+                    ovalWid = form3.cleaned_data.get("ovalWid")
+                    color = form3.cleaned_data.get("color")
+                    text = form3.cleaned_data.get("text")
+                    textColor = form3.cleaned_data.get("textColor")
+                    print(ovalLen, ovalWid)
+                    #make the border of the image slightly larger than the shape
+                    scaledLBorder = int(ovalLen * 0.2) + ovalLen
+                    scaledWBorder = int(ovalWid * 0.2) + ovalWid
+                    imgOval = Image.new('RGB', [scaledLBorder,scaledWBorder], 'white')
+
+                    #create the bounding box for the shape. Start the top left point a few pixels away from the edge of the image
+                    #And place the bottom right point length and width number of pixels away to make a shape of the specified size
+                    draw3 = ImageDraw.Draw(imgOval)
+                    draw3.ellipse((int(ovalLen * 0.2),int(ovalWid * 0.2),ovalLen,ovalWid), fill=color)
+                    meow = ovalWid - int(ovalWid * 0.2)
+                    print("orange: ", meow )
+                    if ovalLen < ovalWid:
+                        fontsize = int(ovalLen/4)
+                    else:
+                        fontsize = int(ovalWid/4)
+                    font = ImageFont.truetype("arial.ttf", fontsize)
+                    
+                    #_,_,length, width = draw3.textbbox((0,0),text, font=font)
+                    newL= int((scaledLBorder/2))
+                    newW = int((scaledWBorder/2))
+                    #print(newL,newW)
+                    draw3.text((newL,newW), text, fill=textColor,font=font, align='center', anchor='mm')
+
+                    #draw.rectangle([(int(diameter * 0.1),int(logoWid * 0.1)), (int(diameter * 0.1) + diameter, int(logoWid * 0.1) + logoWid)], fill=color)
+
+                    imgOval.show()
+                    data_url = URLConverter(imgOval)
+                else:
+                    form3 = OvalForm()
+            elif shape == "polygon":
+                form2 = RectangleForm()
+                form3 = OvalForm()
+                form4 = PolyForm(request.POST)
+                if form4.is_valid():
+                    polySize = form4.cleaned_data.get("polySize")
+                    noSides = form4.cleaned_data.get("noSides")
+                    color = form4.cleaned_data.get("color")
+                    text = form4.cleaned_data.get("text")
+                    textColor = form4.cleaned_data.get("textColor")
+                    print(polySize,noSides)
+                    #make the border of the image slightly larger than the shape
+                    scaledLBorder = int(polySize * 0.2 + polySize)
+                    scaledWBorder = int(polySize * 0.2 + polySize)
+                    imgPoly = Image.new('RGB', [polySize *2,polySize *2], 'white')
+
+                    draw2 = ImageDraw.Draw(imgPoly)
+                    draw2.regular_polygon((polySize,polySize, polySize), noSides, fill=color)
+
+                    fontsize = int(polySize/4)
+                    font = ImageFont.truetype("arial.ttf", fontsize)
+                    print(polySize)
+                    #_,_,length, width = draw3.textbbox((0,0),text, font=font)
+                    newL= int((polySize))
+                    newW = int((polySize))
+                    #print(newL,newW)
+                    draw2.text((newL,newW), text, fill=textColor,font=font, align='center', anchor='mm')
+
+                    imgPoly.show()
+                    data_url = URLConverter(imgPoly)
+                else:
+                    form4 = PolyForm()
+
+        else:
+            form2 = RectangleForm()
+            form3 = OvalForm()
+            form4 = PolyForm()
+            data_url = ""
+        return render(request, 'pixelspace/logo.html', {'form': form,'form2': form2,'form3': form3,'form4': form4,  'shape':shape, 'data_url':data_url})
+        #return render(request, 'pixelspace/logo.html', {'form': form,'form2': form2,'form3': form3,'form4': form4})
+    else:
+        form = ShapeForm()
+        form2 = RectangleForm()
+        form3 = OvalForm()
+        form4 = PolyForm()
+
+    return render(request, 'pixelspace/logo.html', {'form': form, 'form2': form2,'form3': form3,'form4': form4,})
+
+
 
 def pixelmap(request):
     template = loader.get_template('pixelspace/pixelmap.html')

@@ -64,3 +64,30 @@ class confirmDeleteForm(forms.Form):
 
 class confirmMapDeleteForm(forms.Form):
     confirmMapDelete = forms.BooleanField(label='confirmMapDelete', required=False)
+
+class ShapeForm(forms.Form):
+    shape = forms.ChoiceField(choices = (("rectangle","rectangle"),("oval","oval"),("polygon","polygon")))
+
+class RectangleForm(forms.Form):
+    logoLen = forms.IntegerField(label='logoLen')
+    logoWid = forms.IntegerField(label='logoWid')
+    color = forms.CharField(label='color', max_length=100)
+    text = textColor = forms.CharField(label='text', max_length=100)
+    textColor = forms.CharField(label='textColor', max_length=100)
+    shape = forms.CharField(widget=forms.HiddenInput())
+
+class OvalForm(forms.Form):
+    ovalLen = forms.IntegerField(label='ovalLen')
+    ovalWid = forms.IntegerField(label='ovalWid')
+    color = forms.CharField(label='color', max_length=100)
+    text = textColor = forms.CharField(label='text', max_length=100)
+    textColor = forms.CharField(label='textColor', max_length=100)
+    shape = forms.CharField(widget=forms.HiddenInput())
+
+class PolyForm(forms.Form):
+    polySize = forms.IntegerField(label='polySize')
+    noSides = forms.IntegerField(label='noSides')
+    color = forms.CharField(label='color', max_length=100)
+    text = textColor = forms.CharField(label='text', max_length=100)
+    textColor = forms.CharField(label='textColor', max_length=100)
+    shape = forms.CharField(widget=forms.HiddenInput())

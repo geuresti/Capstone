@@ -56,6 +56,13 @@ class UserModelTest(TestCase):
 
         self.assertTrue(already_exists)
 
+    def test_get_user(self):
+        mongo_auth.create_account("Jan", "password", "jan@gmail.com", collection_name="test_users")
+
+        retrieve_user = mongo_auth.get_user("test_users", user_id=1)
+        #print("RETRIEVE USER:", retrieve_user)
+        self.assertIsNone(retrieve_user)
+
     def test_user_authenticate_valid_credentials(self):
         username = "Lod"
         password = "password"

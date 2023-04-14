@@ -2,9 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.template import loader
 from django.http import HttpResponseRedirect
-from .models import User
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 from django.contrib import messages
 import base64
 from http import HTTPStatus
@@ -647,9 +645,7 @@ def pixelmap(request):
 
     return render(request, 'pixelspace/pixelmap.html', {'form':form})
 
-# need to tEST
 def deleteConfirm(request):
-    #currAcc = User.objects.get(username = request.user.username)
     try:
         request.session['username']
     except:
@@ -674,7 +670,6 @@ def deleteConfirm(request):
     return render(request, 'pixelspace/delete-confirm.html', {'form':form})
 
 def deleteMapConfirm(request):
-    #currAcc = User.objects.get(username = request.user.username)
     #check to make sure user is logged in
     try:
         request.session['username']

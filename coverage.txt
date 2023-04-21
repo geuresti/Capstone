@@ -1,11 +1,12 @@
 Name                              Stmts   Miss Branch BrPart  Cover
 -------------------------------------------------------------------
-pixelspace\authentication.py         53      4     10      2    90%
-pixelspace\forms.py                  53      0      0      0   100%
-pixelspace\models.py                 14      3      0      0    79%
-pixelspace\tests\test_forms.py       76      0      2      1    99%
-pixelspace\tests\test_models.py      43      0      0      0   100%
-pixelspace\tests\test_views.py       95      5      0      0    95%
-pixelspace\views.py                 452    195     96     12    52%
+pixelspace\authentication.py         53      9     10      0    79%
+pixelspace\email_test.py              4      4      0      0     0%
+pixelspace\forms.py                  76      0      0      0   100%
+pixelspace\models.py                 87      9     18      3    89%
+pixelspace\tests\test_forms.py       76      2      2      1    96%
+pixelspace\tests\test_models.py      78      0      0      0   100%
+pixelspace\tests\test_views.py      111      5      0      0    95%
+pixelspace\views.py                 514    226    102     18    53%
 -------------------------------------------------------------------
-TOTAL                               786    207    108     15    69%
+TOTAL                               999    255    132     22    71%

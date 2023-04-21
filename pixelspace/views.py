@@ -564,7 +564,7 @@ def logo(request):
                     else:
                         fontsize = int(logoWid/4)
                     font = ImageFont.truetype("arial.ttf", fontsize)
-                    
+
                     #_,_,length, width = draw3.textbbox((0,0),text, font=font)
                     newL= int((scaledLBorder/2))
                     newW = int((scaledWBorder/2))
@@ -573,10 +573,10 @@ def logo(request):
                     img.show()
                     #convert to URL to be displayed
                     data_url = URLConverter(img)
-                    
+
                 else:
                     form2 = RectangleForm()
-                            
+
             elif shape == "oval":
                 form2 = RectangleForm()
                 form3 = OvalForm(request.POST)
@@ -604,7 +604,7 @@ def logo(request):
                     else:
                         fontsize = int(ovalWid/4)
                     font = ImageFont.truetype("arial.ttf", fontsize)
-                    
+
                     #_,_,length, width = draw3.textbbox((0,0),text, font=font)
                     newL= int((scaledLBorder/2))
                     newW = int((scaledWBorder/2))
@@ -664,8 +664,6 @@ def logo(request):
         form4 = PolyForm()
 
     return render(request, 'pixelspace/logo.html', {'form': form, 'form2': form2,'form3': form3,'form4': form4,})
-
-
 
 def pixelmap(request):
     template = loader.get_template('pixelspace/pixelmap.html')

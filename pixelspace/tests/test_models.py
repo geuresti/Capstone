@@ -1,5 +1,6 @@
 from django.test import TestCase
 from pixelspace import authentication as auth
+from pixelspace.models import GalleryDAO, PixelMapDAO
 import bcrypt
 import pymongo
 
@@ -11,7 +12,12 @@ dbname = my_client['pixelspace']
 collection_name = "test_users"
 collection = dbname[collection_name]
 
+test_gallery_collection = dbname["test_gallery"]
+test_pixelmaps_collection = dbname["test_pixelmaps"]
+
 mongo_auth = auth.MongoAuthBackend()
+gallery_dao = GalleryDAO()
+pixelmap_dao = PixelMapDAO()
 
 class UserModelTest(TestCase):
 
@@ -83,3 +89,40 @@ class UserModelTest(TestCase):
 
         user = mongo_auth.authenticate(collection_name, username, password)
         self.assertFalse(user)
+
+class PixelMapModelTest(TestCase):
+    def setUp(self):
+        self.pixel_map_id = pixelmap_dao.create_pixel_map(False, "dummy", "just for testing", 100, 150, True, False)
+
+    def tearDown(self):
+        test_pixelmaps_collection.delete_many({})
+
+    def test_create_pixel_map_no_color_specified(self):
+        map_id = pixelmap_dao.create_pixel_map(False, "some_user", "running a test", 150, 175, False, False)
+        self.assertIsNotNone(map_id)
+
+    def test_create_pixel_map_greyscale(self):
+        map_id = pixelmap_dao.create_pixel_map(False, "some_user", "running a test", 150, 175, True, False)
+        self.assertIsNotNone(map_id)
+
+    def test_create_pixel_map_color_range_blank(self):
+        map_id = pixelmap_dao.create_pixel_map(False, "some_user", "running a test", 150, 175, False, True)
+        self.assertIsNotNone(map_id)
+
+    def test_create_pixel_map_color_range_specified(self):
+        map_id = pixelmap_dao.create_pixel_map(False, "some_user", "running a test", 150, 175, False, True, [0, 50], [50, 100], [100, 150])
+        self.assertIsNotNone(map_id)
+
+class GalleryModelTest(TestCase):
+
+    def setUp(self):
+        self.gallery_id = gallery_dao.create_gallery()
+
+    def tearDown(self):
+        test_gallery_collection.delete_many({})
+
+    def test_empty_gallery(self):
+        self.assertEqual(gallery_dao.empty_gallery(0), 1)
+
+    def test_add_pixel_map(self):
+        self.assertEqual(gallery_dao.add_pixel_map(0, 5), 1)

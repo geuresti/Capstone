@@ -15,12 +15,13 @@ from colormath.color_conversions import convert_color
 from colormath.color_diff import delta_e_cie1976
 from coloraide.everything import ColorAll as Color
 import pymongo
-from PIL import Image,ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont
 import random
 from bson.binary import Binary
 import re
 import bcrypt
 from io import BytesIO
+from pixelspace.models import GalleryDAO, PixelMapDAO
 
 from .authentication import MongoAuthBackend
 
@@ -38,9 +39,10 @@ gallery_collection = dbname["gallery"]
 comments_collection = dbname["comment"]
 
 mongo_auth = MongoAuthBackend()
+gallery_dao = GalleryDAO(collection_name="gallery")
+pixelmap_dao = PixelMapDAO(collection_name="pixelmaps")
 
 def index(request):
-
     # There are some weird items in here
     # "_auth_user_id", "_auth_user_backend", "_auth_user_hash"
     # I THINK these are leftover values from the sqlite db
@@ -229,32 +231,35 @@ def URLConverter(img):
 def gallery(request):
     #locate gallery
     currGallery = gallery_collection.find_one(
-        {'gallery':0}
+        {'gallery_id':0}
     )
     #get dictionary
     urlID = {}
     arrayOfURLs = []
+
+    maps = currGallery['gallery_images']
+
     #for every image that has been posted to the gallery
     for item in reversed(currGallery['gallery_images']):
         currMap = pixelmaps_collection.find_one(
             {'pixelmap_id':item}
         )
 
-        mapWidth = currMap['width']
-        #print(mapWidth)
-        data = currMap['PixelMap']
-        length = currMap['length']
-        width = currMap['width']
-        #take the binary encoding of the image and translate it back into an image object
-        newImg = Image.frombytes("RGB",(length,width), data)
-        #print(newImg)
+        if currMap:
+            mapWidth = currMap['width']
+            #print(mapWidth)
+            data = currMap['PixelMap']
+            length = currMap['length']
+            width = currMap['width']
+            #take the binary encoding of the image and translate it back into an image object
+            newImg = Image.frombytes("RGB", (length, width), data)
 
-        data_url = URLConverter(newImg)
-        arrayOfURLs.append(data_url)
-        #urlID.add(item,data_url)
+            data_url = URLConverter(newImg)
+            arrayOfURLs.append(data_url)
+            #urlID.add(item,data_url)
 
-        #Add to the dictionary of IDs and HTML readable URL to display
-        urlID[item] = data_url
+            #Add to the dictionary of IDs and HTML readable URL to display
+            urlID[item] = data_url
     #print(len(arrayOfURLs))
     #print(urlID.keys())
     #print(urlID.values())
@@ -263,47 +268,44 @@ def gallery(request):
 #processes the results of the pixelmap generation and displays it on a new page
 def results(request):
     #grab the most recent pixelmap added to the database (the current one)
-    newest_map = pixelmaps_collection.find_one(
-        sort=[( '_id', pymongo.DESCENDING )]
+    try:
+        newest_map = pixelmaps_collection.find_one(
+            sort=[( '_id', pymongo.DESCENDING )]
         )
+    except:
+        return render(request, 'pixelspace/index.html')
 
     data = newest_map['PixelMap']
     length = newest_map['length']
     width = newest_map['width']
     mapID = newest_map['pixelmap_id']
 
-    '''
-    #if the user is logged in, add this generated pixelmap (its ID) to their account
-    if request.session['username']:
-        username = request.session['username']
-        users_collection.update_one({'username':username}, {'$push':{'pixelmap_ids':mapID}})
-        print("UPDATED")
-    '''
     #take the binary encoding of the image and translate it back into an image object
-    newImg = Image.frombytes("RGB",(length,width), data)
-    #print(newImg)
+    newImg = Image.frombytes("RGB", (length, width), data)
 
     #format image data into HTML readable
     data_url = URLConverter(newImg)
 
-    #print(data_url)
-    #data_url = 'data:image/jpg;base64,' + data
-    #print("TESTING" , data_url)
-    #binaryMap = newest_map[pixelmap]
-
     #if the saving form is valid, proceed
     if request.method == 'POST':
+            print("\n HERE: \n", request.POST, "\n")
             print('testing1')
             form = SaveForm(request.POST)
             form2 = MapForm(request.POST)
             if form.is_valid() and form2.is_valid():
-                print('testing')
+            #    print('\n SAVE FORM: \n', form, '\n')
+            #    print('\n MAP FORM: \n', form2, '\n')
+
                 savePNG = form.cleaned_data.get("png")
                 saveJPG = form.cleaned_data.get("jpg")
                 saveTIF = form.cleaned_data.get("tif")
 
+                print('\n SAVE FORM: \n', savePNG, '\n', saveJPG, '\n', saveTIF, '\n')
+
                 deleteMap = form2.cleaned_data.get("deleteMap")
                 submitMap = form2.cleaned_data.get("submitMap")
+
+                print('\n MAP FORM: \n', deleteMap, '\n', submitMap, '\n')
 
                 #check to see what formats the user wants to save in, and make the necessary image saves
                 if savePNG:
@@ -316,7 +318,7 @@ def results(request):
                     newImg.save("image.tiff")
                     print("tiff saved")
                 #if map delete is true, delete the map
-                print("BEFORE SUBMIT", submitMap, deleteMap)
+                #print("BEFORE SUBMIT", submitMap, deleteMap)
                 if submitMap:
                     print("submitting...")
                     try:
@@ -326,7 +328,8 @@ def results(request):
                                 sort=[( '_id', pymongo.DESCENDING )]
                         )
                         mapID = newest_map['pixelmap_id']
-                        gallery_collection.update_one({'gallery':0}, {'$push':{'gallery_images':mapID}})
+                        # CHANGED THIS
+                        gallery_collection.update_one({'gallery_id':0}, {'$push':{'gallery_images':mapID}})
                         return redirect('image')
 
                     except:
@@ -342,24 +345,6 @@ def results(request):
         return render(request, 'pixelspace/results.html', {'form': form, 'form2':form2, 'Image': data_url})
     #return render(request, 'pixelspace/results.html', {'form': form, 'Image': data_url})
 
-    '''
-    if request.method == 'POST':
-            print('testing1')
-            form2 = MapForm(request.POST)
-            if form2.is_valid():
-                print('testing')
-                deleteMap = form2.cleaned_data.get("deleteMap")
-
-                if deleteMap:
-                    print("testing3")
-                    return redirect('delete-map-confirm')
-
-
-            return render(request, 'pixelspace/results.html', {'form': form, 'Image': data_url})
-    else:
-        form = MapForm()
-        return render(request, 'pixelspace/results.html', {'form': form, 'Image': data_url})
-'''
 def comment_delete(request, map_id=-1, pk=-1):
     if pk == -1 or map_id == -1:
         return redirect('/pixelspace')
@@ -407,12 +392,7 @@ def detail(request, map_id):
         #since multiple people can leave the same comment, and a person can leave more than one comment
         #a dictionary is infeasible for this task
         for item in currComments:
-            #print(item)
             commentAuthor.append((item['author'], item['content'], item['ID']))
-            #commentAuthor[item] = data_url
-
-    #    for author, comment, ID in commentAuthor:
-    #        print(author, comment, ID)
 
         #retrieve current amount of likes to be displayed
         currMap = pixelmaps_collection.find_one(
@@ -425,7 +405,6 @@ def detail(request, map_id):
             like_form = LikeForm(request.POST)
             #handle liking
             if like_form.is_valid():
-                #print("liking..")
                 #increment the amount of likes, and update it in the database
                 currMapLikes = currMapLikes + 1
                 pixelmaps_collection.update_one({'pixelmap_id':mapID}, {'$set':{'likes':currMapLikes}})
@@ -456,8 +435,6 @@ def detail(request, map_id):
                     "pixelmap_id" : mapID,
                 }
                 comments_collection.insert_one(comment)
-
-                print(comment_form , like_form, data_url, commentAuthor, currMapLikes)
 
                 commentAuthor.append((comment['author'], comment['content'], comment['ID']))
 
@@ -676,7 +653,6 @@ def pixelmap(request):
         username = "Guest_User"
     if request.method == 'POST':
             form = PixelForm(request.POST)
-            #form2 = CustomForm(request.POST)
             #acquire acquire length, width, and greyscale from user input
             if form.is_valid():
                 length = form.cleaned_data.get("length")
@@ -693,73 +669,18 @@ def pixelmap(request):
 
                 custom = form.cleaned_data.get("custom")
 
-
-                print("provided length:", length, "\nprovided width:", width)
-                print(custom, "provided length:", rrangeLow, "\nprovided width:", rrangeHigh)
-
-                #generate placeholder image in which to fill in with pixels
-                img = Image.new('RGB', [length,width], 'pink')
-
-                #the process is similar for if the maps are greyscale or color
-                #generate a random value between 1-255, and apply to rgb balues
-                #append onto a list of values, which then gets mapped to the image
-                if custom == True:
-                    colorRange = [rrangeLow,brangeLow,grangeLow,rrangeHigh,brangeHigh,grangeHigh]
-                    for item in range(len(colorRange)):
-                        if colorRange[item] == None and item < 3:
-                            print(colorRange[item])
-                            colorRange[item] = 1
-                        if colorRange[item] == None and item >= 3:
-                            print(colorRange[item])
-                            colorRange[item] = 255
-                    listCustom= [0] * (width * length )
-                    for x in range(width * length ):
-                        r = random.randint(colorRange[0],colorRange[3])
-                        g = random.randint(colorRange[2],colorRange[5])
-                        b = random.randint(colorRange[1],colorRange[4])
-                        listCustom[x] = (r,g,b)
-                    img.putdata(listCustom)
-                    img.show()
-
-                elif greyscale == True:
-                    listGrey= [0] * (width * length )
-                    for x in range(width * length ):
-                        Grey = random.randint(1,255)
-                        listGrey[x] = (Grey,Grey,Grey)
-                    img.putdata(listGrey)
-                    img.show()
-                else:
-                    listColor= [0] * (width * length )
-                    for x in range(width * length ):
-                        r = random.randint(1,255)
-                        g = random.randint(1,255)
-                        b = random.randint(1,255)
-                        listColor[x] = (r,g,b)
-                    img.putdata(listColor)
-                    img.show()
-
-                #get the previous map
-                newest_map = pixelmaps_collection.find_one(
-                    sort=[( '_id', pymongo.DESCENDING )]
+                pixelmap_dao.create_pixel_map(
+                        True,
+                        username,
+                        "placeholder",
+                        length,
+                        width,
+                        greyscale,
+                        custom,
+                        [rrangeLow, rrangeHigh],
+                        [grangeLow, grangeHigh],
+                        [brangeLow, brangeHigh]
                 )
-
-                #increment the id of the previous map to get the id for the current map
-                newest_map_id = int(newest_map["pixelmap_id"]) + 1
-
-                #convert image to binary in order to store in the database
-                bin = img.tobytes()
-
-                #insert pixelmap into database
-                pixelmap = {
-                    "pixelmap_id": newest_map_id,
-                    "creator" : username,
-                    "caption" : "temp",
-                    "PixelMap" : bin,
-                    "width" : width,
-                    "length" : length,
-                    "likes" : 0,
-                    }
-                pixelmaps_collection.insert_one(pixelmap)
 
                 #if the user is logged in, add this generated pixelmap (its ID) to their account
                 try:
@@ -770,10 +691,7 @@ def pixelmap(request):
                     print("As Guest")
 
                 print("PixelMap successfully created")
-                #return results(request, data_url, img)
                 return redirect('results')
-                #return render(request, 'pixelspace/results.html', {'form':form, 'Image': data_url})
-
     else:
         form = PixelForm()
 
@@ -830,7 +748,6 @@ def deleteMapConfirm(request):
             print("Successfully deleted Map", mapID)
             pixelmaps_collection.delete_one({'pixelmap_id':mapID})
             users_collection.update_one({'username':username}, {'$pop':{'pixelmap_ids':1}})
-
 
             return redirect('/pixelspace')
 

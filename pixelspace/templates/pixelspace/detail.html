@@ -36,6 +36,7 @@
             <br>
             <div class="containerCScroll" style="padding-left:0px; width:700px;">
                 {% for author, comment, comment_id in commentAuthor %}
+                    {% if author %}
                     <div class="comment">
                         <p style="font-weight:bold; text-decoration:underline;">{{author}}:</p>
                         <p>{{comment}}</p>
@@ -45,6 +46,7 @@
                             </a>
                         {% endif %}
                     </div>
+                    {% endif %}
                 {% endfor %}
             </div>
             <br>

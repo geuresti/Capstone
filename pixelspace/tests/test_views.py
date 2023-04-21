@@ -1,17 +1,24 @@
 from django.test import TestCase
 from pixelspace import authentication as auth
+from PIL import Image
+from pixelspace.views import URLConverter
+from pixelspace.forms import SaveForm, MapForm
 import bcrypt
 import pymongo
+from pixelspace.models import GalleryDAO, PixelMapDAO
 
 connect_string = 'mongodb+srv://mongodb_dao:uC3wPbLm7AIhkOUL@cluster0.nem4zbs.mongodb.net/?retryWrites=true&w=majority'
 my_client = pymongo.MongoClient(connect_string)
 dbname = my_client['pixelspace']
 
 # CREATE A NEW COLLECTION FOR TESTING
-collection_name = "test_users"
-collection = dbname[collection_name]
+test_users_collection = dbname["test_users"]
+test_gallery_collection = dbname["test_gallery"]
+test_pixelmaps_collection = dbname["test_pixelmaps"]
 
 mongo_auth = auth.MongoAuthBackend()
+gallery_dao = GalleryDAO()
+pixelmap_dao = PixelMapDAO()
 
 # once the views are separated into files, each
 # view should probably get its own test class
@@ -19,7 +26,7 @@ mongo_auth = auth.MongoAuthBackend()
 class ViewTests(TestCase):
 
     def setUp(self):
-        # Set up user document to use in all tests
+        # set up user document to use in all tests
         encoded_password = "password".encode('utf-8')
         encrypted_password = bcrypt.hashpw(encoded_password, bcrypt.gensalt(10))
 
@@ -31,13 +38,25 @@ class ViewTests(TestCase):
         }
 
         # Insert the document into the test database
-        collection.insert_one(user)
+        test_users_collection.insert_one(user)
+
+        self.gallery_id = gallery_dao.create_gallery()
+
+        self.pixel_map_id = pixelmap_dao.create_pixel_map(False, "dummy", "just for testing", 100, 150, True, False)
 
     def tearDown(self):
-        # Delete dummy test account once tests are done
-        #delete_data = collection.delete_one({'user_id':'999'})
+        #try:
+        #    newest_map = dbname["pixelmaps"].find_one(
+        #        sort=[( '_id', pymongo.DESCENDING )]
+        #    )
 
-        collection.delete_many({})
+        #    mapID = newest_map['pixelmap_id']
+        #except:
+        #    pass
+
+        test_pixelmaps_collection.delete_many({})
+
+        test_gallery_collection.delete_many({})
 
     def test_index_view(self):
         response = self.client.get('/pixelspace/')
@@ -166,7 +185,14 @@ class ViewTests(TestCase):
         response = self.client.get('/pixelspace/results')
         self.assertEqual(response.status_code, 200)
 
-#    def test_results_view_with_arguments(self):
-#        response = self.client.post('/pixelspace/results', {"newPassword":"password", "retypePassword":"password", "deleteAccount":False})
-#
-#        self.assertEqual(response.status_code, 200)
+    #def test_results_view_submit_map(self):
+    #    response = self.client.post('/pixelspace/results', {'png': ['on'], 'jpg': ['on'], 'tif': ['on']})
+    #    self.assertEqual(response.status_code, 200)
+
+    def test_results_view_delete_map(self):
+        response = self.client.post('/pixelspace/results', {'deleteMap': ['on']})
+        self.assertEqual(response.status_code, 302)
+
+    def test_results_view_save_map(self):
+        response = self.client.post('/pixelspace/results', {'submitMap': ['off']})
+        self.assertEqual(response.status_code, 302)

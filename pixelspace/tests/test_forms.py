@@ -1,5 +1,5 @@
 from django.test import TestCase
-from pixelspace.forms import UserForm, SettingsForm, LABForm, confirmDeleteForm
+from pixelspace.forms import AccountForm, UserForm, SettingsForm, LABForm, confirmDeleteForm
 from pixelspace import authentication as auth
 import pymongo
 
@@ -33,31 +33,31 @@ class LoginFormTest(TestCase):
 class CreateAccountFormTest(TestCase):
     def test_user_form_good_input(self):
         testData = {'newUser':'meow', 'newPass':'bark', 'confirmPass': 'bark'}
-        form = CreateAccountForm(data=testData)
+        form = AccountForm(data=testData)
         self.assertTrue(form.is_valid())
 
     def test_user_form_no_username(self):
         testData = {'newUser':'', 'newPass':'bark', 'confirmPass': 'bark'}
-        form = CreateAccountForm(data=testData)
+        form = AccountForm(data=testData)
         self.assertFalse(form.is_valid())
 
     def test_user_form_mismatched_passwords(self):
         testData = {'newUser':'meow', 'newPass':'bark', 'confirmPass': 'moo'}
-        form = CreateAccountForm(data=testData)
+        form = AccountForm(data=testData)
 
         # (passwords mismatch)
         self.assertTrue(form.is_valid())
 
     def test_user_form_no_passwords(self):
         testData = {'newUser':'meow', 'newPass':'', 'confirmPass': ''}
-        form = CreateAccountForm(data=testData)
+        form = AccountForm(data=testData)
 
         # (no passwords)
         self.assertFalse(form.is_valid())
 
     def test_user_form_no_input(self):
         testData = {'newUser':'', 'newPass':'', 'confirmPass': ''}
-        form = CreateAccountForm(data=testData)
+        form = AccountForm(data=testData)
         self.assertFalse(form.is_valid())
 """
 

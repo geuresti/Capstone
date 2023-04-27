@@ -1,10 +1,53 @@
 from django import forms
 
+security_question_first_options = [
+    ('Q1', 'What is the name of your first pet?'),
+    ('Q2', 'What is your favorite ice cream flavor?'),
+    ('Q3', 'What was your favorite stuffed animal?'),
+]
+
+security_question_second_options = [
+    ('Q4', 'What is your favorite sports team?'),
+    ('Q5', 'What is the name of your high school?'),
+    ('Q6', 'What is the name of your favorite teacher?'),
+]
+
 class AccountForm(forms.Form):
     username = forms.CharField(label='username', max_length=100)
     password = forms.CharField(widget=forms.PasswordInput, label='password', max_length=100)
     confirm_password = forms.CharField(widget=forms.PasswordInput, label='retype password', max_length=100)
     email = forms.CharField(label='email', max_length=100)
+
+    question_one = forms.CharField(
+        label='Question One',
+        widget=forms.Select(choices=security_question_first_options)
+    )
+
+    answer_one = forms.CharField(label='Answer One', max_length=100)
+
+    question_two = forms.CharField(
+        label='Question Two',
+        widget=forms.Select(choices=security_question_second_options)
+    )
+
+    answer_two = forms.CharField(label='Answer Two', max_length=100)
+
+    """
+class SecurityQuestionsForm(forms.Form):
+    question_one = forms.CharField(
+        label='Question One',
+        widget=forms.Select(choices=security_question_first_options)
+    )
+
+    answer_one = forms.CharField(label='Answer One', max_length=100)
+
+    question_two = forms.CharField(
+        label='Question Two',
+        widget=forms.Select(choices=security_question_second_options)
+    )
+
+    answer_two = forms.CharField(label='Answer Two', max_length=100)
+"""
 
 class UserForm(forms.Form):
     username = forms.CharField(label='username', max_length=100)

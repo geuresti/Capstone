@@ -6,6 +6,15 @@ connect_string = 'mongodb+srv://mongodb_dao:uC3wPbLm7AIhkOUL@cluster0.nem4zbs.mo
 my_client = pymongo.MongoClient(connect_string)
 dbname = my_client['pixelspace']
 
+security_questions = {
+    'Q1':'What is the name of your first pet?',
+    'Q2':'What is your favorite ice cream flavor?',
+    'Q3':'What was your favorite stuffed animal?',
+    'Q4':'What is your favorite sports team?',
+    'Q5':'What is the name of your high school?',
+    'Q6':'What is the name of your favorite teacher?'
+}
+
 # django.contrib.auth authenticate does not work because
 # djang Users have an attribute ".backend" which keeps track
 # of which backend authenticator successfully authenticated
@@ -41,7 +50,7 @@ class MongoAuthBackend(BaseBackend):
         collection.delete_one({'username':username})
         print("Successfully deleted user:", username)
 
-    def create_account(self, username, password, email, collection_name="test_users"):
+    def create_account(self, username, password, email, security_q1, answer1, security_q2, answer2, collection_name="test_users"):
         collection = dbname[collection_name]
         newest_user = collection.find_one(
             sort=[( '_id', pymongo.DESCENDING )]
@@ -56,11 +65,18 @@ class MongoAuthBackend(BaseBackend):
         encoded_password = password.encode('utf-8')
         encrypted_password = bcrypt.hashpw(encoded_password, bcrypt.gensalt(10))
 
+        sec_question_one = security_questions[security_q1]
+        sec_question_two = security_questions[security_q2]
+
         new_user = {
             "user_id": new_user_id,
             "username" : username,
             "password" : encrypted_password,
             "pixelmap_ids": [],
+            "sec_q1": sec_question_one,
+            "sec_q2": sec_question_two,
+            "sec_a1": answer1,
+            "sec_a2": answer2,
             "email" : email,
         }
 

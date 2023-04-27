@@ -181,6 +181,7 @@ input[type=text] {
   color: #406783;
   justify-content: space-around;
 }
+
 input[type=number] {
   width: 30%;
   font-family: 'Iceland-Regular';
@@ -232,8 +233,8 @@ output{
   resize: none;
   padding: 12px 20px;
   text-align:left;
-  word-break: break-all; 
-  
+  word-break: break-all;
+
 }
 
 /*
@@ -295,4 +296,59 @@ output{
 
 .field2{
   float:right;
+}
+
+.create_account_container {
+  display: block;
+
+  border: none;
+  width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.create_account_sub_container {
+  display: flex;
+  justify-content: center;
+  border: none;
+}
+
+.create_account_form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-wrap: nowrap;
+  align-items: baseline;
+
+  margin: 10px;
+  padding: 10px;
+  width: 350px;
+  font-family: 'Iceland-Regular';
+  font-weight: bold;
+  border: 2px solid black;
+  background-color: #D9E5FC;
+  color: #406783;
+
+  text-align: center;
+
+  row-gap: 15px;
+}
+
+.create_account_form input {
+  display: block;
+  width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid black;
+  border-radius: 5px;
+  background-color: white;
+  color: #406783;
+}
+
+.create_account_form select {
+  width: 280px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid black;
 }

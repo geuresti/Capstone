@@ -9,12 +9,50 @@
         <h1>Create Account</h1>
     </div>
 
-    <div class="containerB">
-        <form id="django_form" action="" method="post">
+    <div class="create_account_container">
+      <form action="" method="post">
           {% csrf_token %}
-          {{ form }}
-          <button class="button" type ="submit"> CREATE </button>
-        </form>
+              <div class="create_account_sub_container">
+                  <div class="create_account_form">
+                      <div>
+                            {{ form.username.label }}
+                            {{ form.username }}
+                      </div>
+
+                      <div>
+                          {{ form.password.label }}
+                          {{ form.password }}
+                      </div>
+
+                      <div>
+                          {{ form.confirm_password.label }}
+                          {{ form.confirm_password }}
+                      </div>
+
+                      <div>
+                          {{ form.email.label }}
+                          {{ form.email }}
+                      </div>
+                  </div>
+                  <div class="create_account_form">
+
+                      <h3> Security Questions: </h3>
+                      <div>
+                          {{ form.question_one }}
+                          {{ form.answer_one }}
+                      </div>
+
+                      <div>
+                          {{ form.question_two }}
+                          {{ form.answer_two }}
+                      </div>
+                  </div>
+              </div>
+          <div class="create_account_sub_container">
+            <button class="button" type ="submit"> CREATE </button>
+          </div>
+
+      </form>
     </div>
 
 {% endblock %}

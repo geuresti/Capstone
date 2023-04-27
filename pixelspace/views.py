@@ -1,14 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from django.template import loader
 from django.http import HttpResponseRedirect
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib import messages
 import base64
 from http import HTTPStatus
 import os, sys
 from .forms import AccountForm, UserForm, SettingsForm, LABForm, confirmDeleteForm, PixelForm, SaveForm, MapForm, confirmMapDeleteForm, CustomForm, LikeForm, commentForm, ShapeForm, RectangleForm, OvalForm, PolyForm
-from django.contrib import messages
 from colormath.color_objects import LabColor, sRGBColor, AdobeRGBColor
 from colormath.color_objects import BT2020Color
 from colormath.color_conversions import convert_color
@@ -43,14 +40,7 @@ gallery_dao = GalleryDAO(collection_name="gallery")
 pixelmap_dao = PixelMapDAO(collection_name="pixelmaps")
 
 def index(request):
-    # There are some weird items in here
-    # "_auth_user_id", "_auth_user_backend", "_auth_user_hash"
-    # I THINK these are leftover values from the sqlite db
-    # need to remove them and see if it causes any issues
-#    del request.session['test']
-
     print("----------------\n", request.session)
-    #request.session['test'] = 'testing'
     for data in request.session.keys():
         print(f'request.session[{data}]:', request.session[data])
     #print("\n", request.session['test'], "\n----------------")
@@ -60,7 +50,6 @@ def index(request):
 
 #View Function for the Colors template
 def colors(request):
-    template = loader.get_template('pixelspace/colors.html')
     if request.method == 'POST':
         #take in L*A*B values
         form = LABForm(request.POST)
@@ -451,8 +440,6 @@ def detail(request, map_id):
         return render(request, 'pixelspace/detail.html', {'mapID':mapID, 'dataURL': data_url, 'commentAuthor': commentAuthor})
 
 def login(request):
-
-    template = loader.get_template('pixelspace/login.html')
     if request.method == 'POST':
         form = UserForm(request.POST)
         #acquire login and password from user input
@@ -467,8 +454,6 @@ def login(request):
             if user:
                 # log user into the session
                 mongo_auth.login(request, user)
-                #messages.success(request, "LOGGED IN ALERT") # WIP !!!!!!!!!!!
-                messages.add_message(request, messages.SUCCESS, 'Sucessfully Logged In') #, extra_tags='login_alert')
 
                 print("Successfully logged in user:", user['username'])
                 return redirect('/pixelspace')
@@ -500,11 +485,7 @@ def logout(request):
         )
 
 def logo(request):
-    template = loader.get_template('pixelspace/logo.html')
-    #return HttpResponse(template.render(request))
-    print("here")
     if request.method == "POST":
-        print("also here")
         #initialize forms
         form = ShapeForm(request.POST)
         form2 = RectangleForm()
@@ -643,8 +624,6 @@ def logo(request):
     return render(request, 'pixelspace/logo.html', {'form': form, 'form2': form2,'form3': form3,'form4': form4,})
 
 def pixelmap(request):
-    template = loader.get_template('pixelspace/pixelmap.html')
-
     #set username to username or guest username depending on if the user is logged in
     try:
         request.session['username']
@@ -793,7 +772,6 @@ def settings(request):
     return render(request, 'pixelspace/settings.html', {'form':form})
 
 def create_account(request):
-    template = loader.get_template('pixelspace/create_account.html')
     if request.method == 'POST':
         form = AccountForm(request.POST)
         if form.is_valid():
@@ -803,9 +781,13 @@ def create_account(request):
             confirm_password = form.cleaned_data.get("confirm_password")
             new_email = form.cleaned_data.get("email")
 
-            # ! ERROR CHECK INPUT HERE (or in form?) !
+            security_question_one = form.cleaned_data.get("question_one")
+            security_answer_one = form.cleaned_data.get("answer_one")
+            security_question_two = form.cleaned_data.get("question_two")
+            security_answer_two = form.cleaned_data.get("answer_two")
 
             print(f'NEW USER: {new_username} \n NEW_PASS: {new_password} \n CON_PASS: {confirm_password} \n EMAIL: {new_email}')
+            print(f'SQ1: {security_question_one} \n A1: {security_answer_one} \n SQ2: {security_question_two} \n A2: {security_answer_two}')
 
             if mongo_auth.already_exists("users", new_username):
                 # ! DISPLAY ERROR NOTIFICATION TO USER !
@@ -814,20 +796,24 @@ def create_account(request):
 
             # If the input is valid, create a new user
             elif new_password == confirm_password:
+                print("\n ACCOUNT CREATION IN DB ON HOLD \n")
                 mongo_auth.create_account(
                     new_username,
                     new_password,
                     new_email,
+                    security_question_one,
+                    security_answer_one,
+                    security_question_two,
+                    security_answer_two,
                     "users"
                 )
                 return redirect('login')
             else:
                 print("Error: passwords did not match")
-                messages.error(request, 'Passwords did not match.')
                 return redirect('create-account')
 
             return redirect('/pixelspace/login')
     else:
-        form=AccountForm()
+        form = AccountForm()
 
     return render(request, 'pixelspace/create_account.html', {'form':form})

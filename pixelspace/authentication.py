@@ -33,6 +33,7 @@ class MongoAuthBackend(BaseBackend):
 
     def login(self, request, user):
         request.session['username'] = user['username']
+        request.session['user_id'] = user['user_id']
 
     def change_password(self, collection_name="users", username=None, new_password=None):
         if username and new_password:
@@ -83,6 +84,7 @@ class MongoAuthBackend(BaseBackend):
         collection.insert_one(new_user)
         print("Account successfully created")
 
+
     @classmethod
     def already_exists(self, collection_name="test_users", username=None):
         collection = dbname[collection_name]
@@ -92,8 +94,28 @@ class MongoAuthBackend(BaseBackend):
 
         return False
 
+    def get_security_questions(self, collection_name="users", user_id=None):
+        try:
+            collection = dbname[collection_name]
+            user = collection.find_one({'user_id': user_id})
+
+            q1 = user['sec_q1']
+            q2 = user['sec_q2']
+            return [q1, q2]
+        except:
+            return None
+
+    def get_user_id(self, collection_name="users", username=None):
+        try:
+            collection = dbname[collection_name]
+            user = collection.find_one({"username": username})
+            return user['user_id']
+        except:
+            return None
+
     def get_user(self, collection_name="users", user_id=None):
         try:
-            return collection_name.find_one({"user_id": user_id})
+            collection = dbname[collection_name]
+            return collection.find_one({"user_id": user_id})
         except:
             return None

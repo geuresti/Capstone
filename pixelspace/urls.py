@@ -19,4 +19,5 @@ urlpatterns = [
     path('results', views.results, name='results'),
     path('detail/<int:map_id>/', views.detail, name='detail'),
     path('comment-delete/<int:map_id>/<int:pk>', views.comment_delete, name='comment_delete'),
+    path('reset-password', views.reset_password, name='reset_password'),
 ]

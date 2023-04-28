@@ -32,22 +32,10 @@ class AccountForm(forms.Form):
 
     answer_two = forms.CharField(label='Answer Two', max_length=100)
 
-    """
 class SecurityQuestionsForm(forms.Form):
-    question_one = forms.CharField(
-        label='Question One',
-        widget=forms.Select(choices=security_question_first_options)
-    )
-
-    answer_one = forms.CharField(label='Answer One', max_length=100)
-
-    question_two = forms.CharField(
-        label='Question Two',
-        widget=forms.Select(choices=security_question_second_options)
-    )
-
-    answer_two = forms.CharField(label='Answer Two', max_length=100)
-"""
+    username = forms.CharField(label='Username', required=False, max_length=100)
+    answer_one = forms.CharField(label='Answer One', required=False, max_length=100)
+    answer_two = forms.CharField(label='Answer Two', required=False, max_length=100)
 
 class UserForm(forms.Form):
     username = forms.CharField(label='username', max_length=100)

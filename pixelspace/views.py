@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 import base64
 from http import HTTPStatus
 import os, sys
-from .forms import AccountForm, UserForm, SettingsForm, LABForm, confirmDeleteForm, PixelForm, SaveForm, MapForm, confirmMapDeleteForm, CustomForm, LikeForm, commentForm, ShapeForm, RectangleForm, OvalForm, PolyForm
+from .forms import AccountForm, SecurityQuestionsForm, UserForm, SettingsForm, LABForm, confirmDeleteForm, PixelForm, SaveForm, MapForm, confirmMapDeleteForm, CustomForm, LikeForm, commentForm, ShapeForm, RectangleForm, OvalForm, PolyForm
 from colormath.color_objects import LabColor, sRGBColor, AdobeRGBColor
 from colormath.color_objects import BT2020Color
 from colormath.color_conversions import convert_color
@@ -476,6 +476,8 @@ def logout(request):
         if request.session['username']:
             print("Successfully logged out user:", request.session['username'])
             del request.session['username']
+            del request.session['user_id']
+            del request.session['username_for_reset']
             return redirect('/pixelspace')
     except:
         return render(
@@ -684,10 +686,6 @@ def deleteConfirm(request):
 
     username = request.session['username']
 
-    curr_account = users_collection.find_one(
-        {'username':username}
-    )
-
     form = confirmDeleteForm(request.POST)
     if form.is_valid():
         confirmDelete = form.cleaned_data.get("confirmDelete")
@@ -709,10 +707,6 @@ def deleteMapConfirm(request):
 
     username = request.session['username']
 
-    curr_account = users_collection.find_one(
-        {'username':username}
-    )
-
     newest_map = pixelmaps_collection.find_one(
         sort=[( '_id', pymongo.DESCENDING )]
         )
@@ -732,23 +726,83 @@ def deleteMapConfirm(request):
 
     return render(request, 'pixelspace/delete-map-confirm.html', {'form':form})
 
+def reset_password(request):
+
+    if request.method == "POST":
+        settings_form = SettingsForm(request.POST)
+        security_questions_form = SecurityQuestionsForm(request.POST)
+
+        if settings_form.is_valid():
+            changedPassword = settings_form.cleaned_data.get("newPassword")
+            retypePassword = settings_form.cleaned_data.get("retypePassword")
+
+            if changedPassword and changedPassword == retypePassword:
+                print("* The new passwords match *")
+                #when the password is changed, log user out and direct them to the homepage
+                username = request.session['username_for_reset']
+                mongo_auth.change_password("users", username, changedPassword)
+                print("Successfully reset password for:", username)
+                return logout(request)
+            else:
+                print("Reset passwords do not match")
+                return render(request, 'pixelspace/reset_password.html', {'settings_form':settings_form})
+
+        if security_questions_form.is_valid():
+
+            answer_one = security_questions_form.cleaned_data.get("answer_one")
+            answer_two = security_questions_form.cleaned_data.get("answer_two")
+
+            print("A1:", answer_one)
+            print("A2:", answer_two)
+
+            if answer_one and answer_two:
+                print("\n WE CHILLING \n")
+                return render(request, 'pixelspace/reset_password.html', {'settings_form':settings_form})
+
+            print("\n SECURITY QUESTIONS FORM IS VALID \n")
+            # reset password
+            # logout user
+            # direct to log in page
+            try:
+                username = security_questions_form.cleaned_data.get("username")
+                print("\n USERNAME FOR SECURITY QUESTIONS:", username, "\n")
+                request.session['username_for_reset'] = username
+            except:
+                print("\n ERROR GETTING USERNAME \n")
+
+            user_id = mongo_auth.get_user_id(username=username)
+            if user_id:
+                print("\n USER ID:", user_id, "\n")
+                questions = mongo_auth.get_security_questions(user_id = user_id)
+                print("\n QUESTIONS:", questions, "\n")
+                if questions:
+                    question_one = questions[0]
+                    question_two = questions[1]
+            else:
+                print("\n ERROR: account not found \n")
+                return redirect('login')
+
+            security_questions_form = SecurityQuestionsForm()
+            return render(request, 'pixelspace/reset_password.html', {'security_questions_form':security_questions_form, 'question_one':question_one, 'question_two':question_two, 'username':True})
+    else:
+        security_questions_form = SecurityQuestionsForm()
+
+        print("\n WRONG RETURN \n")
+        return render(request, 'pixelspace/reset_password.html', {'security_questions_form':security_questions_form})
+
 #Settings, currently has change password functionality
 def settings(request):
     if request.method == 'POST':
         #grab the password to change to
         form = SettingsForm(request.POST)
+
         if form.is_valid():
             changedPassword = form.cleaned_data.get("newPassword")
             retypePassword = form.cleaned_data.get("retypePassword")
             deleteAccount = form.cleaned_data.get("deleteAccount")
-
             try:
                 if request.session['username']:
                     username = request.session['username']
-
-                    curr_account = users_collection.find_one(
-                        {'username':username}
-                    )
 
                 # user can confirm that they want to delete their account
                 if deleteAccount:
@@ -769,6 +823,7 @@ def settings(request):
             print("* Invalid settings form *")
     else:
         form = SettingsForm()
+
     return render(request, 'pixelspace/settings.html', {'form':form})
 
 def create_account(request):

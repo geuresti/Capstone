@@ -352,3 +352,11 @@ output{
   margin-right: auto;
   border: 1px solid black;
 }
+
+#security_questions_form {
+  display: none;
+}
+
+#submit_answers {
+  display: none;
+}

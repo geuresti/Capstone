@@ -17,6 +17,19 @@ h1 {
     transform: translate(-50%, -50%);
 }
 
+h4 {
+  font-family: 'Iceland-Regular';
+  color: #327FAC;
+  text-align: center;
+  font-size: 90px;
+  text-shadow: #163959 -2px -3px;
+
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
 h2 {
     font-family: 'Iceland-Regular';
     color: #327FAC;
@@ -29,10 +42,39 @@ h3 {
     margin: 0px;
 }
 
+h5 {
+  font-family: 'Courier';
+  color: #4c89af;
+  margin: 0px;
+  font-size: 15px;
+  text-align: center;
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+h6 {
+  font-family: 'Iceland-Regular';
+  color: #9fb4c2;
+  text-align: center;
+  font-size:30px;
+  margin: 0px;
+}
+
+hr {
+  height:1px;
+  border-width:0;
+  background-color:#9fb4c2;
+}
 body {
     /*background: pink url("images/cattoy.jpg") no-repeat;*/
     background: white;
     margin: 0;
+}
+
+.imagez{
+  margin:10px;
 }
 
 .rectangle {
@@ -359,4 +401,8 @@ output{
 
 #submit_answers {
   display: none;
+}
+
+.containerx{
+  margin-top:0;
 }

@@ -14,8 +14,14 @@
     <div class="containerB">
         <form id="django_form" action="" method="post">
           {% csrf_token %}
-          {{ form }}
-          <button class="button" type ="submit"> Change </button>
+          <label>New Pasword:</label>
+          {{ form.newPassword }}
+          <label>Retype Password:</label>
+          {{ form.retypePassword }}
+          <label>Delete Account:</label>
+          {{ form.deleteAccount }}
+
+          <button class="button" type ="submit"> Apply Changes </button>
         </form>
     </div>
 

@@ -478,13 +478,16 @@ def logout(request):
             del request.session['username']
             del request.session['user_id']
             del request.session['username_for_reset']
-            return redirect('/pixelspace')
     except:
-        return render(
-            request,
-            'pixelspace/login.html',
-            status=HTTPStatus.FOUND,
-        )
+        pass
+
+    return redirect('login')
+
+    #return render(
+    #    request,
+    #    'pixelspace/login.html',
+    #    status=HTTPStatus.FOUND,
+    #)
 
 def logo(request):
     if request.method == "POST":
@@ -680,23 +683,24 @@ def pixelmap(request):
 
 def deleteConfirm(request):
     try:
-        request.session['username']
+        username = request.session['username']
     except:
         return redirect('/pixelspace')
 
-    username = request.session['username']
+    if request.method == "POST":
+        form = confirmDeleteForm(request.POST)
 
-    form = confirmDeleteForm(request.POST)
-    if form.is_valid():
-        confirmDelete = form.cleaned_data.get("confirmDelete")
-        if confirmDelete:
-            #users_collection.delete_one({'username':username})
-            mongo_auth.delete_user(username, "users")
+        if form.is_valid():
+            confirmDelete = form.cleaned_data.get("confirmDelete")
 
-            del request.session['username']
-            return redirect('/pixelspace')
-
-    return render(request, 'pixelspace/delete-confirm.html', {'form':form})
+            if confirmDelete:
+                mongo_auth.delete_user(username, "users")
+                return logout(request)
+            else:
+                return redirect('settings')
+    else:
+        form = confirmDeleteForm()
+        return render(request, 'pixelspace/delete-confirm.html', {'form':form})
 
 def deleteMapConfirm(request):
     #check to make sure user is logged in
@@ -709,7 +713,7 @@ def deleteMapConfirm(request):
 
     newest_map = pixelmaps_collection.find_one(
         sort=[( '_id', pymongo.DESCENDING )]
-        )
+    )
 
     mapID = newest_map['pixelmap_id']
     #confirm that the map is deleted properly (the box is ticked)
@@ -732,45 +736,60 @@ def reset_password(request):
         settings_form = SettingsForm(request.POST)
         security_questions_form = SecurityQuestionsForm(request.POST)
 
+        # RESET THE PASSWORD
         if settings_form.is_valid():
             changedPassword = settings_form.cleaned_data.get("newPassword")
             retypePassword = settings_form.cleaned_data.get("retypePassword")
 
-            if changedPassword and changedPassword == retypePassword:
-                print("* The new passwords match *")
-                #when the password is changed, log user out and direct them to the homepage
-                username = request.session['username_for_reset']
-                mongo_auth.change_password("users", username, changedPassword)
-                print("Successfully reset password for:", username)
-                return logout(request)
+            if changedPassword != "":
+                if changedPassword == retypePassword:
+                    print("* The new passwords match: *", changedPassword, "|", retypePassword)
+                    #when the password is changed, log user out and direct them to the homepage
+                    username = request.session['username_for_reset']
+                    mongo_auth.change_password("users", username, changedPassword)
+                    print("Successfully reset password for:", username)
+                    return logout(request)
+                else:
+                    print("Reset passwords do not match")
+                    return render(request, 'pixelspace/reset_password.html', {'settings_form':settings_form})
             else:
-                print("Reset passwords do not match")
-                return render(request, 'pixelspace/reset_password.html', {'settings_form':settings_form})
+                pass
 
+        # ASK SECURITY QUESTIONS
         if security_questions_form.is_valid():
+            print("\n SECURITY QUESTIONS FORM IS VALID \n")
 
             answer_one = security_questions_form.cleaned_data.get("answer_one")
             answer_two = security_questions_form.cleaned_data.get("answer_two")
 
-            print("A1:", answer_one)
-            print("A2:", answer_two)
-
             if answer_one and answer_two:
-                print("\n WE CHILLING \n")
-                return render(request, 'pixelspace/reset_password.html', {'settings_form':settings_form})
+                print("A1:", answer_one)
+                print("A2:", answer_two)
 
-            print("\n SECURITY QUESTIONS FORM IS VALID \n")
-            # reset password
-            # logout user
-            # direct to log in page
-            try:
-                username = security_questions_form.cleaned_data.get("username")
+                username = request.session['username_for_reset']
+                user_id = mongo_auth.get_user_id(collection_name="users", username=username)
+
+                print("PROVIDED ID:", user_id, "\n")
+
+                answers = mongo_auth.get_security_answers(user_id = user_id)
+                print("correct answers:", answers, "\n")
+
+                if answer_one == answers[0] and answer_two == answers[1]:
+                    return render(request, 'pixelspace/reset_password.html', {'settings_form':settings_form})
+                else:
+                    print("! ERROR: Incorrect answers to the security questions !")
+                    return render(request, 'pixelspace/reset_password.html', {'security_questions_form':security_questions_form})
+
+            username = security_questions_form.cleaned_data.get("username")
+
+            if username:
                 print("\n USERNAME FOR SECURITY QUESTIONS:", username, "\n")
                 request.session['username_for_reset'] = username
-            except:
+            else:
                 print("\n ERROR GETTING USERNAME \n")
 
-            user_id = mongo_auth.get_user_id(username=username)
+            user_id = mongo_auth.get_user_id(collection_name="users", username=username)
+
             if user_id:
                 print("\n USER ID:", user_id, "\n")
                 questions = mongo_auth.get_security_questions(user_id = user_id)
@@ -778,28 +797,29 @@ def reset_password(request):
                 if questions:
                     question_one = questions[0]
                     question_two = questions[1]
+
+                    security_questions_form = SecurityQuestionsForm()
+                    return render(request, 'pixelspace/reset_password.html', {'security_questions_form':security_questions_form, 'question_one':question_one, 'question_two':question_two, 'username':True})
             else:
                 print("\n ERROR: account not found \n")
                 return redirect('login')
 
-            security_questions_form = SecurityQuestionsForm()
-            return render(request, 'pixelspace/reset_password.html', {'security_questions_form':security_questions_form, 'question_one':question_one, 'question_two':question_two, 'username':True})
+    #        security_questions_form = SecurityQuestionsForm()
+    #        return render(request, 'pixelspace/reset_password.html', {'security_questions_form':security_questions_form, 'question_one':question_one, 'question_two':question_two, 'username':True})
     else:
         security_questions_form = SecurityQuestionsForm()
-
-        print("\n WRONG RETURN \n")
         return render(request, 'pixelspace/reset_password.html', {'security_questions_form':security_questions_form})
 
 #Settings, currently has change password functionality
 def settings(request):
     if request.method == 'POST':
-        #grab the password to change to
         form = SettingsForm(request.POST)
 
         if form.is_valid():
             changedPassword = form.cleaned_data.get("newPassword")
             retypePassword = form.cleaned_data.get("retypePassword")
             deleteAccount = form.cleaned_data.get("deleteAccount")
+
             try:
                 if request.session['username']:
                     username = request.session['username']
@@ -821,9 +841,9 @@ def settings(request):
                 return redirect('login')
         else:
             print("* Invalid settings form *")
-    else:
-        form = SettingsForm()
 
+    # removed "else:"
+    form = SettingsForm()
     return render(request, 'pixelspace/settings.html', {'form':form})
 
 def create_account(request):

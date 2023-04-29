@@ -105,6 +105,17 @@ class MongoAuthBackend(BaseBackend):
         except:
             return None
 
+    def get_security_answers(self, collection_name="users", user_id=None):
+        try:
+            collection = dbname[collection_name]
+            user = collection.find_one({'user_id': user_id})
+
+            a1 = user['sec_a1']
+            a2 = user['sec_a2']
+            return [a1, a2]
+        except:
+            return None
+
     def get_user_id(self, collection_name="users", username=None):
         try:
             collection = dbname[collection_name]

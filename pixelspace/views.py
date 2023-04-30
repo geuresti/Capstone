@@ -296,16 +296,7 @@ def results(request):
 
                 print('\n MAP FORM: \n', deleteMap, '\n', submitMap, '\n')
 
-                #check to see what formats the user wants to save in, and make the necessary image saves
-                if savePNG:
-                    newImg.save("image.png")
-                    print("png saved")
-                if saveJPG:
-                    newImg.save("image.jpeg")
-                    print("jpg saved")
-                if saveTIF:
-                    newImg.save("image.tiff")
-                    print("tiff saved")
+
                 #if map delete is true, delete the map
                 #print("BEFORE SUBMIT", submitMap, deleteMap)
                 if submitMap:
@@ -323,6 +314,18 @@ def results(request):
 
                     except:
                         return redirect('/pixelspace')
+                    
+                            #check to see what formats the user wants to save in, and make the necessary image saves
+                newestMapString = "image" + str(mapID)
+                if savePNG:
+                    newImg.save("pixelspace\pixelmaps\\" + newestMapString + ".png")
+                    print("png saved")
+                if saveJPG:
+                    newImg.save("pixelspace\pixelmaps\\" + newestMapString + ".jpg")
+                    print("jpg saved")
+                if saveTIF:
+                    newImg.save("pixelspace\pixelmaps\\" + newestMapString + ".tiff")
+                    print("tiff saved")
 
                 if deleteMap:
                     print("testing3")

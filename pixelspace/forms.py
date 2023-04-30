@@ -123,3 +123,16 @@ class PolyForm(forms.Form):
     text = textColor = forms.CharField(label='text', max_length=100)
     textColor = forms.CharField(label='textColor', max_length=100)
     shape = forms.CharField(widget=forms.HiddenInput())
+
+class saveLogo(forms.Form):
+    logoLen = forms.IntegerField(widget=forms.HiddenInput())
+    logoWid = forms.IntegerField(widget=forms.HiddenInput())
+    polySize = forms.IntegerField(widget=forms.HiddenInput())
+    noSides = forms.IntegerField(widget=forms.HiddenInput())
+    ovalLen = forms.IntegerField(widget=forms.HiddenInput())
+    ovalWid = forms.IntegerField(widget=forms.HiddenInput())
+    color = forms.CharField(widget=forms.HiddenInput())
+    text = textColor = forms.CharField(widget=forms.HiddenInput())
+    textColor = forms.CharField(widget=forms.HiddenInput())
+    shape = forms.CharField(widget=forms.HiddenInput())
+    logo = forms.CharField(widget=forms.HiddenInput())

@@ -1,5 +1,4 @@
 from django import forms
-from django.forms.widgets import TextInput
 
 security_question_first_options = [
     ('Q1', 'What is the name of your first pet?'),
@@ -101,7 +100,6 @@ class confirmMapDeleteForm(forms.Form):
 class ShapeForm(forms.Form):
     shape = forms.ChoiceField(choices = (("rectangle","rectangle"),("oval","oval"),("polygon","polygon")))
 
-# CHANGES
 class RectangleForm(forms.Form):
     logoLen = forms.IntegerField(label='logoLen')
     logoWid = forms.IntegerField(label='logoWid')

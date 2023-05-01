@@ -11,6 +11,10 @@
 <h4>Settings</h4>
 <h5>Edit account details, or close account</h5>
 
+    
+    <h7>Change Password</h7>
+    <br> <br>
+    
     <div class="containerB">
         <form id="django_form" action="" method="post">
           {% csrf_token %}
@@ -18,7 +22,8 @@
           {{ form.newPassword }}
           <label>Retype Password:</label>
           {{ form.retypePassword }}
-          <label>Delete Account:</label>
+          <br> <br>
+          <label style="font-size: xx-large;">Delete Account:</label>
           {{ form.deleteAccount }}
 
           <button class="button" type ="submit"> Apply Changes </button>

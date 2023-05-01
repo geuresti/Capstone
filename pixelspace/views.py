@@ -40,11 +40,10 @@ gallery_dao = GalleryDAO(collection_name="gallery")
 pixelmap_dao = PixelMapDAO(collection_name="pixelmaps")
 
 def index(request):
-    print("----------------\n", request.session)
-    for data in request.session.keys():
-        print(f'request.session[{data}]:', request.session[data])
-    #print("\n", request.session['test'], "\n----------------")
-    print("----------------")
+#    print("----------------\n", request.session)
+#    for data in request.session.keys():
+#        print(f'request.session[{data}]:', request.session[data])
+#    print("----------------")
 
     return render(request, 'pixelspace/index.html')
 
@@ -59,28 +58,28 @@ def colors(request):
             axisA = form.cleaned_data.get("axisA")
             axisB = form.cleaned_data.get("axisB")
             testing = [lightness1, axisA, axisB]
-            print(testing)
+        #    print(testing)
             #format the Color to be a LAB
             colorRGB = Color("lab", testing)
             colorsRGB = Color("lab", testing)
             colorPro = Color("lab", testing)
-            print(colorPro)
+        #    print(colorPro)
             #check if color is in gamut (an appropriate conversion)
             if colorRGB.in_gamut('a98-rgb'):
                 rgbColor = colorRGB.convert("a98-rgb")
-                print(rgbColor)
+            #    print(rgbColor)
                 rgbR = rgbColor['r'] * 255
                 rgbG = rgbColor['g'] * 255
                 rgbB = rgbColor['b'] * 255
                 #Upscale color on client request
                 rgbUpscale = "({},{},{})".format(round(rgbR),round(rgbG), round(rgbB) )
-                print(rgbUpscale)
+            #    print(rgbUpscale)
                 #format the color into a hex code for output
                 #and upscaled output on client request
                 hexCode = '#{:02x}{:02x}{:02x}'.format(round(rgbR),round(rgbG), round(rgbB))
                 deltaE = colorRGB.delta_e(rgbColor, method="2000")
-                print(hexCode, rgbUpscale)
-                print(deltaE , "NEW RGB\n\n")
+        #        print(hexCode, rgbUpscale)
+        #        print(deltaE , "NEW RGB\n\n")
                 canRGB = True
                 canRGBText = "Convertible"
             else:
@@ -89,7 +88,7 @@ def colors(request):
                 #fit color into correct gamut before continuing
                 colorRGB.fit("a98-rgb")
                 after = colorRGB.in_gamut("a98-rgb")
-                print("before", before, "after", after)
+        #        print("before", before, "after", after)
                 canRGB = False
                 canRGBText = "Unconvertible"
                 rgbColor = colorRGB.convert("a98-rgb")
@@ -100,33 +99,33 @@ def colors(request):
                 hexCode = '#{:02x}{:02x}{:02x}'.format(round(rgbR),round(rgbG), round(rgbB))
                 rgbUpscale = "({},{},{})".format(round(rgbR),round(rgbG), round(rgbB) )
                 deltaE = colorRGB.delta_e(rgbColor, method="2000")
-                print(hexCode, rgbUpscale)
-                print(deltaE , "NEW RGB\n\n")
+        #        print(hexCode, rgbUpscale)
+        #        print(deltaE , "NEW RGB\n\n")
             #check if color is in gamut (an appropriate conversion)
             if colorsRGB.in_gamut('srgb'):
                 srgbColor = colorsRGB.convert("srgb")
-                print(srgbColor)
+            #    print(srgbColor)
                 srgbR = srgbColor['r'] * 255
                 srgbG = srgbColor['g'] * 255
                 srgbB = srgbColor['b'] * 255
                 #Upscale color on client request
                 srgbUpscale = "({},{},{})".format(round(srgbR),round(srgbG), round(srgbB) )
-                print(srgbUpscale)
+            #    print(srgbUpscale)
                 #format the color into a hex code for output
                 #and upscaled output on client request
                 shexCode = '#{:02x}{:02x}{:02x}'.format(round(srgbR),round(srgbG), round(srgbB))
                 deltaE = colorsRGB.delta_e(srgbColor, method="2000")
                 cansRGB = True
                 cansRGBText = "Convertible"
-                print(shexCode, srgbUpscale)
-                print(deltaE , "NEW SRGB Y\n\n")
+            #    print(shexCode, srgbUpscale)
+            #    print(deltaE , "NEW SRGB Y\n\n")
             else:
-                print("Not in sRGB Gamut")
+            #    print("Not in sRGB Gamut")
                 before = colorsRGB.in_gamut('srgb')
                 #fit color into correct gamut before continuing
                 colorsRGB.fit('srgb')
                 after = colorsRGB.in_gamut('srgb')
-                print("before", before, "after", after)
+            #    print("before", before, "after", after)
                 cansRGB = False
                 cansRGBText = "Unconvertible"
                 srgbColor = colorsRGB.convert("srgb")
@@ -137,12 +136,12 @@ def colors(request):
                 shexCode = '#{:02x}{:02x}{:02x}'.format(round(srgbR),round(srgbG), round(srgbB))
                 srgbUpscale = "({},{},{})".format(round(srgbR),round(srgbG), round(srgbB) )
                 deltaE = colorsRGB.delta_e(srgbColor, method="2000")
-                print(shexCode, srgbUpscale)
-                print(deltaE , "NEW SRGB N\n\n")
+            #    print(shexCode, srgbUpscale)
+            #    print(deltaE , "NEW SRGB N\n\n")
             #check if color is in gamut (an appropriate conversion)
             if colorPro.in_gamut('prophoto-rgb'):
                 ProPhotoColor = colorPro.convert("prophoto-rgb")
-                print(ProPhotoColor)
+            #    print(ProPhotoColor)
                 ProR = ProPhotoColor['r'] * 255
                 ProG = ProPhotoColor['g'] * 255
                 ProB = ProPhotoColor['b'] * 255
@@ -150,20 +149,20 @@ def colors(request):
                 canPro = True
                 canProText = "Convertible"
                 proUpscale = "({},{},{})".format(round(ProR),round(ProG), round(ProB) )
-                print(proUpscale)
+            #    print(proUpscale)
                 #format the color into a hex code for output
                 #and upscaled output on client request
                 ProHexCode = '#{:02x}{:02x}{:02x}'.format(round(ProR),round(ProG), round(ProB))
                 deltaE = colorPro.delta_e(ProPhotoColor, method="2000")
-                print(ProHexCode, proUpscale)
-                print(deltaE , "NEW PROPHOTO\n\n")
+            #    print(ProHexCode, proUpscale)
+            #    print(deltaE , "NEW PROPHOTO\n\n")
             else:
-                print("Not in ProPhoto Gamut")
+            #    print("Not in ProPhoto Gamut")
                 before = colorPro.in_gamut("prophoto-rgb")
                 #fit color into correct gamut before continuing
                 colorPro.fit("prophoto-rgb")
                 after = colorPro.in_gamut("prophoto-rgb")
-                print("before", before, "after", after)
+            #    print("before", before, "after", after)
                 canPro = False
                 canProText = "Unconvertible"
                 ProPhotoColor = colorPro.convert("prophoto-rgb")
@@ -174,8 +173,8 @@ def colors(request):
                 ProHexCode = '#{:02x}{:02x}{:02x}'.format(round(ProR),round(ProG), round(ProB))
                 proUpscale = "({},{},{})".format(round(ProR),round(ProG), round(ProB) )
                 deltaE = colorPro.delta_e(ProPhotoColor, method="2000")
-                print(ProHexCode, proUpscale)
-                print(deltaE , "NEW PROPHOTO\n\n")
+        #        print(ProHexCode, proUpscale)
+        #        print(deltaE , "NEW PROPHOTO\n\n")
             '''
             #Check to make sure that the hex codes outputted are valid hex codes / the conversion was successful
             shexCodeCheck = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', shexCode)
@@ -277,8 +276,8 @@ def results(request):
 
     #if the saving form is valid, proceed
     if request.method == 'POST':
-            print("\n HERE: \n", request.POST, "\n")
-            print('testing1')
+        #    print("\n HERE: \n", request.POST, "\n")
+        #    print('testing1')
             form = SaveForm(request.POST)
             form2 = MapForm(request.POST)
             if form.is_valid() and form2.is_valid():
@@ -289,13 +288,12 @@ def results(request):
                 saveJPG = form.cleaned_data.get("jpg")
                 saveTIF = form.cleaned_data.get("tif")
 
-                print('\n SAVE FORM: \n', savePNG, '\n', saveJPG, '\n', saveTIF, '\n')
+            #    print('\n SAVE FORM: \n', savePNG, '\n', saveJPG, '\n', saveTIF, '\n')
 
                 deleteMap = form2.cleaned_data.get("deleteMap")
                 submitMap = form2.cleaned_data.get("submitMap")
 
-                print('\n MAP FORM: \n', deleteMap, '\n', submitMap, '\n')
-
+            #    print('\n MAP FORM: \n', deleteMap, '\n', submitMap, '\n')
 
                 #if map delete is true, delete the map
                 #print("BEFORE SUBMIT", submitMap, deleteMap)
@@ -308,14 +306,14 @@ def results(request):
                                 sort=[( '_id', pymongo.DESCENDING )]
                         )
                         mapID = newest_map['pixelmap_id']
-                        # CHANGED THIS
+
                         gallery_collection.update_one({'gallery_id':0}, {'$push':{'gallery_images':mapID}})
                         return redirect('image')
 
                     except:
                         return redirect('/pixelspace')
-                    
-                            #check to see what formats the user wants to save in, and make the necessary image saves
+
+                    # check to see what formats the user wants to save in, and make the necessary image saves
                 newestMapString = "image" + str(mapID)
                 if savePNG:
                     newImg.save("pixelspace\pixelmaps\\" + newestMapString + ".png")
@@ -328,7 +326,6 @@ def results(request):
                     print("tiff saved")
 
                 if deleteMap:
-                    print("testing3")
                     return redirect('delete-map-confirm')
                 return render(request, 'pixelspace/results.html', {'form': form,'form2':form2, 'Image': data_url})
     else:
@@ -344,7 +341,7 @@ def comment_delete(request, map_id=-1, pk=-1):
         collection = dbname['comment']
         collection.delete_one({'ID':pk})
         print("DELETED COMMENT ID =", pk)
-    # err
+
     return redirect('detail', map_id)
 
 def detail(request, map_id):
@@ -449,7 +446,7 @@ def login(request):
         if form.is_valid():
             username = form.cleaned_data.get("username")
             password = form.cleaned_data.get("password")
-            print("provided USER:", username, "\nprovided PASSWORD:", password)
+        #    print("provided USER:", username, "\nprovided PASSWORD:", password)
 
             # authenticate credentials
             user = mongo_auth.authenticate(username=username, password=password)
@@ -774,10 +771,10 @@ def reset_password(request):
                 username = request.session['username_for_reset']
                 user_id = mongo_auth.get_user_id(collection_name="users", username=username)
 
-                print("PROVIDED ID:", user_id, "\n")
+                #print("PROVIDED ID:", user_id, "\n")
 
                 answers = mongo_auth.get_security_answers(user_id = user_id)
-                print("correct answers:", answers, "\n")
+                #print("correct answers:", answers, "\n")
 
                 if answer_one == answers[0] and answer_two == answers[1]:
                     return render(request, 'pixelspace/reset_password.html', {'settings_form':settings_form})
@@ -809,8 +806,6 @@ def reset_password(request):
                 print("\n ERROR: account not found \n")
                 return redirect('login')
 
-    #        security_questions_form = SecurityQuestionsForm()
-    #        return render(request, 'pixelspace/reset_password.html', {'security_questions_form':security_questions_form, 'question_one':question_one, 'question_two':question_two, 'username':True})
     else:
         security_questions_form = SecurityQuestionsForm()
         return render(request, 'pixelspace/reset_password.html', {'security_questions_form':security_questions_form})
@@ -847,7 +842,6 @@ def settings(request):
         else:
             print("* Invalid settings form *")
 
-    # removed "else:"
     form = SettingsForm()
     return render(request, 'pixelspace/settings.html', {'form':form})
 
@@ -866,8 +860,8 @@ def create_account(request):
             security_question_two = form.cleaned_data.get("question_two")
             security_answer_two = form.cleaned_data.get("answer_two")
 
-            print(f'NEW USER: {new_username} \n NEW_PASS: {new_password} \n CON_PASS: {confirm_password} \n EMAIL: {new_email}')
-            print(f'SQ1: {security_question_one} \n A1: {security_answer_one} \n SQ2: {security_question_two} \n A2: {security_answer_two}')
+        #    print(f'NEW USER: {new_username} \n NEW_PASS: {new_password} \n CON_PASS: {confirm_password} \n EMAIL: {new_email}')
+        #    print(f'SQ1: {security_question_one} \n A1: {security_answer_one} \n SQ2: {security_question_two} \n A2: {security_answer_two}')
 
             if mongo_auth.already_exists("users", new_username):
                 # ! DISPLAY ERROR NOTIFICATION TO USER !
@@ -876,7 +870,6 @@ def create_account(request):
 
             # If the input is valid, create a new user
             elif new_password == confirm_password:
-                print("\n ACCOUNT CREATION IN DB ON HOLD \n")
                 mongo_auth.create_account(
                     new_username,
                     new_password,

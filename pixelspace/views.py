@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 import base64
 from http import HTTPStatus
 import os, sys
-from .forms import AccountForm, SecurityQuestionsForm, UserForm, SettingsForm, LABForm, confirmDeleteForm, PixelForm, SaveForm, MapForm, confirmMapDeleteForm, CustomForm, LikeForm, commentForm, ShapeForm, RectangleForm, OvalForm, PolyForm
+from .forms import AccountForm, SecurityQuestionsForm, UserForm, SettingsForm, LABForm, confirmDeleteForm, PixelForm, SaveForm, MapForm, confirmMapDeleteForm, CustomForm, LikeForm, commentForm, ShapeForm, RectangleForm, OvalForm, PolyForm, saveLogo
 from colormath.color_objects import LabColor, sRGBColor, AdobeRGBColor
 from colormath.color_objects import BT2020Color
 from colormath.color_conversions import convert_color
@@ -296,16 +296,7 @@ def results(request):
 
                 print('\n MAP FORM: \n', deleteMap, '\n', submitMap, '\n')
 
-                #check to see what formats the user wants to save in, and make the necessary image saves
-                if savePNG:
-                    newImg.save("image.png")
-                    print("png saved")
-                if saveJPG:
-                    newImg.save("image.jpeg")
-                    print("jpg saved")
-                if saveTIF:
-                    newImg.save("image.tiff")
-                    print("tiff saved")
+
                 #if map delete is true, delete the map
                 #print("BEFORE SUBMIT", submitMap, deleteMap)
                 if submitMap:
@@ -323,6 +314,18 @@ def results(request):
 
                     except:
                         return redirect('/pixelspace')
+                    
+                            #check to see what formats the user wants to save in, and make the necessary image saves
+                newestMapString = "image" + str(mapID)
+                if savePNG:
+                    newImg.save("pixelspace\pixelmaps\\" + newestMapString + ".png")
+                    print("png saved")
+                if saveJPG:
+                    newImg.save("pixelspace\pixelmaps\\" + newestMapString + ".jpg")
+                    print("jpg saved")
+                if saveTIF:
+                    newImg.save("pixelspace\pixelmaps\\" + newestMapString + ".tiff")
+                    print("tiff saved")
 
                 if deleteMap:
                     print("testing3")
@@ -500,7 +503,7 @@ def logo(request):
         #obtain the shape chosen, and store it into a hidden variable so that it can be passed onto subsequent forms
         if form.is_valid():
             shape = form.cleaned_data.get("shape")
-            print(shape)
+            print(shape + "logo")
             #For each shape, request information from that form, and pass empty forms for the other shapes
             if shape == "rectangle":
                 form2 = RectangleForm(request.POST)
@@ -536,7 +539,7 @@ def logo(request):
                     img.show()
                     #convert to URL to be displayed
                     data_url = URLConverter(img)
-
+                    img.save("pixelspace\logos\\rectangleLogo.png")
                 else:
                     form2 = RectangleForm()
 
@@ -578,6 +581,7 @@ def logo(request):
 
                     imgOval.show()
                     data_url = URLConverter(imgOval)
+                    imgOval.save("pixelspace\logos\\ovalLogo.png")
                 else:
                     form3 = OvalForm()
             elif shape == "polygon":
@@ -610,6 +614,7 @@ def logo(request):
 
                     imgPoly.show()
                     data_url = URLConverter(imgPoly)
+                    imgPoly.save("pixelspace\logos\\polyLogo.png")
                 else:
                     form4 = PolyForm()
 

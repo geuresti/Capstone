@@ -12,35 +12,35 @@
 <br><br>
 <h4>Logo Generator</h4>
 <h5>Generate simple logo-mockups for your projects</h5>
-    
+
     <div class='flex-parent-element'>
-        
+
         <div class='flex-child-element'>
-            <div class="containerB">   
+            <div class="containerB">
 
 
         <form action="" method="post">
             {% csrf_token %}
-            
+
                 <select id="shape" name="shape">
                     <h2><option value="rectangle">Rectangle</option></h2>
                     <option value="oval">Oval</option>
                     <option value="polygon">Polygon</option>
-                    
+
                 </select>
-            
-        
+
+
             <br><br>
             <button class="button" type ="submit"> Choose Shape </button>
     </form>
     </div>
     </div>
-    
+
     <div class='flex-child-element'>
         <div class="containerB">
     {% if shape == "rectangle" %}
     <br>
-    <h2 style="font-size:40px;"><u>Rectangle</u></h2> 
+    <h2 style="font-size:40px;"><u>Rectangle</u></h2>
     <br><br>
     <form action="" method="post">
         {% csrf_token %}
@@ -49,19 +49,19 @@
         <label for="logoWid"><h2>Width:</h2></label><br>
         <input type="number" id="logoWid" name="logoWid">
         <label for="color"><h2>Color of Shape:</h2></label><br>
-        <input type="text" id="color" name="color"><br>
+        <input type="color" id="color" name="color"><br>
         <br>
         <label for="text"><h2>Text:</h2></label><br>
         <input type="text" id="text" name="text"><br>
         <label for="textColor"><h2>Text Color:</h2></label><br>
-        <input type="text" id="textColor" name="textColor"><br>
+        <input type="color" id="textColor" name="textColor"><br>
         <input type="hidden" id="shape" name="shape" value= {{shape}}>
         <br><br>
         <button class="button" type ="submit"> Create</button>
     </form>
     {% elif shape == "oval" %}
     <br>
-    <h2 style="font-size:40px;"><u>Oval</u></h2> 
+    <h2 style="font-size:40px;"><u>Oval</u></h2>
 
     <br><br>
     <form action="" method="post">
@@ -71,19 +71,19 @@
         <label for="ovalWid"><h2>Oval Width:</h2></label><br>
         <input type="number" id="ovalWid" name="ovalWid">
         <label for="color"><h2>Color of Shape:</h2></label><br>
-        <input type="text" id="color" name="color"><br>
+        <input type="color" id="color" name="color"><br>
         <br>
         <label for="text"><h2>Text:</h2></label><br>
         <input type="text" id="text" name="text"><br>
         <label for="textColor"><h2>Text Color:</h2></label><br>
-        <input type="text" id="textColor" name="textColor"><br>
+        <input type="color" id="textColor" name="textColor"><br>
         <input type="hidden" id="shape" name="shape" value= {{shape}}>
         <br><br>
         <button class="button" type ="submit"> Create</button>
     </form>
     {% elif shape == "polygon" %}
     <br>
-    <h2 style="font-size:40px;"><u>Polygon</u></h2> 
+    <h2 style="font-size:40px;"><u>Polygon</u></h2>
 
     <br><br>
     <form action="" method="post">
@@ -93,12 +93,12 @@
         <label for="noSides"><h2>Number of Sides:</h2></label><br>
         <input type="number" id="noSides" name="noSides">
         <label for="color"><h2>Color of Shape:</h2></label><br>
-        <input type="text" id="color" name="color"><br>
+        <input type="color" id="color" name="color"><br>
         <br>
         <label for="text"><h2>Text:</h2></label><br>
         <input type="text" id="text" name="text"><br>
         <label for="textColor"><h2>Text Color:</h2></label><br>
-        <input type="text" id="textColor" name="textColor"><br>
+        <input type="color" id="textColor" name="textColor"><br>
         <input type="hidden" id="shape" name="shape" value= {{shape}}>
         <br><br>
         <button class="button" type ="submit"> Create</button>
@@ -115,4 +115,3 @@
 </div>
 
 {% endblock %}
-

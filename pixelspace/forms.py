@@ -1,4 +1,5 @@
 from django import forms
+from django.forms.widgets import TextInput
 
 security_question_first_options = [
     ('Q1', 'What is the name of your first pet?'),
@@ -73,6 +74,7 @@ class CustomForm(forms.Form):
     rrangeHigh= forms.IntegerField(label='rrangeHigh', required=False)
     brangeHigh= forms.IntegerField(label='brangeHigh', required=False)
     grangeHigh= forms.IntegerField(label='grangeHigh', required=False)
+
 class SaveForm(forms.Form):
     png = forms.BooleanField(label='png', required=False)
     jpg = forms.BooleanField(label='jpg', required=False)
@@ -82,7 +84,6 @@ class MapForm(forms.Form):
     deleteMap = forms.BooleanField(label='deleteMap', required=False)
     submitMap = forms.BooleanField(label='submitMap', required=False)
 
-# CHANGE TO WIDGET = TEXT AREA
 class commentForm(forms.Form):
     content = forms.CharField(label='content')
 
@@ -100,10 +101,12 @@ class confirmMapDeleteForm(forms.Form):
 class ShapeForm(forms.Form):
     shape = forms.ChoiceField(choices = (("rectangle","rectangle"),("oval","oval"),("polygon","polygon")))
 
+# CHANGES
 class RectangleForm(forms.Form):
     logoLen = forms.IntegerField(label='logoLen')
     logoWid = forms.IntegerField(label='logoWid')
     color = forms.CharField(label='color', max_length=100)
+
     text = textColor = forms.CharField(label='text', max_length=100)
     textColor = forms.CharField(label='textColor', max_length=100)
     shape = forms.CharField(widget=forms.HiddenInput())

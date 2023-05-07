@@ -5,10 +5,14 @@ https://docs.google.com/spreadsheets/d/1yNE07kK7EQER7n0lnJ16K5ewiMCMre42ZUP1z_7q
 
 ## How to use Pixelspace
 
-download the requirements: "pip install -r requirements.txt"
+download the project <br>
 
-to run the program: "*python manage.py runserver*" <br>
-then open your browers and navigate to: "http://localhost:8000/pixelspace" <br>
+open your terminal / command prompt and enter the "Capstone" directory <br>
 
-to run the testing tool: "*python -m coverage run --branch --source='.' manage.py test*" <br>
-to view the coverage report: "*python -m coverage report*"
+download the requirements by typing: "pip install -r requirements.txt" <br>
+
+run the program by typing: "*python manage.py runserver*" <br>
+
+then open your brower and navigate to: "http://localhost:8000/pixelspace" <br>
+
+to terminate the program, press: ctrl + Z <br>
